@@ -553,65 +553,60 @@ Puis, les Sections \ref{sec:3ProMPsAppli} et \ref{sec:appliRealIcub} présentent
 \subsection{Notation}\label{sec:notation}
 %To ease the reading and the understanding of the theoretical tools, we will use the following notations:
 
-\quest{To facilitate understanding of the theoretical framework, we first introduce the notations we use in this section and throughout the remainder of the paper.}
-
-Pour faciliter la compréhension du cadre théorique nous introduisons tout d'abord les notations que nous utilisons tout au long de cette thèse.
+Afin de faciliter la compréhension du cadre théorique, nous introduisons tout d'abord les notations que nous utilisons tout au long de cette thèse.
 
 \noindent
-\textbf{Trajectories:}
+\textbf{Trajectoires:}
 \begin{itemize}
-\item $X(t)\in \mathbb{R}^3, X(t) = [x(t), y(t), z(t)]^\top$: the x/y/z-axis Cartesian coordinate of the robot's end-effector.
-\item $F(t) \in \mathbb{R}^6, F(t) = [f_x, f_y, f_z, m_x, m_y, m_z]^\top$: the wrench contact forces, \textit{i.e.} the external forces and moments measured by the robot at the contact level (end-effector).
-\item $\xi(t) \in \mathbb{R}^D$: the generic vector containing the current value or state of the trajectories at time $t$. It can be mono-dimensional (\textit{e.g.} $\xi(t) = [z(t)]$), or multi-dimensional (\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$), depending on the type of trajectories that we want to represent with the ProMP.
+\item $X(t)\in \mathbb{R}^3, X(t) = [x(t), y(t), z(t)]^\top$ : coordonnées Cartésiennes d'axes x/y/z correspondant à l'actuateur du robot.
+\item $F(t) \in \mathbb{R}^6, F(t) = [f_x, f_y, f_z, m_x, m_y, m_z]^\top$ : forces de contacts, \textit{i.e.} les forces et moments externes mesurés par le robot au niveau de son actuateur.
+\item $\xi(t) \in \mathbb{R}^D$ : vecteur contenant les valeurs de l'état de la trajectoire au temps $t$. Ce vecteur peut être mono-dimensionnel (\textit{e.g.} $\xi(t) = [z(t)]$), ou multi-dimensionnel (\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$), selon le type d trajectoire que l'on veut représenter à l'aide de la \textit{ProMP}.
 
+\item $\Xi = \Xi_{[1:t_{f}]} = [\xi(1), \ldots, \xi(t_{f})]^\top \in \mathbb{R}^{D \cdot t_{f}}$ : correspond à une trajectoire entière, composée de $t_f$ points mesurés.
 
-\item $\Xi = \Xi_{[1:t_{f}]} = [\xi(1), \ldots, \xi(t_{f})]^\top \in \mathbb{R}^{D \cdot t_{f}}$ is an entire trajectory, consisting of $t_f$ samples or data points. 
-
-\item $\Xi_{i[1:t_{fi}]}$ is the $i$-th demonstration (trajectory) of a task, consisting of $t_{fi}$ samples or data points. 
+\item $\Xi_{i[1:t_{fi}]}$ : correspond à la $i^{e}$ démonstration (trajectoire) d'une tâche, correspondant à $t_{fi}$ points mesurés.
 
 %For example, $\Xi_{i[1:t_{fi}]}= [\xi_i(1), \ldots, \xi_i(t_{fi})]^\top $ is the $i$-th trajectory.
 
 %\item $t_{fi}$: total number of samples of a $\Xi_i$ trajectory;
 %\item $\Xi = \Xi_{[1:t_{f}]} \in \mathbb{R}^{D \cdot t_{f}}$: a trajectory. For example, $\Xi_{i[1:t_{fi}]}= [\xi_i(1), \ldots, \xi_i(t_{fi})]^\top $ is the $i$-th trajectory.
 \end{itemize}
-\textbf{Movement Primitives:}
+\textbf{Primitives de Mouvement :}
 \begin{itemize}
-\item $k \in [1:K]$: the $k$-th ProMP, among a set of $K$ ProMPs that represent different tasks/actions. 
-\item $n_k$: number of recorded trajectories for each ProMP.
-\item $S_k = \{\Xi_{\{k,1\}},\ldots,\Xi_{\{k,n_k\}}\}$: set of $n_k$ trajectories for the $k$-th ProMP. 
+\item $k \in [1:K]$ : $k^{e}$ \textit{ProMP} d'un ensemble de $K$ \textit{ProMPs}, où chacune de ces \textit{ProMPs} correspond à une tâche/action spécifique.
+\item $n_k$ : nombre de trajectoires enregistrés pour chaque \textit{ProMP}.
+\item $S_k = \{\Xi_{\{k,1\}},\ldots,\Xi_{\{k,n_k\}}\}$ : ensemble de $n_k$ trajectoires correpsondant à la \textit{ProMP} $k$. 
 %For clarity, we consider $\Xi_i \equiv \Xi_{\{k,j\}}$.
 \end{itemize}
 \begin{itemize}
-\item $\xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi$ is the model of the trajectory with:
+\item $\xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi$ : modélisation de la trajectoire avec :
 \begin{itemize}
-\item $\epsilon_\xi \sim \mathcal{N}(0, \beta)$: expected trajectory noise.
-\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$: radial basis functions (RBFs) used to model trajectories. It is a block diagonal matrix.
+\item $\epsilon_\xi \sim \mathcal{N}(0, \beta)$ : bruits supposés de la trajectoire.
+\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$ : base de fonctions radiales (RBFs) utilisée afin de modéliser les trajectoires. Elle correspond à une matrice diagonale par bloque.
 \begin{itemize}
-\item[-] $M$: number of RBFs.
-\item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$: $i$-th RBF for all inputs $j \in [1:D]$. 
-
-It must be noted that the upper term comes from a Gaussian $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, where $ c_i, h$ are respectively the center and variance of the $i$-th Gaussian. In our RBF formulation, we normalize all the Gaussians.
+\item[-] $M$ : Nombre de RBFs.
+\item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$ : $i^e$ RBF correspondant à l'ensemble des entrées $j \in [1:D]$. 
+Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, où $ c_i, h$ sont respectivement le centr et la variance de la $i^e$ Gaussienne. Les Gaussiennes incluses dans la RBF sont normalisées.
 ˆ%\item[-] $ c_i, h$: center and variance parameters of the $i$-th Gaussian.
 \end{itemize}
-\item $\boldsymbol{\omega} \in \mathbb{R}^{D \cdot M}$: time-independent parameter vector weighting the RBFs, \textit{i.e.}, the parameters to be learned.
+\item $\boldsymbol{\omega} \in \mathbb{R}^{D \cdot M}$ : vecteur paramétrique indépendant du temps, utilisé pour pondérer les RBFs. Il s'agit des paramètres à apprendre.
 
 \end{itemize}
 
-\item $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})$: normal distribution computed from a set $\{\boldsymbol{\omega}_1, \ldots, \boldsymbol{\omega}_n\}$. It represents the distribution of the modeled trajectories, also called \textit{prior} distribution.
+\item $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})$ : distribution normale calculé à partir d'un ensemble $\{\boldsymbol{\omega}_1, \ldots, \boldsymbol{\omega}_n\}$.  Elle représente la dstribution des trajectoires modélisées, et est aussi appelée distribution \textit{à priori}.
 %\footnote{It must be noted that in the original ProMP paper \cite{paraschos2013probabilistic} the prior distribution $p(\boldsymbol{\omega})$ is written as $p(\boldsymbol{\omega}) =\theta \sim \mathcal{N}(\mu_\omega, \sigma_\omega)$. However, in robot learning $\theta$ is often used as a variable for parameters to be learned. To avoid ambiguities, we decide to employ simply $p(\boldsymbol{\omega})$. \todo{Controler} \rev{I am not sure that what you wrote is correct. May be better to write: the distribution is called $p(\omega; \theta)=\mathcal(\omega |\mu_\omega, \Sigma_\omega )$ over the weight vector $\omega$, with parameters $\theta$}}
 
 
-
 \end{itemize}
-\textbf{Time modulation:}
+\textbf{Modulation du temps :}
 \begin{itemize}
-\item $\bar{s}$: number of samples used as reference to rescale all the trajectories to the same duration.
-\item $\Phi_{\alpha_i t} \in \mathbb{R}^{D\times D \cdot M}:$ the RBFs rescaled to match the $\Xi_i$ trajectory duration.
-\item $\alpha_i = { \bar{s} \over t_{fi}}$: temporal modulation parameter of the $i$-th trajectory .
-\item $\alpha = \Psi_{\delta_{n_o}}\boldsymbol{\omega}_\alpha + \epsilon_\alpha$ is the model of the function mapping $\delta_{n_o}$ into the temporal modulation parameter $\alpha$, with:
+\item $\bar{s}$ : nombre d'échantillon utilisé en tant que référence, utilisé pour redimensionner toutes les trajectoires afin qu'elles aient la même durée.
+\item $\Phi_{\alpha_i t} \in \mathbb{R}^{D\times D \cdot M} :$ RBFs redimensionnées qui correspondent ainsi à la durée de la trajectoire $\Xi_i$.
+\item $\alpha_i = { \bar{s} \over t_{fi}}$ : paramètre de modulation du temps correspondant à la $i^e$ trajectoire.
+\item $\alpha = \Psi_{\delta_{n_o}}\boldsymbol{\omega}_\alpha + \epsilon_\alpha$ : modélisation de la fonction de redimensionnement $\delta_{n_o}$ permettant de définir le paramètre de modulation temporel $\alpha$, avec :
 
 \begin{itemize}
-\item[-] $\Psi$: a set of RBFs used to model the mapping between $\delta_{n_o}$ and $\alpha$;
+\item[-] $\Psi$: Un ensemble de \textit{RBFs} used to model the mapping between $\delta_{n_o}$ and $\alpha$;
 \item[-] $\delta_{n_o}$ is the variation of the trajectory during the first $n_o$ observations (data points); it can be $\delta_{n_o}=\xi(n_o) - \xi(1)$ if the entire trajectory variables (\textit{e.g.}, Cartesian position, forces, etc.) are considered, or more simply $\delta_{n_o}= X(n_o) - X(1)$ if only the variation in terms of Cartesian position is considered;
 %\item $ \theta_\alpha \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_\alpha}, \sigma_{\boldsymbol{\omega}_\alpha})$: normal distribution of the $\{\boldsymbol{\omega}_{\alpha_1},\ldots, \boldsymbol{\omega}_{\alpha_n} \}$ dataset.
 \item[-] $\boldsymbol{\omega}_\alpha$: the parameter vector weighting the RBFs of the $\Psi$ matrix. 
