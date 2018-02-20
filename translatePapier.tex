@@ -528,33 +528,25 @@ Function Approximation, DMP, and Black-Box Optimization (dmpbbo) &  DMP  & \cite
 
 %\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Theoretical framework}
+\section{Cadre théorique}
 \label{sec:theory}
 
-%This section is devoted to explain the theoretical framework and the methods implemented in the first module of our software, that implements ProMPs. 
-\quest{In this section we present the theoretical framework that we use to tackle the problem of intent recognition: we describe the ProMPs and how they can be used to predict trajectories from early observations.}
+Dans cette section, nous présentons le cadre théorique utilisé afin de répondre au problème de la reconnaissance de l'intention. 
 
-Dans cette section nous présentons le cadre théorique que nous utilisons pour nous attaquer au problème de la reconnaissance d'intention. C'est-à-dire que nous allons détailler le fonctionnement des méthodes ProMPs et comment elles peuvent être utilisées pour prédire des trajectoires à partir des observations initiales.
+%Pour cela, nous présenterons d'abord dans la Section~\ref{LearningSimpleProMP} le fonctionnement de la méthode \textit{ProMPs}, puis dans la Section~\ref{sec:predict} son utilisation qui consiste à la prédiction de la continuation de trajectoires, à partir de l'observation du commencement de celles-ci.
 
-%is devoted to explain the theoretical framework and the methods implemented in the first module of our software, that implements ProMPs. 
-\quest{In Section~\ref{LearningSimpleProMP} we formulate the problem of learning a primitive for a simple case, where the robot learns the distribution from several demonstrated trajectories. 
-In Section~\ref{sec:predict} we formulate and provide the solution to the problem of predicting the ``future'' trajectory from early observations (\textit{i.e.}, the initial data points).
-In Section~\ref{sec:predictDuration} we discuss the problem of predicting the time modulation, \textit{i.e.}, predicting the global duration of the predicted trajectory. This problem is non-trivial, as by construction the demonstrated trajectories are ``normalized'' in duration when the ProMP is learned. \footnote{In some tasks, \textit{e.g.}, reaching, it is reasonable to assume that the difference of duration of the demonstrated trajectories is negligible; however, in other tasks the duration of the demonstrated trajectories may vary significantly.}
-In Section \ref{sec:ManyProMP} we explain how to recognize, from the early observations, to which of many known skills (modeled by ProMPs) the current trajectory belongs.
-In all these sections we tried to present the theoretical aspects related to the use of ProMPs for the intention recognition application.
-}
-\quest{Practical examples of these theoretical problems are presented and explained later in sections \ref{sec:example1DOF} - \ref{sec:appliRealIcub}. 
-Section \ref{sec:example1DOF} explains how to use our software, introduced in Section \ref{sec:softwareOverview}, for learning one ProMP for a simple set of 1-DOF trajectories.
-Section \ref{sec:3ProMPsAppli} presents an example with the simulated iCub in Gazebo, while Section \ref{sec:appliRealIcub} presents an example with the real iCub.
-}
+Pour cela, la Section~\ref{LearningSimpleProMP} formule le problème de l'apprentissage d'une primitive à l'aide de la méthode \textit{ProMP}, pour un exemple jouet. Cet apprentissage de primitive sera effectué à l'aide de plusieurs trajectoires de démonstration. 
+Puis, la Section~\ref{sec:predict} formule et fournit la solution au problème de prédiction de la trajectoire \og future \fg{}, à partir des premières observations de celle-ci.
+De plus, dans la Section~\ref{sec:predictDuration}, nous discutons du problème de prédiction de la 
+%\toimprove{modulation du temps}, c'est-à-dire la prédiction de la 
+durée globale de la trajectoire qui a été inférée. Ce problème n'est pas trivial puisque, lors de l'apprentissage des \textit{ProMPs}, les trajectoires de démonstration sont \og normalisées \fg{} par rapport au temps. \footnote{Pour certaines tâches, telles que les tâches consistant à atteindre une cible, il est raisonnable de supposer que la différence de durée des trajectoires est négligeable. Cependant, pour d'autres tâches, la durée des trajectoires peut varier, surtout lorsque celles-ci sont effectuées par des personnes différentes.}
+Finalement, la Section~\ref{sec:ManyProMP} présente comment reconnaître, à partir de l'initiation d'une trajectoire, quelle compétence doit être sollicitée parmi les nombreuses apprises (modélisées par des \textit{ProMPs}). En plus de déterminer la compétence sollicitée, cette Section présente comment prédire la continuation de la trajectoire initiée.
 
+Ainsi, ces trois Sections présentent les aspects théoriques de l'utilisation de la méthode \textit{ProMP}, permettant de créer notre application permettant la reconnaissance des intentions.
 
-Dans la Section~\ref{LearningSimpleProMP} nous formulons le problème d'apprentissage de primitives à l'aide de la méthode ProMP pour un cas simple. Dans ce cas, le robot apprend la distribution à partir de plusieurs trajectoires de démonstration. Dans la Section~\ref{sec:predict} nous formulons et fournissons la solution au problème de prédiction de la trajectoire \og future \fg{} à partir des premières observations sur la trajectoire.
-Dans la Section~\ref{sec:predictDuration} nous discutons du problème de prédiction de la \toimprove{modulation du temps}, c'est-à-dire la prédiction de la durée globale de la trajectoire prédite. Ce problème n'est pas trivial parce que les trajectoires de démonstration sont \og normalisées \fg{} par rapport au temps pendant l'apprentissage des primitives avec la méthode ProMP. \toimprove{Pour certaines taches, comme des taches d'atteignabilité par exemple, il est raisonnable de supposer que la différence de durée des trajectoires est négligeable ; cependant d'autres taches \toimprove{exigent davantage de précision et} la durée des trajectoires de démonstration peut significativement varier.}
-Dans la Section~\ref{sec:ManyProMP} nous expliquons comment reconnaitre, à partir des premières observations, laquelle des nombreuses compétences apprises (modélisées par des méthodes ProMP) doit être sollicitée.
-Ainsi dans ces trois sections nous présentons les aspects théoriques liés à l'utilisation de méthodes ProMP dans le but de reconnaitre des intentions.
-
-Nous illustrons ces problèmes théoriques dans les Sections~\ref{sec:example1DOF} à \ref{sec:appliRealIcub}. Dans la Section~\ref{sec:3ProMPsAppli} nous détaillons un exemple avec un robot iCub simulé avec \toimprove{Gazebo\ref{.}} et dans la Section~\ref{sec:appliRealIcub} nous présentons un exemple cette fois-ci avec le robot iCub réel.
+Ces problèmes théoriques sont ensuite illustrés avec des exemples détaillés.
+Ainsi, la Section \ref{sec:example1DOF} explique comment utiliser le logiciel (introduits dans la Section~\ref{sec:softwareOverview}) dans le cas d'apprentissage d'une trajectoire à une dimension.
+Puis, les Sections \ref{sec:3ProMPsAppli} et \ref{sec:appliRealIcub} présentent des exemples avec le robot simulé dans Gazebo~\todo{[ref]}, puis avec le robot réel.
 
 %Before presenting the examples, 
 
