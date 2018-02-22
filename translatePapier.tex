@@ -139,392 +139,6 @@ $^{4}$Data Lab, Volkswagen Group, 80805 Munich, Germany}
 
 \maketitle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{abstract}
-\section{}
-Ce papier présente un logiciel open-source permettant de prédire l'intention d'un utilisateur interagissant avec le robot humanoid iCub.
-Notre but est de permettre au robot d'inférer l'intention de son partenaire humain lors de tâche collaborative, en prédisant la continuation de trajectoire attendu par le partenaire. Cette capacité est nécessaire pour que le robot développe des comportements d'anticipation, ce qui est crucial dans les scénarios de collaboration homme-robot, tel que la co-manipulation, l'assemblement ou le transport coopératif.
-Pour cela, nous proposons une approche permettant au robot d'acquérir des capacités basique de reconnaissance de l'intention, à l'aide de primitive de mouvement probabilistes (ProMPs). Cette méthode (ProMPs) permet de représenter, généraliser et reproduire des mouvements moteurs compliqués.
-Dans cette étude, le robot apprend un ensemble de primitives de mouvements à partir de plusieurs démonstrations fournies par le partenaire qui guide le robot physiquement.
-Lors de l'apprentissage, le scénario collaboratif est modélisé à partir des démonstrations fournies par le partenaire. Lors de la reproduction de la tache collaborative, le partenaire initie le mouvement du robot physiquement, et celui-ci utilise son apprentissage pour reconnaître l'intention de son partenaire.
-Dès les premières observations de ce mouvement, le robot peut en plus d'inférer l'intention de son partenaire (but), compléter le mouvement et ce, même si le partenaire arrête l'interaction physique avec le robot.
-Notre approche a été évalué en simulation et sur le robot réel. En simulation, le iCub est guidé par le partenaire à l'aide d'un appareil haptique nomé Géomagic Touch. Dans l'expérience réelle, le partenaire interagit avec le robot en lui attrapant ses mains et en les guidant. Deux expériences ont été effectués sur le robot réel: l'une où le robot effectue de simples trajectoires pour attraper des objects, et l'autre inspiré de tâche de tri collaboratif.
-Le logiciel implémentant notre approche est accessible sur la plateforme GitHub. De plus, des tutoriels et des vidéos sont fournis.
-
-%The human demonstrations are used to model the prior knowledge of the primitives, that we later use for recognizing the intention of a collaborative movement formalized as the future trajectory given some early observations. 
-%%During the execution of the task, we use ProMPs to predict the intention of the human, after an initial observation of the movement. 
-%We use our approach not only to predict the intention of the user after few observations, but also to complete the movement even if the user breaks the contact and the physical interaction with the robot.
-%We test our approach in simulation and on the real iCub. In simulation, the iCub is driven by the user using the Geomagic Touch haptic device.
-%The human demonstrations model the prior knowledge of the primitives, that we later use for recognizing the intention of a collaborative movement formalized as the future trajectory given some early observations. 
-%%During the execution of the task, we use ProMPs to predict the intention of the human, after an initial observation of the movement. 
-%We use our approach not only to predict the intention of the user after few observations, but also to complete the movement even if the user breaks the contact and the physical interaction with the robot.
-
-
-\tiny
- \keyFont{ \section{Mots clefs:} 
- robot, prédiction, intention, interaction, modèles probabilistes
- } 
- %All article types: you may provide up to 8 keywords; at least 5 are mandatory.
-\end{abstract}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{INTRODUCTION}
-
-Actuellement, les industries n'utilisent que des robots industriels à base fixe, pour des tâches répétitives ne nécessitant pas d'interaction avec l'humain. Dans le future, nous imaginons que les robots humanoïdes pourront aussi effectuer ces tâches pour assister les travailleurs là où des robots à base fixe ne peuvent pas être installés, et où les robots ont besoin de s'adapter aux mouvements des travailleurs, tel que pour la fabrication d'avions~\citep{caron2016humanoids}.
-Pour collaborer avec des humains, les robots ont besoin de pouvoir prédire l'intention de leur partenaire. En effet, les travailleurs aimeraient n'avoir qu'à guider le commencement du mouvement des robots ou lorsqu'il s'agit de lever un objet en collaboration, de commencer eux-même le mouvement sans avoir à commander/programmer les robots. Le robots devineraient alors l'intention de leur partenaire le plus vite possible, afin de compléter la tâche attendu sans avoir besoin d'assistance supplémentaire. Plus précisément, les travailleurs n'auraient qu'à guider les bras des robots dans la direction du but, puis de les lâcher dès que ceux-ci montrent qu'ils sont capables d'atteindre le but voulu par eux-mêmes.
-
-Ce scénario est particulièrement intéressant pour les industries~\citep{Dumora2013}, où les travailleurs n'auraient qu'à initier sans effort un mouvement avec les robots, puis ceux-ci seraient capable de déplacer correctement des objets lourds ou peu maniables, et de les placer à la position désirée. Il y a une multitude de scénarios où ces tâches collaboratives peuvent être initié par un humain et finalisé par un robot, que ce soit dans des services à la personne ou pour la production : assemblage de pièces, tris d'objets, soudure, déplacement d'objets nécessitant ou non d'être à plusieurs, etc. Dans tous ces exemples, le robot a besoin de prédire le but de chaque action et la trajectoire correspondante que le partenaire souhaite exécuter.P Pour effectuer cette prédiction, les robots doivent utiliser toutes qu'ils ont à leur disposition en utilisant leurs senseurs. Ces informations proviennent aussi de leurs expériences passées (a priori), venant par exemple de session d'apprentissage passé, que ce soit en imitant leur partenaire ou en collaborant avec eux. En plus d'être capable d'utiliser toutes ces données, les robots doivent comprendre et modéliser le comportement des humains, afin de développer cette capacité de prédiction de l'intention et l'autonomie liée à cette compréhension~\citep{Sato94}.
-La prédiction de l'intention du partenaire, passe par l'identification de la tâche courante et la prédiction de la trajectoire à effectuer pour atteindre ce but.
-Dans la littérature sur l'interaction homme-robot, beaucoup de mots-clefs sont associés à cette habilité de prédiction: inférence, estimation du but, lisibilité, reconnaissance de l'intention et prédiction.
-%\rev{\sout{In the human-robot interaction literature, many features and capabilities are associated to this ability: prediction, inference, goal estimation, legibility, intention recognition, anticipation.}}
-%\todo{Definition about these terms (to give the context) }
-%Anticipation is a prior act that takes into account the prediction of a future event or state, thanks to an imaginative or speculative process that takes into account all the current information to make the prediction. 
-L'anticipation correspond à la capacité du robot à choisir correctement la tâche à effectuer dans une situation donnée~\citep{Hoffman2010}. Pour cela, le robot doit prédire l'effet de son action, comme étudié avec le concept d'affordance~\citep{Ivaldi2014activeExplo,csahin2007afford,Jamone2017affordance}.  Il doit aussi être capable de prédire l'intention du partenaire, ce qui revient à estimer le but du partenaire~\citep{Wang2013ijrr,Thill2017hri}. Finalement, il doit prédire les futures événements ou états, c'est à dire être capable de simuler l'évolution du système couplé homme-robot, comme cela est fait dans le cas de modèles de contrôle prédictifs~\citep{Zube2016,Ivaldi2010} ou de la planification \ori{human-aware}~\citep{alami2006toward,shah2011improved}.
-
-%\rev{\sout{la prédiction des effets de leur action  (qui a été étudiéthe prediction of the effect of their action (which has been studied with the concept of affordances in ), the prediction of the human intention (e.g., estimating the partner's goal, as in ), and / or the prediction of future events or states (e.g., being able to simulate the evolution of the coupled system, as it is frequently done in model predictive control, as in or human-aware planning presented in )}}. 
-
-Il a été montré que faire des \ori{mouvement lisibles}~\citep{Busch2017,Dragan2013rss} aide l'interaction entre les personnes, puisque cela permet d'améliorer l'estimation mutuelle de l'intention et donc d'améliorer l'efficacité de la collaboration.
-
-L'anticipation necessite donc l’habilité de visualiser ou de prédire le future état désiré, c'est à dire là ou le partenaire souhaite aller.
-% in one of the simplest forms of human-robot collaboration, 
-Prédire l'intention de l'utilisateur est souvent formulé comme la prédiction du but de l'action humaine, ce qui signifie que le robot doit être capable de prédire au moins le but du partenaire quand deux partenaires s'engage dans une action conjointe. Pour faire une telle prédiction, une approche classique est de considérer chaque mouvement comme une instance d'une action particulière, ou d'une primitive de mouvement dirigé vers un but.
-
-Dans la dernière décennie, beaucoup de méthodes ont été proposées afin de représenter des primitives de mouvements, tel que les  ``Gaussian Mixture Models'' (GMM, les modèles de mixture gaussiennes) \citep{Calinon2014,khansari2011learning}, les ``Dynamic Movement Primitives'' (DMP, les primitives de mouvements dynamiques) \citep{ijspeert2013dynamical}, ou encore récemment les ``Probabilistic Dynamic Movement Primitive'' (PDMP \cite{meier2016probabilistic}, les primitives de mouvement dynamiques probabilistes) et les ``Probabilistic Movement Primitives'' (ProMP, primitives de mouvements probabilistes) \citep{paraschos2013probabilistic}.
-
-Une review plus approfondis sur ces différentes techniques est disponible dans~\citep{HandbookRobotLearning}.
-Les différentes techniques d'apprentissage ont été appliqué dans beaucoup de scénario, tel que permettre à un robot à jouer au ping-pong, écrire des nombres, éviter des obstacles pour des mouvement de \toimprove{saisie-placement (pick and place)}, etc. Dans tous ces scénarios, les partenaires humains effectuent généralement les démonstrations (i.e., ils réalisent eux même les mouvements permettant d'effectuer les différentes tâches) soit en guidant manuellement le robot, soit en utilisant la téléopération, en suivant le paradigme classique d'apprentissage par démonstration.
-Certaines études de ce type ont aussi été appliqué au robot humanoïde iCub. Par exemple, dans ~\cite{2013ACTI2891} ils utilisent les DMPs pour adapter en ligne le mouvement dirigé vers un but afin d’éviter les obstacles variables rencontré par le bras robotique, tandis que dans~ \cite{paraschos2015model}, ils utilisent les ProMPs afin d'apprendre comment le robot doit incliner un râteau en utilisant les informations des forces et moments.
-
-Parmi toutes les techniques précédemment énoncées, les ProMPs nous semble être le plus prometteur afin de permette la reconnaissance de l'intention et l'anticipation de mouvement pour des scénario de collaboration homme-robot.
-Ils ont l'avantage, par rapport aux autres méthodes, d'avoir une modélisation de mouvements qui capture la variabilité des démonstrations humaines. Elles ont aussi différentes propriétés décrites dans~\cite{paraschos2013probabilistic}, telles que la co-activation et le couplage de primitives, ainsi que le redimensionnement temporel.
-Les ProMPs ont déjà été utilisés dans la coordination homme-robot pour générer des trajectoires robotiques appropriés en réponse à des trajectoires humaines initiées.~\citep{maeda2016probabilistic}. 
-Contrairement aux DMPs, les ProMPs ne contiennent pas d'attracteur sur la position finale de la trajectoire, donc n'ont pas besoin d'information sur cette position finale et peuvent faire varier la position finale du mouvement tout en respectant les primitives apprises.\footnote{Il y a des applications dans lesquelles la convergence des mouvements du robot vers un but unique et précis est une propriété désirable voir nécessaire. Cependant, il s'agit d'une hypothèse qui empêche de généraliser la méthode à différentes actions, ce qui est une autre raison pour laquelle nous préférons l'utilisation des ProMPs.} De plus, la méthode ProMPs est plus performante lorsque les données reçues par les capteurs sont bruitées ou variables, comme montré dans~\citep{maeda2014learning}.\footnote{Pour avoir une étude détaillée des différences entre ProMPs et DMPs dans le cadre d'apprentissage de primitives d'interaction et de prédiction, voir~\citep{maeda2014learning}.}
-Une étude récente~\cite{meier2016probabilistic} présente une méthode appelée PDMP (Probabilistic Dynamic Movement Primitive). Cette méthode améliore les DMPs en y ajoutant des propriétés probabilistes afin de mesurer la vraisemblance qu'une primitive de mouvement est exécutée correctement et afin d'inférer des mouvements à partir de mesures de capteurs. Malgré cette amélioration, les PDMPs n'ont pas la propriété de généralisation des données \todo{(??)} et les mouvements peuvent dévier de manière arbitraire hors des démonstrations. Cette dernière différence est critique lorsque l'on utilise des robots humanoïdes. Par exemple, à cause d'une telle déviation, le robot pourrait heurter quelque chose durant un mouvement, ou faire tomber un objet dans le cas de mouvement précis durant lequel le robot transporte un objet. C'est pourquoi, nous avons considéré que l'utilisation de ProMPs est plus adaptés à nos applications.
-
-%We believe in the next years they will be one of the most used techniques to be used for human-robot collaboration, because their framework easily naturally deals with prediction from early observations and with generating trajectories belonging to a "skill" that is described in probabilistic terms from few demonstrations.
-
-%\towrite{How it is classically solved - are there different techniques? people focusing on different aspects? we will try to come up with a possible classification / structured organisation. here we need to cite the most relevant prior works. }
-%
-%\todo{some state of the art about intention prediction in HRI (5-6 very significative works)}
-%
-%\todo{some state of the art about techniques for prediction (5-6 very significative works)}
-%
-%In the past decade several approaches have been used to deal with the ability of a robot to finish an initiated movement, using for example Movement Primitives \citep{}, Hidden Markov Models \citep{}, Gaussian Processes \citep{}.
-%
-%\todo{... cite here the papers and the most relevant works (5/6 citations, the most relevant papers only)}
-%
-%\towrite{What are the limits of the current approaches. is there something else that we should be doing to study this problem? }
-Dans ce papier, nous présentons notre approche afin de prédire, dans le cadre d'interaction et de collaboration physique homme-robot, l'intention du partenaire humain, basée sur les primitives de mouvement probabilistes (Probabilistic Movement Primitives, ProMPs)~\citep{paraschos2013probabilistic}. Nous présentons aussi le logiciel open source associé qui permet d'implémenter la méthode à notre robot iCub.
-
-%\towrite{Why did we choose the ProMP? (Alex) }
-
-
-Pour illustrer la technique utilisée, nous présentons dans ce papier un exemple de problématique qui consiste à permettre au robot de finir un mouvement initié par un utilisateur par guidage physique du bras du robot.
-à partir de peu d'observation de ce mouvement commun entre l'homme et le robot, mouvement supposé appartenir à une primitive de mouvement d'une certaine tâche, le robot doit reconnaître quel type de tâche est guidé par l'utilisateur et prédire la continuation de la trajectoire à effectuer afin d'accomplir le mouvement de manière autonome dès que l'utilisateur relâche le bras robotique.\footnote{Ici, les tâches sont encodés par les primitives, primitives qui correspondent à des trajectoires : il s'agit d'une approche classique de technique d'apprentissage robotique et en générale des techniques basés sur des primitives. Il s'agit d'une hypothèse simplificatrice, mais cela permet de représenter plusieurs tâches différentes telles que : pointage, déplacement vers un but, attrapage d'objets, mouvement de regard, etc.}  
-%(3) do an associated task in an autonomous way, without requiring the user's guidance to the end (4) to interpret and respect the user's will, thanks to force information during all these steps (compliance adjustment).\\
-
-Pour effectuer ces tâches, le robot doit tout d'abord apprendre les primitives de mouvements qui y sont associées. S l'aide de la méthode ProMPs, nous décrivons ces primitives à l'aide de distributions de démonstrations décrites par un modèle probabiliste, plutôt que d'apprendre une trajectoire ``moyenne'' unique.
-Durant l'interaction, l'utilisateur commence par guider physiquement le robot afin qu'il effectue la tâche. En même temps, le robot collecte des données d'observation. Il utilise alors sa connaissance a-priori provenant des ProMPs qu'il a apprises, afin de calculer une prédiction de la tâche désirée ainsi que de la trajectoire future qu'il doit effectuer afin d'atteindre le but.
-Le concept de ce problème est représenté dans la Figure~\ref{fig:conceptProMP}.
-Dans la partie supérieur, on représente l'étape d'apprentissage d'une primitive : le robot y est guidé physiquement par le partenaire durant tout le mouvement permettant d'effectuer une certaine tâche, et ce plusieurs fois. Ainsi, le robot observe plusieurs démonstrations de ce même mouvement. Durant ces mouvements, le robot collecte à la fois des mesures cinématiques (\textit{e.g.}, positions Cartésienne) et dynamiques (\textit{e.g.}, couple). Ces $N$ trajectoires  constituent une base pour l'apprentissage des primitives. Cet apprentissage consiste à calculer la distribution de paramètres $\boldsymbol{\omega}$ qui modélisent la trajectoire. On appelle la distribution ainsi apprise la \textit{distribution à priori}. 
-Dans le cas où le robot apprend différentes tâches, ce processus d'apprentissage est répliqué afin d'avoir une ProMP pour chaque tâche.
-
-% $N$ demonstrations of this movement are provided. From these demonstrations, the robot computes a model of the movement using the ProMP method, by computing the distribution of the model's parameter $\boldsymbol{\omega}$. We call this learned distribution the \textit{prior distribution}. 
-Le bas de la figure représente l'étape d'inférence. A partir d'un mouvement initié et guidé par l'utilisateur humain, le robot commence par identifier quelle ProMP correspond le plus (\textit{i.e.}, quelle primitive l'utilisateur exécute parmis les différentes apprises). Puis, il estime la trajectoire future à partir du mouvement initié et de la distribution préalable. Pour ce faire, il calcule les paramètres $\boldsymbol{\omega}^*$ correspondant à la  \textit{distribution postérieur}. La trajectoire correspondante est alors utilisée par le robot afin de finir le mouvement puis la tâche de manière autonome, sans necessité l'aide de l'utilisateur.
- %it updates the ProMP to by-pass\todo{??} by the early observations: this posterior distribution is used by the robot to finish the movement.
-
-
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\hsize]{img/conceptualProMPV3.pdf}
-\caption{Concepte d'utilisation des ProMPs dans lequel le robot prédit la trajectoire a effectuer dans le cadre de tâche collaborative. En haut : phase d'apprentissage, où les ProMPs sont apprises à partir de plusieurs démonstrations guidés par un humain. Bas : phase d'inférence phase (en line),  où le robot reconnaît, à partir d'un mouvement initié par son partenaire, la ProMP courante et où il prédit l'intention de son partenaire, \textit{i.e.}, l'évolution future de la trajectoire initiée.}
-%\todo{Might have to add force information if we have time and results}
-\label{fig:conceptProMP}
-\end{figure}
-
-Dans ce papier, nous décrivons à la fois la théorie et le logiciel sur lesquels se base la capacité du robot à prédire et effectuer les tâches et mouvements associés de manière autonome.
-Le logiciel est actuellement implémenté en Matlab et C++; il est open-source, accessible sur \texttt{github}: %\url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/CppProgram}
-\begin{center}
-\url{https://github.com/inria-larsen/icubLearningTrajectories}
-\end{center}
-De plus, il a été testé à la fois en simulation (à l'aide du simulateur Gazebo contenant une simulation du robot iCub) et sur le robot réel. En simulation, pour que l'utilisateur puisse guider physiquement le robot simulé, nous utilisons un appareil haptique nommé ``Geomagic Touch'', capable de faire ressentir à l'utilisateur une simulation des forces que le robot simulé exerce.\footnote{Dans notre expérience, nous n'utilisons pas cette fonctionalité de retour de forces. Nous utilisons cet appareil afin de diriger manuellement le bras du robot dans le simulateur. Ainsi, nous utilisons cet appareil comme un joystick plus naturellement manipulable.}
-%, to simulate the physical guidance of the real robot case. 
-; sur le robot réel, l'utilisateur attrape physiquement l'avant bras du robot réel pour le guider.
-
-Nous fournissons aussi un exemple pratique du logiciel, permettant de répondre à des problèmes classiques.
-Dans l'exemple, les mesures des trajectoires correspondent à la position cartésienne de l'actuateur ainsi que les forces qui y sont exercées.
-%Thanks to the Cartesian position information, the robot can continue movements autonomously, without being guided by the human\footnote{
-
-Notons notamment que ce type de mesures diffère de celles utilisées dans les autres études basées sur les ProMPs~\citep{paraschos2015model}, où il s'agissait des valeurs articulaires. L'utilisation de positions Cartésiennes plutôt que des valeurs articulaires nous permet d'exploiter la redondance du bras robotique afin d'effectuer une certaine tâche dans un espace 3D, ainsi que de permettre au robot de bouger son bras de manière plus naturelle pour effectuer la trajectoire voulue (en effet, lors du déplacement du bras robotique, le partenaire ne bouge que l'avant bras du robot, ce qui limite les possibilités de mouvement du robot).
-Du point de vu contrôle du iCub, ce choix implique que le iCub définisse ses couples articulaires afin d'effectuer les mouvements à l'aide d'un contrôleur cartésien~\citep{pattacini2010experimental}, plutôt que d'utiliser un contrôleur articulaire. En ce qui concerne les forces, on se base sur une estimation basée sur une modélisation de la dynamique du robot, et qui utilise les valeurs des capteurs de couple 6D~\citep{ivaldi2011computing,fumagalli2012force}.
-Tous les détails des expériences sont présentés dans ce papier et dans le tutoriel du logiciel.
-%}.
-%\todo{add forces info if we have done it} 
-%Thanks to the force information, the robot can detect if the user's forces are larger than the ones it has previously learned: in this case, the robot assumes that the current movement is probably a new demonstration of a new primitive (\textit{e.g.}, a new task, different from the one previously learned) and then instead of trying to guess the goal using the information of the previous primitive, it can follow the users' movement to learn a new movement primitive.
-
-Pour résumer, les contributions de ce papier sont les suivants :
-\begin{itemize}
-\item  une description de la théorie utilisée dans ce logiciel basée sur la méthode ProMPs et permettant de prédire la trajectoire et le but désirés par l'utilisateur du robot lors d'interaction physique entre le partenaire et le robot. Elle fournie notamment les fonctionnalités suivantes : reconnaissance de la tâche courante, estimation de la durée de la tâche, prédiction de la trajectoire future.;
-\item une étude expérimentale concernant comment l'information des forces et moments peuvent améliorer l'estimation de la durée/vitesse de la trajectoire initiée;
-\item un software open-source permettant la reconnaissance de l'intention et son application avec le robot iCub, que ce soit en simulation ou avec le robot réel.
-\end{itemize}
-
-Ce papier est organisé en plusieurs sections.
-Dans la Section~\ref{sec:SOA}, nous résu we review the literature about intentions in Human-Robot Interaction (HRI), probabilistic models for motion primitives and their related software. 
-In Section \ref{sec:theory} we describe the theoretical tools that we use to formalize the problem of predicting the intention of the human during interaction. Particularly, we describe the ProMPs and their use for predicting the evolution of a trajectory given early observations. 
-In Section \ref{sec:software} we overview the software organization and the interconnection between our software and the iCub's main software, both for the real and simulated robot.
-\rev{The following sections are devoted to presenting our software and its use for predicting intention. We choose to present three examples of increasing complexity, with the simulated and real robot.}
-We provide and explain in detail a software example for a 1-DOF trajectory in Section \ref{sec:example1DOF}.
-In  Sections \ref{sec:3ProMPsAppli} and \ref{sec:appliRealIcub} we present the intention recognition application with the simulated and real iCub, respectively.
-\rev{In the first examples with the robot, the ``tasks'' are exemplified by simple reaching movements, to provide simple and clear trajectories that help the reader understand the method, whereas the last experiment with the robot is a collaborative object sorting task.}
-Section \ref{sec:video} provides the links to the videos showing how to use the software in simulation and on the iCub.
-Finally, in Section~\ref{sec:conclusions} we discuss our approach, its limitations and outline our future developments.
-
-%\newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Related Work}\label{sec:SOA}
-
-%\towrite{We will follow the structure that you cited in the introduction if possible. What are the main techniques to solve the problem? Are there papers more focusing on the application? Are there papers more focusing on the theory? Are there different techniques? Here we need to come up to around 20 papers to cite }
-
-
-In this paper we propose a method to recognize the intention of the human partner collaborating with the robot, formalized as the target and the ''future'' trajectory associated to a skill, modeled by a goal-directed Probabilistic Movement Primitive.   
-In this section, we briefly overview the literature about intention recognition in human-robot interaction and motion primitives for  learning of goal-directed robotic skills.
-
-\subsection{Intention during human-robot interaction}
-Lors de collaboration homme-robot, la compréhension mutuelle de ces deux agents est primordiale pour assurer la réussite de leur tâche commune.
-La compréhension mutuelle signifie que chaque agent est au courant de l'action courante de l'autre, de son statut, de son but, des informations disponibles qu'il peut estimer ou prédire.
-La reconnaissance de l'intention n'est qu'une pièce de ce problème, mais joue un rôle cruciale dans l’acquisition de compétence anticipative.
-
-Formaliser l'intention s'avère être une tâche compliquée, notamment parce que fournir une représentation unique qui explique à la fois l'intention moteur (mouvement actuel); l'intention 
- à bas niveau c'est à dire des actions dirigés vers un but (\textit{e.g.} atteindre un objet ciblé et l'attraper); et l'intention à haut niveau, c'est à dires des actions complexes, abstraites, cognitives (\textit{e.g.} changer une ampoule au plafond, en utilisant une échelle, en la grimpant pour afin atteindre l'ampoule, etc.).
-Dans \cite{demiris2007prediction}, un récapitulatif est fait sur les différentes approches existantes de la reconnaissance de l'action et de la prédiction de l'intention.
-
-Du point de vue de l'humain, comprendre l'intention du robot signifie qu'il doit déterminer les mouvements ou actions du robot dirigés vers un but, de manière intuitive et non-ambiguë, et qu'il doit comprendre ce que le robot est entrain de faire, ou ce qu'il va faire~\citep{kim2017collaborative}. 
-Dans \cite{dragan2014integrating}, on formalise les différence entre~\textit{prédiction} et \textit{lisibilité} : un mouvement est lisible si un observateur peut rapidement inférer son but, tandis qu'un mouvement est prédictible lorsqu'il correspond aux attentes d'un l'observateur connaissant le but. De plus, quand une trajectoire peut être prédite par un observateur à partir d’observation antérieure de celle-ci, on peut dire que la trajectoire n’est pas seulement lisible, mais aussi prédictible.
-
-Les difficultés lors de la génération de mouvements robotiques \textit{lisibles} ont été étudiées dans des études récentes. Par exemple, dans~\cite{dragan2014integrating} on utilise des techniques d'optimisation afin de générer des mouvements à la fois lisible et prédictibles.
-Dans~\cite{HuangHAD17}, on applique une méthode d'apprentissage par renforcement inverse à des voitures autonomes afin de sélectionner les mouvements du robot qui contiennent le maximum d'information pour les humains et qui facilite ainsi la compréhension des objectifs du robot.
-
-
-
-%"a legible motion is motion that enables an observer to quickly and confidently infer the correct goal G" and predictable  motion  is  motion  that  matches what an observer would expect, given the goal G.", they generate both predictable motion and legible motion using functional gradient descent, but with two different optimization criterion, and they highlight that their legibility model is correct only when the trajectories are contain in a 
-%a movement is legible when the robot's goal is clear for the observer whereas a movement is predicable when according to the robot's goal, the motion is predictable.
-
-
-%\todo{talk about Dragan, Shah, Sciutti with lifting weights, Serena with directional gaze with icub, serena with icub learning objects}
-
-Du point de vue du robot, comprendre l'intention du partenaire humain signifie que le robot doit être capable de déchiffrer l'ensemble des indices verbaux et non-verbaux naturellement générés par le comportement de l'humain afin d'identifier, selon la tâche et le contexte courant, quelle est son intention.
-Plus le robot utilise d'informations (\textit{e.g.} signaux mesurables provenant du partenaire humain et de son environnement), plus l'estimation peut être précis.
-La forme la plus simple de la reconnaissance de l’intention du partenaire est d'estimer le but d'une action en cours, sous la condition que chaque action correspond à un mouvement dirigé vers un but. \todo{intention}
-Dans~\cite{sciutti2013robots}, on montre que les humains attribuent implicitement des intentions dirigées vers un but aux mouvements robotiques, ce qui montre que les humains effectuent un regard d'anticipation vers l'objectif visé. \todo{ ? phrase originel: showed that humans implicitly attribute intentions in form of goals to robot motions, proving that humans exhibit anticipatory gaze towards the intended goal }   
-Le regard a aussi été utilisé dans un jeu homme-robot avec le iCub~\cite{Ivaldi2014}, où le robot (respectivement l'humain) suivait le regard de l'humain (respectivement du robot) pour identifier l'objet visé.
-Dans~\cite{ferrer2014bayesian}, on propose un algorithme Bayésien permettant de prédire l’intention du mouvement humain, en calculant géométriquement le but le plus probable à partir de la méthode Espérance-Maximisation et d'un simple classificateur Bayésien.
-Dans~\citep{wang2012probabilistic}, on propose une méthode appelée modèle dynamique dirigé vers le but (Intention-Driven Dynamics model). Cette méthode est basée sur les Modèles Dynamiques de Processus Gaussiens (GPDM \citep{wang2005gaussian}) et elle permet d'inférer l'intention de l'adversaire humain du robot lors d'un match de ping-pong. Cette intention à estimer correspond à la position ciblée avec la balle, et la méthode se base sur le mouvement entier du partenaire humain, avant même que celui-ci frappe la balle.
-
-\todo{comprendre la phrase : More generally, modeling and descriptive approaches can be used to match predefined labels with measured data \citep{csibra2007obsessed}}.
-
-%\todo{some other examples? }
-Une forme plus complexe de reconnaissance de l'intention correspond à l'estimation de la continuation d'une trajectoire à partir des observations antérieures. C'est à dire que l'on veut estimer $[x_{t+1}, \ldots, x_{t+T_{future}}] = f(x_t,x_{t-1},\ldots, x_{t-T_{past}})$. 
-\toimprove{Ce problème, similaire à l'estimation des modèles prédictif de la dynamique d'un systeme \todo{c'est bien ça forward dynamics ?}, est fréquemment adressé par les chercheurs en ce qui concerne les modèles de contrôle prédictifs, où être capable de faire évoluer le système dans les temps est la base du controle robotique. }
-\sout{This problem, very similar to the estimate of the forward dynamics model of a system, is frequently addressed by researchers in model predictive control, where being able to ``play'' the system evolving in time is the basis for computing appropriate robot controls. }
-
-Quand une trajectoire peut être prédite par un observateur à partir d'observation antérieure de celle-ci, on peut dire que la trajectoire n'est pas seulement \textit{lisible}, mais aussi \textit{prédictible}.
-Une approche systématique permettant de prédire une trajectoire est de raisonner en terme de primitives de mouvements, de façon à ce que la séquence de points d'une trajectoire peut être générée par un modèle temporel paramétrique ou par un système dynamique paramétrique.
-Par exemple,~\cite{palinko2014communicative} planifie des trajectoires dirigées vers des buts permettant de transporter des objets. Cette méthode de planification permet notamment de connaître les informations sur le poids  des objets transportés.
-Plus généralement, dans les approches génératives~\citep{buxton2003learning}, des variables latentes sont utilisées pour modéliser par apprentissage les primitives et ainsi être capable de générer et d'inférer des actions. La section suivante donne plus de détails concernant l'état de l'art des techniques permettant de générer les primitives de mouvements.
-%: this is the typical case for movement primitives.
-
-%\todo{some more examples?}
-Dans ~\citep{amor2014interaction}, le robot commence par apprendre une primitive d'interaction en regardant deux humains effectuer eux-même la tâche interactive, à l'aide de capture du mouvement. Cette primitive d'Interaction encapsule les dépendances entre deux mouvements humains. Puis, le robot utilise des primitives d'interaction afin d'adapter son comportement aux mouvements de son partenaire. La méthode utilisé est basée sur les Primitives Dynamique de Moteur (Dynamics Motor Primitives~\citep{ijspeert2013dynamical}), où une distribution sur les paramètres des DMP est apprise. Notons que dans notre papier, nous n'utilisons pas la même approche pour apprendre les primitives d'interaction puisque nous modélisons les trajectoires du robot et de l’utilisateur comme une trajectoire unique conjointe, dû au fait que le l'utilisateur et le robot sont en contact physique. De plus, il n'y a pas de latence entre le mouvement initié par le partenaire et celui du robot, puisque le bras du robot est guidé physiquement par le partenaire jusqu'à ce que celui-ci stop le contact.
-
-Beaucoup d'exemples dans la littérature se focalise sur des trajectoires cinématiques, correspondant aux gestes utilisés dans les interactions dyadiques caractérisés par une coordination des actions et des réactions. D'autres s’intéressent à des trajectoires plus complexes, qui correspondent aux trajectoires effectués lors d'interaction physique entre l'homme et le robot, permettant d'effectuer des tâches nécessitant la collaboration des agents et des échanges de forces. En effet, les informations cinématiques fournies par de telles trajectoires ne peuvent pas être analyser sans prendre en compte l’échange haptique et l'estimation des rôles des partenaires (\textit{i.e.}, qui est le leader qui est le follower).
-
-Estimer le rôle actuel du partenaire humain (maître/esclave ou leader/follower) est cruciale puisque l'information des rôle est nécessaire pour adapter correctement la compliance  et l’impédance du robot au niveau des échanges de forces de contact.
-
-Plus important, adapter l'interaction haptique peut permettre au robot d'exprimer qu'il a compris l'intention du partenaire et qu'il est capable de finir la tâche de manière autonome, en imitant le même type de communication non verbale qui est typique chez l'humain.
-
-Par exemple, dans~\citep{gribovskaya2011motion}, le robot infère l'intention de l'humain en utilisant les mesures des forces humaines et en utilisant les modèles de mixture gaussiennes.
-Dans~\citep{rozo2013learning}, l'impédance des bras est adapté en utilisant un modèle basé sur les modèles de mixtures de Gaussienne, sur les forces mesurées  et sur les informations visuelles.
-Beaucoup d’études se focalisent sur l'abilité du robot à agir seulement quand et selon comment l'utilisateur le souhaite~\citep{carlson2008human}\citep{soh2015learning} , d'autres sur la capacité au robot de ne pas interférer contre les forces de son partenaire~\citep{jarrasse2008can} ou de ses actions~\citep{baraglia2016initiative}.
-
-
-%\todo{some examples?}
-
-In this paper, we describe our approach to the problem of recognizing the human intention during collaboration by providing an estimate of the future intended trajectory to be performed by the robot. In our experiments, the robot does not adapt its role during the physical interaction, but simply switch from follower to leader when the human breaks contact with it. 
-
-\section{MA VIEILLE PARTIE}
-
-Dans cer papier, on souhaite que notre robot prédise l'intention de son partenaire afin de finaliser un mouvement et une action par lui même. Beaucoup d'autres travaux de recherche necessite cette abilité.
-
-
-Dans \cite{ferrer2014bayesian}, il s'agit de prédire les mouvements d'un humain en utilisant une méthode appelée Prédiction Bayesienne de l'Intention du Mouvement Humain (BHMIP).
-Cette méthode se base sur des calculs géométriques permettant de trouver la destination la plus probable de l'humain ainsi que sur l'algorithme Esperance-Maximisation 
-Puis, pour trouver la prédiction la plus performante, ils utilisent un classifieur Bayesien. Cette méthode a l'avantage d'être indépendant du type d'environnement et qu'il ne nécessite pas de calculs intensifs.
-
-D'autres études utilisent la capacité d'inférence pour adapter l'impédance des robots.
-Dans \citep{gribovskaya2011motion}, le robot infère l'intention de l'humain grâce a la mesure des forces de celui ci et en utilisant des modèles de mixtures de gaussiennes. Dans \citep{wang2009hmm}, ils utilisent des Hidden Markov Models pour apprendre comment compenser des forces physique potentielles. Leur robot utilise cette méthode afin de serrer la main de son partenaire, en mesurant l'impédance de ce dernier et en reconnaissant quel type de mouvement il doit suivre. Dans~\citep{rozo2013learning}, un bras robotique mesure les forces et les informations visuelles afin d'adapter son impédance, en utilisant ici aussi des modèles de mixtures gaussiennes.
-Dans notre étude, le robot utilise l'information des forces et des moments afin d'estimer l’intention de son partenaire ainsi que de détecter la vitesse du mouvement.
-
-Dans une autre thématique de recherche, les robots utilisent la capacité de prédiction de l'intention humaine afin d'adapter leur comportement (maître/esclave). En effet, pour collaborer efficacement avec les humains, les robots doivent être rigide quand ils effectuent eux même la tache (maître), tout en restant alerte à la volonté de leur partenaire (c'est à dire qu'il doit rester suffisamment compliant pour permettre à l'utilisateur de contrôler l'action). C'est pourquoi beaucoup d'études se focalisent sur l’habilité du robot à agir uniquement quand et comment son utilisateur le souhaite~\citep{carlson2008human}\citep{soh2015learning} et sur sa capacité à ne pas interférer avec les forces de son partenaire~\citep{jarrasse2008can} ou ses actions~\citep{baraglia2016initiative}.
-Dans notre étude, le robot est "esclave" lorsqu'il est guidé par son partenaire (au début du mouvement), puis devient maître lorsqu'il finit le mouvement par lui même.
-
-
-%To acquire this inference ability, different scenarios have been used.
-
-Dans certaines études, le robot observe d'abord le mouvement du partenaire dans sa totalité avant d'agir.Dans \citep{wang2012probabilistic}, une méthode appelé Intention-Driven Dynamics model permet d'inférer l'intention du partenaire du robot durant un match de ping pong. Cette méthode est une amélioration des Gaussian Process Dynamical Models (GPDM \citep{wang2005gaussian}) et permet au robot d'inférer où la balle va être envoyé, avant même que le partenaire humain ait frappé la balle, grâce à l'analyse du mouvement de celui-ci.
-
-Pour obtenir cette aptitude d'inférence, différentes méthodes existent.
-Dans\citep{demiris2007prediction}, un récapitulatif est fait sur les différentes approches concernant la reconnaissance de l'action et de la prédiction de l’intention. La premiers possibilité consiste à faire coïncider les informations mesurées avec des modèles. Pour cela, une première possibilité consiste à utiliser des approches descriptives, où l'on fait correspondre à des labels prédéfinis, les données récoltées. On peut trouver un récapitulatif de ces méthodes descriptives dans~\citep{csibra2007obsessed}. Une deuxième possibilité consiste à utiliser des approches génératives, où l'on utilise des variables latentes afin d'apprendre les informations utiles à l’inférence de l'action. Ce type d'approche se base sur l'utilisation de distribution probabilistes. Un récapitulatif de ces approches génératives peut être trouvé dans~\citep{buxton2003learning}.
-
-
-
-Dans \todo{citer Yannis Demiris Prediction of intent in robotics and multi agent systems 2007}, les différentes approches permettant la reconnaissance de l'action et la prédiction de l'intentionnalité sont définis et expliqués. Dans ce document, une architecture générative est mise en évidence, appelé HAMMER (Hierarchical Attentive Multiple Models for Excecution and Recognition). Cette architecture utilise un modele inverse de prédiction \todo{inverse-forward model} afin d'executer une action ou de reconnaitre une action faite par un demonstrateur.
-
-Un probleme sous jacent à la reconnaissance de mouvement est que le robot doit estimer la durée de la trajectoire afin de l'aligner avec les trajectoires qu'il a apprit. Dans notre cas, au début de l'interaction physique entre l'homme et le robot, ce dernier observe un mouvement partiellement guidé par son utilisateur. À partir de ce mouvement partiel, le robot doit d'abord estimer l'etat courant du mouvement afin de comprendre l'intention de son partenaire. Ainsi, il a besoin d'estimer la vitesse du mouvement.
-
-Mathématiquement, la loi de Fitt modélise la durée d'um mouvement. Une assumption de ce modèle est que la durée du mouvement est fonction linéaire de la difficulté à atteindre la cible\cite{fitts1992information}. Dans~\cite{langolf1976investigation}, ils montrent qu'en modifiant la taille de la cible, la forme du mouvement change. Ainsi, il est difficile d'appliquer la théorie de la loi de Fitt quand la taille de la cible peut varier. Dans~\cite{langolf1976investigation} et \cite{soechting1984effect}, ils confirment cette idée en montrant que la même forme du mouvement change avec la précision necessaire pour atteindre la position but du mouvement.
-
-Une autre méthode, souvent utilisé en informatique est appelée Dynamics Time Warping\footnote{Déformation temporelle dynamique} (DTW). 
-Cette méthode permet de trouver la corrélation entre deux trajectoires dont la durée diffère, de maniere plus robuste qu'en utilisant la distance euclidienne. Dans \cite{amor2014interaction}, cet algorithme est modifié afin de permettre de faire coïncider des mouvements partiels avec une trajectoire référence.
-Beaucoup d'améliorations et de variations de cette méthode existe. Dans~\cite{keogh2002exact}, 
-ils proposent des méthodes permettant d'améliorer l'indexation, et ainsi d’accélérer la vitesse de calcul de l'algorithme. On trouve ainsi les méthodes FastDTW, Lucky Time Wraping ou encore FTW.  Dans\cite{silva2016speeding}, ils commencent par expliquer et comparer ces méthodes, puis ils ajoutent leur propre méthode appelé Pruned Warping Path, qui accélère encore plus la vitesse calculatoire. De plus, cette méthode permet de supprimer les données improbables. Mais le principale désavantage de toutes ces méthodes basés sur DTW est qu'elles ne préservent pas la forme globale de la trajectoire (la trajectoire est déformée).
-
-Dans \cite{maeda2014learning}, des primitives de mouvements sont apprises à l'aide d'apprentissage probabiliste. Ils améliorer l'estimation des mouvements en utilisant une méthode différente. Celle-ci utilise aussi une modélisation à base de gaussiennes de la fonction de déformation du temps, et au lieu d'utiliser la méthode DTW, cette méthode force l'alignement locale entre les deux mouvements, sans "sauter" des indexes. Ainsi, les trajectoires obtenues sont plus réalistes, plus régulière, et cette méthode préserve la forme globale des trajectoires.
-
-\subsection{\quest{Movement primitives /} Primitives de mouvement}
-
-
-%\todo{@Alex: please revise this entire section about movement primitives}
-
-%Movement primitives can be encoded into a set of parameters in dynamical system as well as in stochastic models. Dynamical systems define the dynamic of movements as a vector field, where each motion pattern is expressed by a closed curve in this field. This field attracts the robot's movement to the reference one, and this attraction assures the stabilization of the robot's movement. Many methods exist for that purpose.
-%Dynamic Motor Primitives (DMP) is one of these methods, presented in \cite{schaal2006dynamic}, that formalized mathematically movement primitives as stable non-linear attractor systems. This method consists of adding a term to a stable dynamical model. This term makes the system follow specific trajectories. This methods has been used in several studies with robotic manipulators, in particular for reaching motions. It has been improved in \cite{ijspeert2013dynamical}.
-
-\quest{Movement Primitives (MPs) is a well established paradigm for representing complex motor skills.}
-
-Les modèles utilisant des primitives de mouvement \toimprove{(MPs)} sont une référence quand il s'agit de représenter des capacités motrices complexes.
-
-%MPs can be encoded into a set of parameters in dynamical system as well as in stochastic models. Dynamical systems define the dynamic of movements as a vector field, where each motion pattern is expressed by a closed curve in this field. This field attracts the robot's movement to the reference one, and this attraction assures the stabilization of the robot's movement. Many methods exist for that purpose.
-\rev{The most known method for representing movement primitives is probably the} Dynamic Movement Primitives (DMPs)~\cite{ijspeert2013dynamical,schaal2006dynamic,meier2016probabilistic}. \rev{DMPs} use a stable non-linear attractor in combination with a forcing term to represent the movement. The forcing term enables to follow specific movement, while the attractor asserts asymptotic stability. 
-\rev{In a recent paper, \cite{meier2016probabilistic} proposed an extension to DMPs, called PDMP (Probabilistic Dynamic Movement Primitive). This method improves DMP with probabilistic properties to measure the likelihood that the movement primitive is executed correctly and to perform inference on sensor measurement. However, The PDMPs do not have a data-driven generalization and can deviate arbitrarily from the demonstrations. This last difference can be critical for our applications with the humanoid robot iCub, since uncertainties are unavoidable and disturbances may happen frequently and de-stabilize the robot movement (for example, an unexpected collision during the movement). Thus, the ProMPs method is more accurate for our software.}
-
-
-
-\rev{\cite{ewerton2015learning}, \cite{paraschos2013probabilisticTrajectory} and \cite{maeda2014learning} 
-%\todo{I don't find this paper on the internet, so I cannot cite it. Can you give me the bibtex?} 
-compared ProMPs and DMPs for learning primitives and specifically interaction primitives. With the DMP model, at the end of the movement, only a dynamic attractor is activated. Thus, it always reach a stable goal. 
-The properties allowed by both methods are temporal scaling of the movement, learning from a single demonstration, and generalizing to new final position. 
-With ProMPs, we have in addition the ability to do inference (thanks to the distribution), to force the robot to pass by several initial via-points (the early observations), to know the correlation between the input of the model, and to co-activate some ProMPs. 
-In our study, we need these features, because the robot must determine a trajectory that passes by the early observations (beginning of the movement where the user guides physically the robot). 
-}
-%Moreover, in an experiment of our paper, we assume the robot uses only a sub-part of the inputs of the model to do the inference (e.g. only Cartesian position is used). By using ProMPs instead of DMP, the program is able to compute the expectation of the other inputs (forces), from the correlation between the inputs).\\
-%}
-
-%The DMPs have been extensively used for controlling robotic manipulators for reaching movements.
-%An probabilistic approach to DMPs improvement of this method, called Probabilistic Dynamic Movement Primitive (PDMP), is presented in \cite{meier2016probabilistic}. %This method shares the advantages of DMPs, and on,% a failure detection feature thanks to a probabilistic learning. In \cite{denivsa2016learning}, they use a method called Compliant Movement Primitive (CMP) based on Torques Primitives (TP) and Dynamic Movement Primitives (DMP). First, the trajectory of the movement is shown and encoded in DMP. Then, a robot executes the movement by using a feedback control. The executed trajectories are then encoded as radial basis functions in a TP. This TP is used as a feed-forward term. By using this method, robots can learn the specificities of the dynamical model of each task, instead of mathematical models that cannot take into account all these specificities. In \cite{mulling2013learning}, they use DMPs to allow a robot to learn a set of elementary table tennis hitting movements, thanks to kinesthetic learning. Then, they use a mixture of motor primitives (MoMP) to generalize the learned movements to a wider range of situations.
-A Recurrent Neural Networks (RNN) approach \cite{billard2001learning} used a 
-hierarchy of neural networks to simulate the activation of areas in human brain. The network can be trained to infer the state of the robot at the next point in time, given the current state. The authors propose to train the RNN by minimizing the error between the inferred position of the next time step and the ground-truth obtained from demonstrations.
-
-%%A short explanation is done here \url{https://studywolf.wordpress.com/2013/11/16/dynamic-movement-primitives-part-1-the-basics/}.
-%An improvement of this method, called Probabilistic Dynamic Movement Primitive (PDMP), is presented in \cite{meier2016probabilistic}. This method has the same advantages as DMP with, in addition,% a failure detection feature thanks to a probabilistic learning. In \cite{denivsa2016learning}, they use a method called Compliant Movement Primitive (CMP) based on Torques Primitives (TP) and Dynamic Movement Primitives (DMP). First, the trajectory of the movement is shown and encoded in DMP. Then, a robot executes the movement by using a feedback control. The executed trajectories are then encoded as radial basis functions in a TP. This TP is used as a feed-forward term. By using this method, robots can learn the specificities of the dynamical model of each task, instead of mathematical models that cannot take into account all these specificities. In \cite{mulling2013learning}, they use DMPs to allow a robot to learn a set of elementary table tennis hitting movements, thanks to kinesthetic learning. Then, they use a mixture of motor primitives (MoMP) to generalize the learned movements to a wider range of situations.
-%All these dynamical methods allow to recognize and predict movements.
-%allow to infer following input (\textit{e.g.} for a movement the position of the next iteration) and to improve the inference ability by optimizing the error between inferred positions and their real values (measured by the robot). In \cite{billard2001learning}, they use a 
-%
-
-%
-%Another dynamical method is Recurrent Neural Networks (RNN). The idea of such Neural Networks is to infer the following input (\textit{e.g.} for a movement the position of the next iteration) and to improve the inference ability by optimizing the error between inferred positions and their real values (measured by the robot). In \cite{billard2001learning}, they use a hierarchy of artificial neural network models based on some human's brain areas. This model allows to reproduce all their tested human's arm motions efficiently.
-
-Hidden Markov Models (HMMs) for  movement skills were introduced by~\cite{fine1998hierarchical}.
-This method is often used to categorize movements, where a category represents a movement primitive. This method also allows to represent the temporal sequence of a movement. 
-In \cite{nguyen2005learning} they use learned Hierarchical Hidden Markov Model (HHMMs) to recognize human behaviors efficiently. 
-In \cite{ren2002human} they present the Primitive based Coupled-HMM (CHMM) approach, for human natural complex action recognition. In this approach, each primitive is represented by a Gaussian Mixture Model.
-
-
-Adapting Gaussian Mixture Models is another method used to learn physical interaction with %distribution \todo{why did you wrote "distributions"?} 
-learning. In \cite{evrard2009teaching} they use GMMs and Gaussian Mixture Regression to learn, in addition to the position (joint information), force information. Using this method, a humanoid robot is able to collaborate in one dimension with its partner for a lifting task. In our paper, we will also use (Cartesian) position and force information to allow our robot to interact physically with its partner.
-
-%With regard to stochastic models, a well known method is the Hidden Markov Models (HMMs). This method is often used to categorize movements, where a category represents a movement primitive. This method also allows to represent the temporal sequence of a movement. Improvements of this model exist to encode complex spatio-temporal features.  For example, Hierarchical HMMs (HHMMs) have been introduced in \cite{fine1998hierarchical} to include a hierarchy of hidden states. In \cite{nguyen2005learning}, they use learned HHMMs to recognize human behaviours efficiently. They compare their method with other HHMMs methods and show that thanks to their learning, the results are more efficient. In \cite{ren2002human} they present an approach called Primitive based Coupled-HMM (CHMM), for human natural complex action recognition. In this approach, each primitive is represented by a Gaussian Mixture Model.
-
-
-A sub-problem of movement recognition is that robots need to estimate the duration of the trajectory to align a current trajectory with learned movements. In our case, at the beginning of the physical Human-Robot Interaction (pHRI), the robot observes a partial movement guided by its user. Given this partial movement, the robot must first estimate what the current state of the movement is to understand what its partner intent is. Thus, it needs to estimate the partial movement's speed.
-
-Fitts' law models the movement duration for goal-directed movements. This model is based on the assumption that the movement duration is a linear function of the difficulty to achieve a target\cite{fitts1992information}. In \cite{langolf1976investigation}, they show that by modifying the target's width, the shape of the movement changes. Thus, it is difficult to apply Fitt's law when the size of the target can change. In \cite{langolf1976investigation} and \cite{soechting1984effect}, they confirm this idea by showing that the shape of the movement changes with the accuracy required by the goal position of the movement. 
-
- Dynamics Time Warping (DTW) is a method to find the correlation between two trajectories that have different durations, in a more robust way than the Euclidean distance. In \cite{amor2014interaction}, they modify the DTW algorithm to match a partial movement with a reference movement.
-Many improvements over this method exist. In~\cite{keogh2002exact}, they propose a robust method to improve the indexation. The calculation speed of DTW is improved using different methods, such as FastDTW, Lucky Time Warping or FTW. An explanation and comparison of these methods is presented in \cite{silva2016speeding}, where they add their own computation speed improvement by using a method called Pruned Warping Paths. This method allows the deletion of unlikely data. However, a drawback of this well-known DTW method is they don't preserve the global trajectory's shape. 
-
-In \cite{maeda2014learning}, where they use a probabilistic learning of movement primitives, they improve the duration estimation of movements by using a different time warping method. This method is based on a Gaussian basis model to represent a time warping function and, instead of DTW, it forces a local alignment between the two movements without ``jumping'' some index. Thus, the resulting trajectories are more realistic, smoother, and this method preserves the global trajectories' shapes.
-
-
-\medskip
-
-For inferring the intention of the robot's partner, we use Probabilistic Movement Primitives (ProMPs), \cite{paraschos2013probabilistic}). Specifically, we use the ProMP's conditioning operator to adapt the learned skills according  to observations. The ProMPs can encode the correlations between forces and positions and allow better prediction of the partner's intention.
-Further, the phase of the partner's movement can be inferred  and therefore  the robot can adapt to the partner's velocity changes. ProMPs are more efficient for collaborative tasks, as shown in~\cite{maeda2014learning}, where in comparison to DMPs, the root-mean square error of the predictions is lower.
-
-
-%In our case, we use the Probabilistic Movement Primitives method (ProMP,\cite{paraschos2013probabilistic}) that has the advantage to exhibit all the following properties: conditioning the trajectory to pass by via-points (this property is used here to adapt the robot's movement according to its partner's will); using correlation between different information (used here to correlate forces and positions); inferring and following the phase of the partner's movement (thanks to this property, the robot recognizes a movement even if the partner's velocity changes). 
-%This method is close to DMP, but ProMPs are more efficient for our goal. Indeed, in~\cite{maeda2014learning} we see that when we use DMP, the root-mean square prediction error of a collaborative movement is bigger than when we use ProMPs. Also, in \cite{paraschos2013probabilisticTrajectory}, we see that when we modify the end of the trajectory, the movement is inside of the learned movement distribution, whereas with DMPs, the new movement is out of the learned distribution. 
-%This could be critical in our case since our robot learns the CoM trajectory used to maintain its balance during the whole movement.\\
-%amélioration temps modulation marco
-%\cite{paraschos2015model} 
-%permet d'apprendre en plus de la trajectoire à suivre, les actions que le robot doit effectuer (eg il apprend le controle qu'il doit effectuer au court de cette trajectoire, controle dont la raideur est variable grace a la distribution apprise.
-%\subsection{Probabilistic models for prediction}
-
-%\todo{Already placed in the previous paragraphs}
-
-
-\subsection{Related open-source software}
-
-One of the goals of this paper is to introduce an open-source software for the iCub (but potentially for any other robot), where the ProMP method is used to recognize human intention during collaboration, so that the robot can execute initiated actions autonomously.
-%continue trajectories guided by a human user.
-This is not the first open-source implementation for representing movement primitives: however, it has a novel application and a rationale  
-%\todo{what does this mean ?} 
-that makes it easy to use with the iCub robot.
-
-%We can find other open-source softwares that implement other methods applied on other robots. In the following table, we give a partial list of some of these softwares.
-
-In Table 1
-%\ref{table:software}, 
-we report on the main software libraries that one can use to learn movement primitives. Some have been also used to realize learning applications with iCub, \textit{e.g.}, \cite{lober2014multiple,2013ACTI2891} or to recognize human intention.
-However, the software we propose here is different: it provides an implementation of ProMPs used explicitly for intention recognition and prediction of intended trajectories. It is interfaced with iCub, both real and simulated, and addresses in the specific case of physical interaction between the human and the robot. 
-In short, it is a first step towards adding intention recognition ability to the iCub robot.%This skill is used to allow the robot to finish a movement on its own, where each movement can be linked to a specific action.
-
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|p{5.5cm}|p{3cm}|p{2cm}|p{1.5cm}|p{2cm}| p{2cm}|}
-  \hline
-  \textbf{Software/library} & \textbf{Method} & \textbf{Code link} & \textbf{Language} & \textbf{Robot} & \textbf{Reference(s)}\tabularnewline
-  \hline
-Dynamical System Modulation for Robot Adaptive Learning via Kinesthetic Demonstrations & GMR & \cite{gmr} & Matlab & Hoap3 & \cite{hersch2008dynamical}\tabularnewline
-  \hline
-pbdlib-matlab & HMM, GMM, and others & \cite{pbdlib} & Matlab & Baxter & \cite{Calinon16JIST} \tabularnewline
-  \hline
-% Intention\_Recognition \_Human\_Robot\_Interaction & SURF matching & \cite{HumanIntention} & C++, python and others &  SeekurJr with manipulator & \\
-%  \hline
-DMP learning with GMR  & DMP and GMR & \cite{StatisticalDynamical}  & Matlab or C & Coman & \cite{Calinon12Hum} \tabularnewline
-\hline
-Stochastic Machine Learning Toolbox & Kernel Functions, Gaussian Processes, Bayesian Optimization & \cite{smlt} & C++ or Python &  | & \tabularnewline
-\hline
-  pydmps & DMP & \cite{pydmps} & Python & Sarcos & \cite{ijspeert2013dynamical}\tabularnewline
-  \hline
-   Dynamical Systems approach to Learn Robot Motions & GMM, SEDS & \cite{seds} & Matlab & iCub & \cite{khansari2011learning}, \cite{khansari2012dynamical} \tabularnewline
-  \hline
-
-Function Approximation, DMP, and Black-Box Optimization (dmpbbo) &  DMP  & \cite{dmpbbo} & Python or C++ & iCub & \cite{lober2014multiple,2013ACTI2891} \tabularnewline
-  \hline  
-  Learning Motor Skills from Partially Observed Movements Executed at Different Speeds & ProMP & \cite{marcoProg} & Matlab or Python & | & \cite{ewerton2015learning}\tabularnewline
-  \hline
-\rowcolor{yellow} icubLearningTrajectories & ProMP & \cite{icubLearningTrajectories} & Matlab and C++ & iCub & | \tabularnewline
-\hline
-\end{tabular}
-\end{center}
-
-\label{table:software}
-\caption{Open-source software libraries implementing Movement Primitives and their application to different known robots.}
-\end{table}
-
-
 
 %\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -552,6 +166,8 @@ Puis, les Sections \ref{sec:3ProMPsAppli} et \ref{sec:appliRealIcub} présentent
 
 \subsection{Notation}\label{sec:notation}
 %To ease the reading and the understanding of the theoretical tools, we will use the following notations:
+
+Lors de l'observation de trajectoire, le robot mesure les données de manière régulière (toutes les \todo{??} ms). Nous parlerons de ``\textit{temps $t$}'' par abus de langage, pour dénommer la $t^e$ mesure récoltée par le robot. De même, lorsque nous parlerons de \textit{durée $t_f$}, il s'agira du nombre de mesure total récupéré par le robot durant toute la trajectoire
 
 Afin de faciliter la compréhension du cadre théorique, nous introduisons tout d'abord les notations que nous utilisons tout au long de cette thèse.
 
@@ -582,9 +198,9 @@ Afin de faciliter la compréhension du cadre théorique, nous introduisons tout 
 \item $\xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi$ : modélisation de la trajectoire avec :
 \begin{itemize}
 \item $\epsilon_\xi \sim \mathcal{N}(0, \beta)$ : bruits supposés de la trajectoire.
-\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$ : base de fonctions radiales (RBFs) utilisée afin de modéliser les trajectoires. Elle correspond à une matrice diagonale par bloque.
+\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$ : fonctions de base radiale (RBFs) utilisée afin de modéliser les trajectoires. Elle correspond à une matrice diagonale par bloque.
 \begin{itemize}
-\item[-] $M$ : Nombre de RBFs.
+\item[-] $M$ : nombre de RBFs.
 \item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$ : $i^e$ RBF correspondant à l'ensemble des entrées $j \in [1:D]$. 
 Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, où $ c_i, h$ sont respectivement le centr et la variance de la $i^e$ Gaussienne. Les Gaussiennes incluses dans la RBF sont normalisées.
 ˆ%\item[-] $ c_i, h$: center and variance parameters of the $i$-th Gaussian.
@@ -606,132 +222,49 @@ Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{
 \item $\alpha = \Psi_{\delta_{n_o}}\boldsymbol{\omega}_\alpha + \epsilon_\alpha$ : modélisation de la fonction de redimensionnement $\delta_{n_o}$ permettant de définir le paramètre de modulation temporel $\alpha$, avec :
 
 \begin{itemize}
-\item[-] $\Psi$: Un ensemble de \textit{RBFs} used to model the mapping between $\delta_{n_o}$ and $\alpha$;
-\item[-] $\delta_{n_o}$ is the variation of the trajectory during the first $n_o$ observations (data points); it can be $\delta_{n_o}=\xi(n_o) - \xi(1)$ if the entire trajectory variables (\textit{e.g.}, Cartesian position, forces, etc.) are considered, or more simply $\delta_{n_o}= X(n_o) - X(1)$ if only the variation in terms of Cartesian position is considered;
+\item[-] $\Psi$: un ensemble de \textit{RBFs} utilisé dans la modélisation de la fonction de redimensionnement de temps entre $\delta_{n_o}$ and $\alpha$;
+\item[-] $\delta_{n_o}$ : différence entre la $n_o^e$ mesure et la $1^e$ mesure récoltée. Cette différence peut correspondre à $\delta_{n_o}=\xi(n_o) - \xi(1)$ lorsque l'on considère l'ensemble des mesures décrivant la trajectoire (\textit{e.g.}, position Cartésienne, forces, etc.), ou plus simplement à $\delta_{n_o}= X(n_o) - X(1)$ lorsque l'on considère uniquement les positions cartésiennes de la trajectoire.
 %\item $ \theta_\alpha \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_\alpha}, \sigma_{\boldsymbol{\omega}_\alpha})$: normal distribution of the $\{\boldsymbol{\omega}_{\alpha_1},\ldots, \boldsymbol{\omega}_{\alpha_n} \}$ dataset.
-\item[-] $\boldsymbol{\omega}_\alpha$: the parameter vector weighting the RBFs of the $\Psi$ matrix. 
+\item[-] $\boldsymbol{\omega}_\alpha$ : vecteur paramètre pondérant les fonctions de base radiale inclusent dans la matrice $\Psi$. 
 %It provides an overall fit for all the $\alpha_i$.
 
 \end{itemize}
 \end{itemize}
-\textbf{Inference:}
+\textbf{Inférence :}
 \begin{itemize}
 %\item $n_o = t_{no}$: number of early observations used for the prediction.
-\item $\Xi^o =[X^o, F^o]^\top = [\xi^o(1),\ldots, \xi^o(n_o)]^\top$: early-trajectory observations, composed of $n_o$ data points.
-\item $\Sigma_\xi^o$: noise of the initiated trajectory observation.
-\item $\hat{\alpha}$: estimated time modulation parameter of a trajectory to infer.
-\item $\hat{t}_f ={\bar{s} \over \hat{\alpha}}$: estimated duration of a trajectory to infer.
-\item $\Xi^* = [\xi^o(1),\ldots, \xi^o(n_o), \xi^*(n_o+1),\ldots, \xi^*(t_f)]$: ground truth of the trajectory for the robot to infer.
-\item $\hat{\Xi} =[\hat{X}, \hat{F}]^\top = [\xi^o(1),\ldots, \xi^o(n_o), \hat{\xi}(n_o + 1),\ldots,\hat{\xi}(\hat{t}_f)]^\top$: the estimated trajectory.
-\item $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}}, \hat{\sigma}_{\boldsymbol{\omega}})$: posterior distribution of the parameter vector of a ProMP using the observation $\Xi^o$.
+\item $\Xi^o =[X^o, F^o]^\top = [\xi^o(1),\ldots, \xi^o(n_o)]^\top$ : observation du début d'une trajectoire, composée de $n_o$ mesures.
+\item $\Sigma_\xi^o$ : bruit des mesures récoltées de la trajectoire initiée.
+\item $\hat{\alpha}$ : estimation du paramètre de modulation du temps de la trajectoire à prédire.
+\item $\hat{t}_f ={\bar{s} \over \hat{\alpha}}$ : estimation de la durée de la trajectoire à prédire.
+\item $\Xi^* = [\xi^o(1),\ldots, \xi^o(n_o), \xi^*(n_o+1),\ldots, \xi^*(t_f)]$ : réalité terrain correspondant à la trajectoire que le robot doit prédire.
+\item $\hat{\Xi} =[\hat{X}, \hat{F}]^\top = [\xi^o(1),\ldots, \xi^o(n_o), \hat{\xi}(n_o + 1),\ldots,\hat{\xi}(\hat{t}_f)]^\top$ : trajectoire prédite.
+\item $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}}, \hat{\sigma}_{\boldsymbol{\omega}})$ : distribution postérieur du vecteur paramètre d'une \textit{ProMP}, calculé à partir des observations $\Xi^o$.
 %\item $\hat{\theta}_\alpha \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}_\alpha}, \hat{\sigma}_{\boldsymbol{\omega}_\alpha})$: posterior distribution of the parameter vector of the parameter $\alpha$ using the observation.
 %\item $ \hat{\boldsymbol{\omega}} \overset{\mathrm{def}}{=}  \hat{\boldsymbol{\mu}_\omega}$ \todo{is it correct to write it like that?}: parameter vector used to select a trajectory in the posterior distribution $\hat{\theta}$.
 %\item $ \hat{\boldsymbol{\omega}_\alpha} = \hat{\mu_{\boldsymbol{\omega}_\alpha}}$: new mean of the distribution of the parameters vector of a modelled $\alpha$ phase, after inference.
-
-
-\item $\hat{k}$: index of the recognized ProMP from the set of $K$ known (previously learned) ProMPs.
+\item $\hat{k}$ : index de la \textit{ProMP} reconnu dans l'ensemble des $K$ \textit{ProMPs} apprises précédemment.
 \end{itemize}
 
 
-\noindent
-\textbf{Trajectoires :}
-\begin{itemize}
-	\item $X(t)\in \mathbb{R}^3, X(t) = [x(t), y(t), z(t)]^\top$ : l'axe x/y/z pour représenter les coordonnées cartésiennes de l'effecteur du robot.
-	\item $F(t) \in \mathbb{R}^6, F(t) = [f_x, f_y, f_z, m_x, m_y, m_z]^\top$ : la \toimprove{wrench} des forces de contact, c'est-à-dire les forces externes et les moments mesurées par le robot au \toimprove{niveau du contact (effecteur).}
-	\item $\xi(t) \in \mathbb{R}^D$ : le vecteur générique contenant la valeur courante ou l'état des trajectoires au temps $t$. 
-	Il peut être mono-dimensionnel (\textit{e.g.}, $\xi(t) = [z(t)]$), ou multidimensionnel(\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$), dépendant du type de trajectoires qui peut être représenté avec la méthode ProMP.
-	
-	
-	\item $\Xi = \Xi_{[1:t_{f}]} = [\xi(1), \ldots, \xi(t_{f})]^\top \in \mathbb{R}^{D \cdot t_{f}}$ is an entire trajectory, consisting of $t_f$ samples or data points. 
-	
-	\item $\Xi_{i[1:t_{fi}]}$ is the $i$-th demonstration (trajectory) of a task, consisting of $t_{fi}$ samples or data points. 
-	
-	%For example, $\Xi_{i[1:t_{fi}]}= [\xi_i(1), \ldots, \xi_i(t_{fi})]^\top $ is the $i$-th trajectory.
-	
-	%\item $t_{fi}$: total number of samples of a $\Xi_i$ trajectory;
-	%\item $\Xi = \Xi_{[1:t_{f}]} \in \mathbb{R}^{D \cdot t_{f}}$: a trajectory. For example, $\Xi_{i[1:t_{fi}]}= [\xi_i(1), \ldots, \xi_i(t_{fi})]^\top $ is the $i$-th trajectory.
-\end{itemize}
-\textbf{Movement Primitives:}
-\begin{itemize}
-	\item $k \in [1:K]$: the $k$-th ProMP, among a set of $K$ ProMPs that represent different tasks/actions. 
-	\item $n_k$: number of recorded trajectories for each ProMP.
-	\item $S_k = \{\Xi_{\{k,1\}},\ldots,\Xi_{\{k,n_k\}}\}$: set of $n_k$ trajectories for the $k$-th ProMP. 
-	%For clarity, we consider $\Xi_i \equiv \Xi_{\{k,j\}}$.
-\end{itemize}
-\begin{itemize}
-	\item $\xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi$ is the model of the trajectory with:
-	\begin{itemize}
-		\item $\epsilon_\xi \sim \mathcal{N}(0, \beta)$: expected trajectory noise.
-		\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$: radial basis functions (RBFs) used to model trajectories. It is a block diagonal matrix.
-		\begin{itemize}
-			\item[-] $M$: number of RBFs.
-			\item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$: $i$-th RBF for all inputs $j \in [1:D]$. 
-			
-			It must be noted that the upper term comes from a Gaussian $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, where $ c_i, h$ are respectively the center and variance of the $i$-th Gaussian. In our RBF formulation, we normalize all the Gaussians.
-			ˆ%\item[-] $ c_i, h$: center and variance parameters of the $i$-th Gaussian.
-		\end{itemize}
-		\item $\boldsymbol{\omega} \in \mathbb{R}^{D \cdot M}$: time-independent parameter vector weighting the RBFs, \textit{i.e.}, the parameters to be learned.
-		
-	\end{itemize}
-	
-	\item $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})$: normal distribution computed from a set $\{\boldsymbol{\omega}_1, \ldots, \boldsymbol{\omega}_n\}$. It represents the distribution of the modeled trajectories, also called \textit{prior} distribution.
-	%\footnote{It must be noted that in the original ProMP paper \cite{paraschos2013probabilistic} the prior distribution $p(\boldsymbol{\omega})$ is written as $p(\boldsymbol{\omega}) =\theta \sim \mathcal{N}(\mu_\omega, \sigma_\omega)$. However, in robot learning $\theta$ is often used as a variable for parameters to be learned. To avoid ambiguities, we decide to employ simply $p(\boldsymbol{\omega})$. \todo{Controler} \rev{I am not sure that what you wrote is correct. May be better to write: the distribution is called $p(\omega; \theta)=\mathcal(\omega |\mu_\omega, \Sigma_\omega )$ over the weight vector $\omega$, with parameters $\theta$}}
-	
-	
-	
-\end{itemize}
-\textbf{Time modulation:}
-\begin{itemize}
-	\item $\bar{s}$: number of samples used as reference to rescale all the trajectories to the same duration.
-	\item $\Phi_{\alpha_i t} \in \mathbb{R}^{D\times D \cdot M}:$ the RBFs rescaled to match the $\Xi_i$ trajectory duration.
-	\item $\alpha_i = { \bar{s} \over t_{fi}}$: temporal modulation parameter of the $i$-th trajectory .
-	\item $\alpha = \Psi_{\delta_{n_o}}\boldsymbol{\omega}_\alpha + \epsilon_\alpha$ is the model of the function mapping $\delta_{n_o}$ into the temporal modulation parameter $\alpha$, with:
-	
-	\begin{itemize}
-		\item[-] $\Psi$: a set of RBFs used to model the mapping between $\delta_{n_o}$ and $\alpha$;
-		\item[-] $\delta_{n_o}$ is the variation of the trajectory during the first $n_o$ observations (data points); it can be $\delta_{n_o}=\xi(n_o) - \xi(1)$ if the entire trajectory variables (\textit{e.g.}, Cartesian position, forces, etc.) are considered, or more simply $\delta_{n_o}= X(n_o) - X(1)$ if only the variation in terms of Cartesian position is considered;
-		%\item $ \theta_\alpha \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_\alpha}, \sigma_{\boldsymbol{\omega}_\alpha})$: normal distribution of the $\{\boldsymbol{\omega}_{\alpha_1},\ldots, \boldsymbol{\omega}_{\alpha_n} \}$ dataset.
-		\item[-] $\boldsymbol{\omega}_\alpha$: the parameter vector weighting the RBFs of the $\Psi$ matrix. 
-		%It provides an overall fit for all the $\alpha_i$.
-		
-	\end{itemize}
-\end{itemize}
-\textbf{Inference:}
-\begin{itemize}
-	%\item $n_o = t_{no}$: number of early observations used for the prediction.
-	\item $\Xi^o =[X^o, F^o]^\top = [\xi^o(1),\ldots, \xi^o(n_o)]^\top$: early-trajectory observations, composed of $n_o$ data points.
-	\item $\Sigma_\xi^o$: noise of the initiated trajectory observation.
-	\item $\hat{\alpha}$: estimated time modulation parameter of a trajectory to infer.
-	\item $\hat{t}_f ={\bar{s} \over \hat{\alpha}}$: estimated duration of a trajectory to infer.
-	\item $\Xi^* = [\xi^o(1),\ldots, \xi^o(n_o), \xi^*(n_o+1),\ldots, \xi^*(t_f)]$: ground truth of the trajectory for the robot to infer.
-	\item $\hat{\Xi} =[\hat{X}, \hat{F}]^\top = [\xi^o(1),\ldots, \xi^o(n_o), \hat{\xi}(n_o + 1),\ldots,\hat{\xi}(\hat{t}_f)]^\top$: the estimated trajectory.
-	\item $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}}, \hat{\sigma}_{\boldsymbol{\omega}})$: posterior distribution of the parameter vector of a ProMP using the observation $\Xi^o$.
-	%\item $\hat{\theta}_\alpha \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}_\alpha}, \hat{\sigma}_{\boldsymbol{\omega}_\alpha})$: posterior distribution of the parameter vector of the parameter $\alpha$ using the observation.
-	%\item $ \hat{\boldsymbol{\omega}} \overset{\mathrm{def}}{=}  \hat{\boldsymbol{\mu}_\omega}$ \todo{is it correct to write it like that?}: parameter vector used to select a trajectory in the posterior distribution $\hat{\theta}$.
-	%\item $ \hat{\boldsymbol{\omega}_\alpha} = \hat{\mu_{\boldsymbol{\omega}_\alpha}}$: new mean of the distribution of the parameters vector of a modelled $\alpha$ phase, after inference.
-	
-	
-	\item $\hat{k}$: index of the recognized ProMP from the set of $K$ known (previously learned) ProMPs.
-\end{itemize}
-
-
-\subsection{Learning a Probabilistic Movement Primitive (ProMP) from demonstrations}
+\subsection{Apprenssiage d'une \textit{ProMP} à partir de démonstrations}
 \label{LearningSimpleProMP}
-Our toolbox to learn, replay and infer the continuation of trajectories is written in Matlab and available at:
+
+Le logiciel implémenté lors de cette thèse permet d'apprendre, de rejouer et de prédire la continuation de trajectoires. Ce logiciel est écrit en Matlab et est disponible à l'adresse :
 
 \url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/MatlabProgram}
 
-Let us assume the robot has recorded a set of $n_1$ trajectories: $\{\Xi_1,\ldots, \Xi_{n_1} \}$, where the $i$-th trajectory is $\Xi_i = \{\xi(1), \ldots, \xi(t_{f_i})\}$. 
-$\xi(t)$ is the generic vector containing all the variables to be learned at time $t$, with the ProMP method. It can be mono-dimensional (\textit{e.g.} $\xi(t) = [z(t)]$ for the z-axis Cartesian coordinate), or multi-dimensional (\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$). Note that the duration of each recorded trajectory (\textit{ i.e.}  $t_{f_i}$) may be variable. 
-To find a common representation in terms of primitives, a time modulation is applied to all trajectories, such that they have the same number of samples $\bar{s}$ (see details in Section~\ref{sec:predictDuration}). Such modulated trajectories are then used to learn a ProMP.
+Supposons que le robot ait enregistré un ensemble de $n_1$ trajectoires : $\{\Xi_1,\ldots, \Xi_{n_1} \}$, où la $i^e$ trajectoire est définie par : $\Xi_i = \{\xi(1), \ldots, \xi(t_{f_i})\}$. 
+Avec $\xi(t)$ le vecteur composé de l'ensemble des variables définissant la trajectoire à apprendre au \textit{temps $t$}. Ce vecteur peut être à la fois mono-dimensionnel (\textit{e.g.} $\xi(t) = [z(t)]$ lorsqu'il s'agit de la coordonnée cartésienne d'axe $z$), ou multi-dimensionnel (\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$). Notons que la durée de chaque trajectoire enregistrée (\textit{ i.e.}  $t_{f_i}$) peut être variable. 
+Afin de trouver une représentation commune en terme de primitive, un paramètre de modulation du temps est appliqué à l'ensemble des trajectoire, afin qu'elles soient décrites par le même nombre de mesures $\bar{s}$ (\textit{c.f.}  Section~\ref{sec:predictDuration}). Les trajectoires ainsi \toimprove{normalisé temporellement} sont alors utilisées pour apprendre la \textit{ProMP}.
 
-A ProMP is a Bayesian parametric model of the demonstrated trajectories in the form: 
+Une \textit{ProMP} est un modèle paramétrique Bayésien représentant un ensemble de trajectoires observées, de formule : 
 \begin{eqnarray}
 \xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi
 \end{eqnarray}
-where $\boldsymbol{\omega} \in R^M$ is the time-independent parameter vector weighting the RBFs, $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ is the trajectory noise, and $\Phi_t$ is a vector of $M$ radial basis functions evaluated at time $t$:
+, où $\boldsymbol{\omega} \in R^M$ correspond au paramètre indépendant du temps pondérant les fonctions de base radiale, $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ au bruit de la trajectoire et $\Phi_t$  le vecteur contenant les $M$ fonctions de base radiale~\cite{buhmann2000radial} \todo{annexe ?} évaluées au \textit{temps $t$}:
 $$ \Phi_{t}=[\psi_{1}(t), \psi_{2}(t), \ldots., \psi_{M}(t)]$$
-with
+avec :
 \begin{equation} \label{eq:RBF}
 \left\lbrace \begin{array}{cccc}
 \psi_{i}(t) &=& {1 \over\sum_{j=1}^M \psi_{j}(t) }exp\{{-(t  - c(i))^2 \over {2h}}\} \\
@@ -739,31 +272,32 @@ c(i) &=& {i / M}\\
 h &=& {1 / M^2}
 \end{array} \right. 
 \end{equation}
-Note that all the $\psi$ functions are scattered across time.
+Avec $\psi \in [0: \bar{s}] \rightarrow mathbb{R}$ étalée temporellement pour représenter la trajectoire dans sa totalité.
 
-For each $\Xi_i$ trajectory, we compute the $\omega_i$ parameter vector to have $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. This vector is computed to minimize the error between the observed $\xi_i(t)$ trajectory and its model $\Phi_t \omega_i + \epsilon_\xi$. This is done using the Least Mean Square algorithm, \textit{i.e.}:
+Pour chaque trajectoire $\Xi_i$, le vecteur de paramètre $\omega_i$ est alors calculé afin d'obtenir $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. À cet fin, ce vecteur est calculé de sorte qu'il minimise l'erreur entre la trajectoire observée $\xi_i(t)$ et sa modélisation $\Phi_t \omega_i + \epsilon_\xi$. Pour cela, l'algorithme de l'erreur quadratique minimale (\textit{Least Mean Square, LMS}) est utilisé :
 \begin{equation} \label{eq:w}
 \omega_i = (\Phi_t^\top\Phi_t)^{-1}\Phi_t^\top \xi_i(t).
 \end{equation} 
 %\todo{I added some noise in the inverse matrix to make sure it is inversible: do I specify it?}
 %\todo{Obs.: I think you can specify it if you want. If you decide to do so, you can write that you are using ``Ridge Regression'' instead of using ``Least Mean Square algorithm''. And you could update the equations accordingly.}
 
-To avoid the common issue of the matrix $\Phi_t^\top\Phi_t$ in Equation~\ref{eq:w} not being invertible, we add a diagonal term and perform Ridge Regression:
+Afin d'éviter une erreur classique dans le calcule de la matrice $\Phi_t^\top\Phi_t$, lorsque l'Équation~\ref{eq:w} n'est pas inversible, un terme sur la diagonal est ajouté afin d'obtenir la ``\textit{Régularisation de Tikhonov}'' :
 \begin{eqnarray} \label{eq:wInvertible}
 \omega_i = (\Phi_t^\top\Phi_t + \lambda)^{-1}\Phi_t^\top \xi_i(t).
 \end{eqnarray} 
-where $\lambda=10^{-11} \cdot \mathds{1}_{ D\cdot M \times D\cdot M} $ is a parameter that can be tuned by looking at the smallest singular value of the matrix $\Phi_t^\top\Phi_t$.
+où $\lambda=10^{-11} \cdot \mathds{1}_{ D\cdot M \times D\cdot M} $ est un paramètre à adapter en recherchant la valeur singulière la plus petite de la matrice $\Phi_t^\top\Phi_t$.\todo{??}
 
 
-Thus, we obtain a set of these parameters: $\{\boldsymbol{\omega}_1,\ldots, \boldsymbol{\omega}_n\}$, upon which a distribution is computed. Since we assume Normal distributions, we have:
+Ainsi, en faisant de même avec chaque trajectoire observée, un ensemble de paramètres est obtenu : $\{\boldsymbol{\omega}_1,\ldots, \boldsymbol{\omega}_n\}$, à partir duquel la distribution est calculée. En supposant qu'il s'agit de distribution normale, on a alors:
 \begin{eqnarray}
 p(\boldsymbol{\omega}) & \sim & \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})\\
-\mathrm{with }~\mu_{\boldsymbol{\omega}} & = & {1 \over n} \sum_{i=1}^n \boldsymbol{\omega_i} \\
-\mathrm{and }~\Sigma_{\boldsymbol{\omega}} & = & {1 \over n-1} \sum_{i=1}^n (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})^\top (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})
+\mathrm{avec }~\mu_{\boldsymbol{\omega}} & = & {1 \over n} \sum_{i=1}^n \boldsymbol{\omega_i} \\
+\mathrm{et }~\Sigma_{\boldsymbol{\omega}} & = & {1 \over n-1} \sum_{i=1}^n (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})^\top (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})
 \end{eqnarray}
-The ProMP captures the distribution over the observed trajectories. {To represent this movement primitive, we usually use the movement that passes by the mean of the distribution} Figure \ref{fig:1DOFtrajectoriesProMP} shows the ProMP for a 1-DOF lifting motion, with a number of reference samples $\bar{s}=100$ and number of basis functions $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
+La \textit{ProMP} correspond alors à une distribution des trajectoires observées. 
 
-This example is included in our Matlab toolbox as \mcode{demo_plot1DOF.m}. The explanation of this Matlab script is presented in Section~\ref{sec:example1DOF}. More complex examples are also included in the scripts \mcode{demo_plot*.m}.
+Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette distribution, on utilise alors généralement la trajectoire correspondant à la moyenne de la distribution. La Figure~\ref{fig:1DOFtrajectoriesProMP} montre la \textit{ProMP}d'un mouvement de levée de dimension $1$, avec le nombre d'échantillon référence $\bar{s}=100$ et un nombre de fonctions à base radiale $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
+Cet exemple est inclut dans le logiciel Matlab sous le nom~\mcode{demo_plot1DOF.m}. L'explication de ce script est présenté dans la Section~\ref{sec:example1DOF}. De plus, des explempls plus compliqués sont aussi introduis dans le logiciel, sous des noms type : \mcode{demo_plot*.m}.
 
 
 %\todo{[Obs.: I don't like the notation $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Usually $\theta$ is used for parameters, not for distributions. I would simply write $p(\boldsymbol{\omega}) = \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Moreover $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$ means, as far as I know, that variable $\theta$ is distributed accordingly to a normal distribution with mean $\mu_\boldsymbol{\omega}$ and covariance $\Sigma_{\boldsymbol{\omega}}$, not that $\theta$ is a distribution.]}
