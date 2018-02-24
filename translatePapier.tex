@@ -168,6 +168,8 @@ Puis, les Sections \ref{sec:3ProMPsAppli} et \ref{sec:appliRealIcub} présentent
 %To ease the reading and the understanding of the theoretical tools, we will use the following notations:
 
 Lors de l'observation de trajectoire, le robot mesure les données de manière régulière (toutes les \todo{??} ms). Nous parlerons de ``\textit{temps $t$}'' par abus de langage, pour dénommer la $t^e$ mesure récoltée par le robot. De même, lorsque nous parlerons de \textit{durée $t_f$}, il s'agira du nombre de mesure total récupéré par le robot durant toute la trajectoire
+De plus, nous parlons de ``\textit{trajectoire complète}'' pour opposer une trajectoire connue dans sa totalité à une \textit{trajectoire partielle} correspondant généralement aux  
+
 
 Afin de faciliter la compréhension du cadre théorique, nous introduisons tout d'abord les notations que nous utilisons tout au long de cette thèse.
 
@@ -234,7 +236,7 @@ Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{
 \begin{itemize}
 %\item $n_o = t_{no}$: number of early observations used for the prediction.
 \item $\Xi^o =[X^o, F^o]^\top = [\xi^o(1),\ldots, \xi^o(n_o)]^\top$ : observation du début d'une trajectoire, composée de $n_o$ mesures.
-\item $\Sigma_\xi^o$ : bruit des mesures récoltées de la trajectoire initiée.
+\item $\Sigma_\xi^o$ : bruit des mesures récoltées de la trajectoire partielle.
 \item $\hat{\alpha}$ : estimation du paramètre de modulation du temps de la trajectoire à prédire.
 \item $\hat{t}_f ={\bar{s} \over \hat{\alpha}}$ : estimation de la durée de la trajectoire à prédire.
 \item $\Xi^* = [\xi^o(1),\ldots, \xi^o(n_o), \xi^*(n_o+1),\ldots, \xi^*(t_f)]$ : réalité terrain correspondant à la trajectoire que le robot doit prédire.
@@ -255,14 +257,14 @@ Le logiciel implémenté lors de cette thèse permet d'apprendre, de rejouer et 
 \url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/MatlabProgram}
 
 Supposons que le robot ait enregistré un ensemble de $n_1$ trajectoires : $\{\Xi_1,\ldots, \Xi_{n_1} \}$, où la $i^e$ trajectoire est définie par : $\Xi_i = \{\xi(1), \ldots, \xi(t_{f_i})\}$. 
-Avec $\xi(t)$ le vecteur composé de l'ensemble des variables définissant la trajectoire à apprendre au \textit{temps $t$}. Ce vecteur peut être à la fois mono-dimensionnel (\textit{e.g.} $\xi(t) = [z(t)]$ lorsqu'il s'agit de la coordonnée cartésienne d'axe $z$), ou multi-dimensionnel (\textit{e.g.} $\xi(t) = [X(t), F(t)]^\top$). Notons que la durée de chaque trajectoire enregistrée (\textit{ i.e.}  $t_{f_i}$) peut être variable. 
-Afin de trouver une représentation commune en terme de primitive, un paramètre de modulation du temps est appliqué à l'ensemble des trajectoire, afin qu'elles soient décrites par le même nombre de mesures $\bar{s}$ (\textit{c.f.}  Section~\ref{sec:predictDuration}). Les trajectoires ainsi \toimprove{normalisé temporellement} sont alors utilisées pour apprendre la \textit{ProMP}.
+$\xi(t)$ correspond au vecteur composé de l'ensemble des variables définissant la trajectoire à apprendre au \textit{temps $t$}. Ce vecteur peut être à la fois mono-dimensionnel (\textit{i.e.} $\xi(t) = [z(t)]$  correspondant à la coordonnée cartésienne d'axe $z$), ou multi-dimensionnel (\textit{i.e.} $\xi(t) = [X(t), F(t)]^\top$). Notons que la durée $t_{f_i}$ de chaque trajectoire enregistrée peut être variable. 
+Afin de trouver une représentation commune en terme de primitive, un paramètre de modulation du temps est appliqué à l'ensemble des trajectoires, afin qu'elles soient décrites par le même nombre de mesures $\bar{s}$ (\textit{c.f.}  Section~\ref{sec:predictDuration}). Les trajectoires ainsi \toimprove{normalisées temporellement} sont alors utilisées pour apprendre la \textit{ProMP}.
 
 Une \textit{ProMP} est un modèle paramétrique Bayésien représentant un ensemble de trajectoires observées, de formule : 
 \begin{eqnarray}
 \xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi
 \end{eqnarray}
-, où $\boldsymbol{\omega} \in R^M$ correspond au paramètre indépendant du temps pondérant les fonctions de base radiale, $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ au bruit de la trajectoire et $\Phi_t$  le vecteur contenant les $M$ fonctions de base radiale~\cite{buhmann2000radial} \todo{annexe ?} évaluées au \textit{temps $t$}:
+, où $\boldsymbol{\omega} \in R^M$ correspond au paramètre indépendant du temps pondérant les fonctions de base radiale ; $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ au bruit de la trajectoire ; et $\Phi_t$  le vecteur contenant les $M$ fonctions de base radiale~\cite{buhmann2000radial} \todo{annexe ?} évaluées au \textit{temps $t$}:
 $$ \Phi_{t}=[\psi_{1}(t), \psi_{2}(t), \ldots., \psi_{M}(t)]$$
 avec :
 \begin{equation} \label{eq:RBF}
@@ -272,47 +274,44 @@ c(i) &=& {i / M}\\
 h &=& {1 / M^2}
 \end{array} \right. 
 \end{equation}
-Avec $\psi \in [0: \bar{s}] \rightarrow mathbb{R}$ étalée temporellement pour représenter la trajectoire dans sa totalité.
+Avec $\psi \in [0: \bar{s}] \rightarrow \mathbb{R}$ étalée temporellement pour représenter la trajectoire dans sa totalité.
 
-Pour chaque trajectoire $\Xi_i$, le vecteur de paramètre $\omega_i$ est alors calculé afin d'obtenir $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. À cet fin, ce vecteur est calculé de sorte qu'il minimise l'erreur entre la trajectoire observée $\xi_i(t)$ et sa modélisation $\Phi_t \omega_i + \epsilon_\xi$. Pour cela, l'algorithme de l'erreur quadratique minimale (\textit{Least Mean Square, LMS}) est utilisé :
+Pour chaque trajectoire $\Xi_i$, le vecteur de paramètre $\omega_i$ est alors calculé afin d'obtenir $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. Ce calcul de vecteur est effectué de manière à ce qu'il minimise l'erreur entre la trajectoire observée $\xi_i(t)$ et sa modélisation $\Phi_t \omega_i + \epsilon_\xi$. Pour cela, l'algorithme de l'erreur quadratique minimale (\textit{Least Mean Square, LMS}) est utilisé :
 \begin{equation} \label{eq:w}
 \omega_i = (\Phi_t^\top\Phi_t)^{-1}\Phi_t^\top \xi_i(t).
 \end{equation} 
 %\todo{I added some noise in the inverse matrix to make sure it is inversible: do I specify it?}
 %\todo{Obs.: I think you can specify it if you want. If you decide to do so, you can write that you are using ``Ridge Regression'' instead of using ``Least Mean Square algorithm''. And you could update the equations accordingly.}
+Sachant qu'une erreur classique lors du calcul de la matrice $\Phi_t^\top\Phi_t$ a lieu lorsque l'Équation~\ref{eq:w} n'est pas inversible\todo{[ajouter détails]}, un terme sur la diagonal est ajouté afin d'obtenir la ``\textit{Régularisation de Tikhonov}'' :
 
-Afin d'éviter une erreur classique dans le calcule de la matrice $\Phi_t^\top\Phi_t$, lorsque l'Équation~\ref{eq:w} n'est pas inversible, un terme sur la diagonal est ajouté afin d'obtenir la ``\textit{Régularisation de Tikhonov}'' :
 \begin{eqnarray} \label{eq:wInvertible}
 \omega_i = (\Phi_t^\top\Phi_t + \lambda)^{-1}\Phi_t^\top \xi_i(t).
 \end{eqnarray} 
 où $\lambda=10^{-11} \cdot \mathds{1}_{ D\cdot M \times D\cdot M} $ est un paramètre à adapter en recherchant la valeur singulière la plus petite de la matrice $\Phi_t^\top\Phi_t$.\todo{??}
-
-
-Ainsi, en faisant de même avec chaque trajectoire observée, un ensemble de paramètres est obtenu : $\{\boldsymbol{\omega}_1,\ldots, \boldsymbol{\omega}_n\}$, à partir duquel la distribution est calculée. En supposant qu'il s'agit de distribution normale, on a alors:
+Ces calculs sont alors effectués pour chaque trajectoire observée, fournissant un ensemble de paramètres : $\{\boldsymbol{\omega}_1,\ldots, \boldsymbol{\omega}_n\}$. À partir de cet ensemble de paramètre, la distribution est alors calculée, avec l'hypothèse que cette distribution soit normale :
 \begin{eqnarray}
 p(\boldsymbol{\omega}) & \sim & \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})\\
 \mathrm{avec }~\mu_{\boldsymbol{\omega}} & = & {1 \over n} \sum_{i=1}^n \boldsymbol{\omega_i} \\
 \mathrm{et }~\Sigma_{\boldsymbol{\omega}} & = & {1 \over n-1} \sum_{i=1}^n (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})^\top (\boldsymbol{\omega_i} - \mu_{\boldsymbol{\omega}})
 \end{eqnarray}
-La \textit{ProMP} correspond alors à une distribution des trajectoires observées. 
+La \textit{ProMP} est ainsi apprise et correspond à une distribution de trajectoires. 
 
-Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette distribution, on utilise alors généralement la trajectoire correspondant à la moyenne de la distribution. La Figure~\ref{fig:1DOFtrajectoriesProMP} montre la \textit{ProMP}d'un mouvement de levée de dimension $1$, avec le nombre d'échantillon référence $\bar{s}=100$ et un nombre de fonctions à base radiale $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
-Cet exemple est inclut dans le logiciel Matlab sous le nom~\mcode{demo_plot1DOF.m}. L'explication de ce script est présenté dans la Section~\ref{sec:example1DOF}. De plus, des explempls plus compliqués sont aussi introduis dans le logiciel, sous des noms type : \mcode{demo_plot*.m}.
+Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette distribution, on utilise généralement la trajectoire correspondant à la moyenne de la distribution. La Figure~\ref{fig:1DOFtrajectoriesProMP} montre la \textit{ProMP} d'un mouvement de levée de dimension $1$, avec le nombre d'échantillon référence $\bar{s}=100$ et un nombre de fonctions à base radiale $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
+Cet exemple est inclut dans le logiciel Matlab sous le nom~\mcode{demo_plot1DOF.m}. L'explication de ce script est présenté dans la Section~\ref{sec:example1DOF}. De plus, des exemples plus compliqués sont aussi introduis dans le logiciel, sous des noms de type : \mcode{demo_plot*.m}.
 
 
 %\todo{[Obs.: I don't like the notation $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Usually $\theta$ is used for parameters, not for distributions. I would simply write $p(\boldsymbol{\omega}) = \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Moreover $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$ means, as far as I know, that variable $\theta$ is distributed accordingly to a normal distribution with mean $\mu_\boldsymbol{\omega}$ and covariance $\Sigma_{\boldsymbol{\omega}}$, not that $\theta$ is a distribution.]}
 
 
-\subsection{Predicting the future movement from initial observations} \label{sec:predict}
+\subsection{Prédiction du futur mouvement à partir de l'observation d'une trajectoire initiée} \label{sec:predict}
 
-Once the ProMP  $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})$ of a certain task has been learned\footnote{\textit{i.e.}, we computed the $p(\boldsymbol{\omega})$ distribution from the dataset $\{\boldsymbol{\omega}_1, \ldots, \boldsymbol{\omega}_n\}$, where each $\boldsymbol{\omega}_i$ is an estimated parameter computed from the trajectory demonstrations.}, we can use it to predict the evolution of an initiated movement. An underlying hypothesis is that the observed movement follows to this learned distribution.
+Après avoir appris la \textit{ProMP} correspondant à une certaine tâche\footnote{\textit{e.g.}, calcul de la distribution $p(\boldsymbol{\omega})$ à partir de l'ensemble de mesure $\{\boldsymbol{\omega}_1, \ldots, \boldsymbol{\omega}_n\}$, où chaque $\boldsymbol{\omega}_i$ correspond à l'estimation d'un paramètre calculé à partir des démonstrations de trajectoires.} :  $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})$, celle-ci peut être utilisée afin de prédire l'évolution d'un mouvement initié. Une hypothèse sous-jacente est que ce mouvement est inclut dans la distribution apprise.
+On suppose que le robot mesure les $n_o$ premières observations de la trajectoire à prédire (\textit{e.g.}, levée du bras). On note ces observations $\Xi^o=[\xi^o(1),\ldots, \xi^o({n_o})].$
+Le but est alors de prédire l'évolution de la trajectoire après ces ${n_o}$ observations, c'est à dire que l'on trouve $\{\hat{\xi}({n_o+1}),\ldots,\hat{\xi}(\hat{t}_f)\}$, où $\hat{t}_f$ correspond à l'estimation de la durée de la trajectoire (\textit{c.f.} Section~\ref{sec:predictDuration}). 
+Cela correspond à prédire la trajectoire dans sa totalité $\hat{\Xi}$, en posant que les $n_o$ premières données de cette trajectoire passe par les  observations: $\hat{\Xi} = \{\xi^o({1}), \ldots, \xi^o({n_o}), \hat{\xi}({n_o+1}), \ldots, \hat{\xi}(t_{\hat{t}_f})\}$.
+Ainsi, l'enjeu de la prédiction consiste à prédire $\hat{\Xi}$ à partir des observations $\Xi^o$. 
 
-Suppose that the robot measures the first $n_o$ observations of the trajectory to predict (\textit{e.g.}, lifting the arm). We call these observations $\Xi^o=[\xi^o(1),\ldots, \xi^o({n_o})].$
-The goal is then to predict the evolution of the trajectory after these ${n_o}$ observations, \textit{i.e.} find $\{\hat{\xi}({n_o+1}),\ldots,\hat{\xi}(\hat{t}_f)\}$, where $\hat{t}_f$ is the estimation of the trajectory duration (see Section~\ref{sec:predictDuration}). 
-This is equivalent to predicting the entire $\hat{\Xi}$ trajectory where the first $n_o$ samples are known and equal to the observations: $\hat{\Xi} = \{\xi^o({1}), \ldots, \xi^o({n_o}), \hat{\xi}({n_o+1}), \ldots, \hat{\xi}(t_{\hat{t}_f})\}$.
-Therefore, our prediction problem consists of predicting $\hat{\Xi}$ given the $\Xi^o$ observations. 
-
-To do this prediction, we start from the learned prior distribution $p(\boldsymbol{\omega})$, and we find the $\hat{\boldsymbol{\omega}}$ parameter within this distribution that generates $\hat{\Xi}$. To find this $\hat{\boldsymbol{\omega}}$ parameter, we update the learned distribution $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}},\hat{\Sigma}_{\boldsymbol{\omega}})$ using the formulae:
+Cette prédiction commence par l'apprentissage d'une distribution à-priori $p(\boldsymbol{\omega})$. Puis, on trouve des paramètres de cette distribution $\hat{\boldsymbol{\omega}}$ qui permettent de générer la trajectoire $\hat{\Xi}$. Pour trouver ces paramètres $\hat{\boldsymbol{\omega}}$, la distribution a-priori est mise à jour afin d'obtenir la distribution postérieure $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}},\hat{\Sigma}_{\boldsymbol{\omega}})$ à l'aide de la formule :
 \begin{eqnarray} \label{eq:inf}
 \left\{
 \begin{array}{rl}
@@ -321,16 +320,16 @@ To do this prediction, we start from the learned prior distribution $p(\boldsymb
 \end{array}
 \right.
 \end{eqnarray}
-where $K$ is a gain computed by:
+où $K$ correspond a un paramètre de gain calculé avec :
 \begin{equation}\label{eq:K}
 K= \Sigma_{\boldsymbol{\omega}}\Phi_{[1:n_o]}^\top(\Sigma_\xi^o + \Phi_{[1:n_o]}\Sigma_{\boldsymbol{\omega}} \Phi_{[1:n_o]}^\top)^{-1}
 \end{equation}
-Equation~\ref{eq:inf} and \ref{eq:K} can be computed through the marginal and conditional distributions~\cite{paraschos2013probabilistic, Bishop:2006}, as detailed in Appendix~\ref{sec:formulas}.
+Les Équations~\ref{eq:inf} et \ref{eq:K} peuvent être calculés à partir des distributions marginales et conditionnelles~\cite{paraschos2013probabilistic, Bishop:2006}, comme détaillé dans l'Appendix~\ref{sec:formulas}.
 
 %These formulae come from the marginal and the conditional formulae of the Gaussian identities~\cite{paraschos2013probabilistic, Bishop:2006}. See Appendix~\ref{sec:formulas} for more details.
 
-Figure \ref{fig:1DOFtrajectoriesPredictions} shows the predicted trajectory for the lifting motion of the left arm of iCub. The different graphs show inferred trajectories when the robot observed $n_{o}=10,30,50,80\%$ of the total trajectory duration. This example is also available in the toolbox as \mcode{demo_plot1DOF.m}. 
-The \mcode{nbData} variable changes the percentage of known data. Thus, it will be visible how the inference improves according to this variable. An example of predicted trajectories of the arm lifting in Gazebo can be found in a provided video (see Section~\ref{sec:video}).
+La Figure~\ref{fig:1DOFtrajectoriesPredictions} présente la trajectoire inférée correspondant à un mouvement de levée du bras gauche du robot \textit{iCub}. Les différents graphes montrent les trajectoires inférées, lorsque le robot connaît $n_{o}=10,30,50,80\%$ des données de la trajectoire complète. Cet exemple est aussi disponible dans notre logiciel, sous le nom \mcode{demo_plot1DOF.m}. 
+La variable \mcode{nbData} permet de faire varier le pourcentage de données connues. Cette figure permet de montrer que l'amélioration de la prédiction en fonction du nombre de données connues. Un exemple de trajectoires prédites lors de cette tâche de levée de bras à partir de la simulation \textit{Gazebo} peut être visualisée dans une vidéo fournies (\textit{c.f.} Section~\ref{sec:video}).
 
 
 %\begin{figure}[h]
@@ -340,24 +339,24 @@ The \mcode{nbData} variable changes the percentage of known data. Thus, it will 
 %\label{fig:predictionLifting15}
 %\end{figure}
 
-\subsection{Predicting the trajectory time modulation}\label{sec:predictDuration}
-In the previous section, we presented the general formulation of ProMPs, which makes the implicit assumption that all the observed trajectories have the same duration and thus the same sampling.\footnote{Actually, we call here duration what is in fact the total number of samples for the trajectory.} That is why the duration of the trajectories generated by the RBF is fixed and equal to $\bar{s}$.
-Of course, this is valid only for synthetic data and not for real data.
+\subsection{Prédiction du paramètre de modulation du temps de la trajectoire}\label{sec:predictDuration}
+Dans la section précédente, la formulation générale des \textit{ProMPs}a été présentée, en faisant l'hypothèse que toutes les trajectoires observées étaient même durée et donc qu'elles sont représentées par le même nombre d'échantillons.\footnote{Actually, we call here duration what is in fact the total number of samples for the trajectory.}
+C'est pourquoi la durée des trajectoires générés par les fonctions à base radiale est fixe et égale à $\bar{s}$. 
 
-To be able to address real experimental conditions, we now consider the variation of the  duration of the demonstrated trajectories. 
-To this end, we introduce a time modulation parameter $\alpha$ that maps the actual trajectory duration $t_{f}$ to $\bar{s}$: $\alpha = \bar{s} / t_{f}$.
+Cependant, afin de pouvoir générer des trajectoires dans des conditions expérimentales réelles, on considère maintenant que la durée de ces trajectoires de démonstration varie.
+Dans ce but, un paramètre de modulation du temps $\alpha$ est introduit permettant de redimensionner la trajectoire actuelle afin qu'elle ne soit plus définie par $t_{f}$ mesures mais par $\bar{s}$: $\alpha = \bar{s} / t_{f}$.
 %This variable rescales the RBFs of the model to the trajectory duration. 
 %It relies on the trajectory duration and a reference number of samples $\bar{s}$.
-The normalized duration $\bar{s}$ can be chosen arbitrarily; for example it can be set to the average of the  duration of the trajectories, \textit{e.g.}, $\bar{s}=mean(t_{f1},\ldots,t_{fK})$.
+La durée normalisée $\bar{s}$ peut être choisi arbitrairement; par exemple, elle peut correspondre à la moyenne des durées des trajectoires, \textit{e.g.}, $\bar{s}=mean(t_{f1},\ldots,t_{fK})$.
 % (we have one sample per iteration time $t$).
-Notably, in the literature sometimes $\alpha$ is called \textit{phase} \cite{paraschos2013probabilistic,paraschos2013probabilisticTrajectory}. 
-The effect of $\alpha$ is to change the phase of the RBFs, that are scaled in time.
+Dans la littérature, ce terme $\alpha$ est parfois appelé la \textit{phase}~\cite{paraschos2013probabilistic,paraschos2013probabilisticTrajectory}. 
+\toimprove{Ce terme $\alpha$ change la phase des fonctions à base radiale, foncitions qui sont étalée temporellement sur l'ensemble de la durée de la trajectoire}.
 
-The time modulation of the $i$-th trajectory $\Xi_i$ is computed by $ \alpha_i = {\bar{s} \over t_{fi}}$. Thus, we have $\alpha \cdot t \in [1:\bar{s}]$. Thus, the improved ProMP model is:
+Le paramètre de modulation du temps de la $i^e$ trajectoire $\Xi_i$ est calculé avec : $ \alpha_i = {\bar{s} \over t_{fi}}$. Ainsi, on obtient : $\alpha \cdot t \in [1:\bar{s}]$. Ainsi, le modèle \textit{ProMP} amélioré devient :
 \begin{eqnarray}
 \xi_t = \Phi_{\alpha t} \boldsymbol{\omega} + \epsilon_t \, ,
 \end{eqnarray}
-where $\Phi_{\alpha t}$ is the RBFs matrix evaluated at time $\alpha t$. All the $M$ Gaussian functions of the RBFs are spread over the same number of samples $\bar{s}$. Thus, we have:
+où $\Phi_{\alpha t}$ est la matrice de fonctions à base radiale évaluée au temps $\alpha t$. L'ensemble des $M$ fonctions Gaussiennes représentant les fonctions à base radialesont étalée pour représenter le même nombre d'échantillons $\bar{s}$. Ainsi, on obtient :
 $$ \Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\alpha t)].$$
 %\begin{equation}
 %\Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\alpha t)] \mathrm{,~with:}  
@@ -382,55 +381,55 @@ $$ \Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\a
 %
 %The output matrix \mcode{Phi_alpha} $= \Phi_{\alpha [1:no]}$ is the RBF matrix computed to represent the first $n_o$ observed data points of a $\Xi$ trajectory.
 
-During the learning step, we record a set of $\alpha$ parameters: $S_{\alpha} = \{\alpha_{1},\ldots,\alpha_{n}\}$.
-Then, using this set, we can replay the learned ProMP with different speeds. By default (\textit{e.g.} when $\alpha=1$), the speed allows to finish the movement in $\bar{s}$ samples.
+Durant la phase d'apprentissage, un ensemble de paramètres $\alpha$ est appris : $S_{\alpha} = \{\alpha_{1},\ldots,\alpha_{n}\}$.
+Puis, en utilisant ce set, la \textit{ProMP} apprise peut être rejouée à différentes vitesses. Par défaut, (\textit{e.g.} quand $\alpha=1$), la vitesse de la trajectoire permet de finir le mouvement en $\bar{s}$ itérations.
 
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=13cm]{img/mean_alpha_errV2.pdf}
-\caption{This plot shows the predicted trajectory given early observations (data points, in black), compared to the ground truth (\textit{e.g.}, the trajectory that the human intends to execute with the robot). We show the prior distribution (in light blue) and the posterior distribution (in red), which is computed by conditioning the distribution to match the observations. Here, the posterior simply uses the average $\alpha$ computed over the $\alpha_1, \ldots, \alpha_K$ of the $K$ demonstrations. Without predicting the time modulation from the observations and using the average $\alpha$, the predicted trajectory has a duration that is visibly different from the ground truth.}
+\caption{Trajectoire prédite à partir de l'observation d'une trajectoire initiée (points noirs); réalité terrain (\textit{e.g.}, la trajectoire que l'utilisateur voudrait que le robot execute) ; distribution à priori (en bleu clair) ; et distribution postérieur (en rouge), calculée en \toimprove{conditionnant} la distribution afin qu'elle corresponde aux observations. Ici, le calcul de la distribution postérieur est uniquement calculée à partir de la moyenne $\alpha$, de l'ensemble $\alpha_1, \ldots, \alpha_K$ correspondant aux $K$ trajectoires de démonstrations. Sans prédiction du paramètre de modulation du temps de la trajectoire observée et donc en utilisant la moyenne $\alpha$, la trajectoire prédite a une durée visiblement différente de la réalité terrain.}
 
 \label{fig:meanAlpha}
 \end{figure}
 
-During the inference, the \rev{time modulation} $\alpha$ of the partially observed trajectory is not known. \rev{Unless fixed a priori}, the robot \rev{must} estimate it. This estimation is critical to ensure a good recognition, as shown in Figure~\ref{fig:meanAlpha}: the inferred trajectory (represented by the mean of the posterior distribution in red) 
+Durant l'inférence, le paramètre de modulation du temps $\alpha$ de la trajectoire observée partiellement n'est pas connu. À moins que ce paramètre soit fixé à priori, le robot doit alors l'estimer. Cette estimation est essentiel pour assurer une bonne reconnaissance, comme cela est montré dans la Figure~\ref{fig:meanAlpha} : la trajectoire inférée (représentée par la moyenne de la distribution postérieure en rouge) 
 %\todo{why "has not the same" is not correct?} 
 %For Oriane: check https://english.stackexchange.com/questions/13672/have-not-versus-do-not-have
-does not have the same duration as the ``real'' intended trajectory (which is the ground truth). This difference is due to the estimation error of the time modulation parameter. This estimation $\hat{\alpha}$ by default is  computed as the mean of all the $\alpha_k$ observed during the learning:
+n'a pas la même durée que la trajectoire attendue ``réelle'' (qui correspond à la réalité terrain). Cette différence est du à l'erreur d'estimation du paramètre de modulation du temps. Cette estimation $\hat{\alpha}$  est calculée par défaut en tant que moyenne de l'ensemble des paramètres $\alpha_k$ calculés lors de la phase d'apprentissage :
 \begin{equation}
 \label{eq:avg}
 %\hat{\alpha} = {1 \over |S_{\alpha k}|} \sum_{\alpha \in S_{\alpha k}} \alpha
 \hat{\alpha} = {{\sum \alpha_k} \over n_k} .
 \end{equation}
 
-However, using the mean value for the time modulation is an appropriate choice only when the primitive represents goal-directed motions that are very regular, or for which we can reasonably assume that differences in the duration can be neglected (which is not a general case). In many applications this estimation may be too rough.
+Cependant, l'utilisation de la valeur moyenne du temps de modulation est appropriée uniquement lorsque la primitive représente des mouvements dirigés vers un but très régulier, ou plus généralement lorsqu'il est raisonnable de supposer que les différences de vitesse entre les trajectoires peuvent être négligé (ce qui n'est pas le cas en général). Ainsi, pour beaucoup d'applications, cette estimation est trop imprécise.
 
-Thus, we have to find a way to estimate the duration of the observed trajectory, which corresponds to accurately estimating the time modulation parameter $\hat{\alpha}$.
-To estimate $\hat{\alpha}$, we implemented four different methods.
+C'est pourquoi nous avons trouvé un moyen d'estimer la durée des trajectoires observées, ce qui correspond à estimer de manière précise le paramètre de modulation du temps $\hat{\alpha}$.
+Afin d'estimer $\hat{\alpha}$, on a implémenté différentes méthodes.
 %Instead, we implemented simpler methods that select the most likely $\hat{\alpha}$ temporal modulation parameter according to different methods.
 %\begin{itemize}
 %\label{itemize:methodAlphaEstimation}
-The first is the \textbf{mean of all the $\alpha_k$}, as in Equation \ref{eq:avg}. The second is
+La première méthode consiste au calcul de la \textbf{moyenne des $\alpha_k$}, comme montré dans l'Équation \ref{eq:avg}. La seconde méthode consiste au calcul du \textbf{maximum de ressemblance }
 %As first method, we can simply use the \textbf{mean of the $\alpha$}:
 %\begin{equation}
 %\label{eq:avg}
 %%\hat{\alpha} = {1 \over |S_{\alpha k}|} \sum_{\alpha \in S_{\alpha k}} \alpha
 %\hat{\alpha} = {{\sum \alpha_k} \over K} .
 %\end{equation}
-the \textbf{maximum likelihood}, with
+avec :
 \begin{equation}
 \label{eq:ml}
 \hat{\alpha} = \mathrm{argmax}_{\alpha \in S_{\alpha k}}\{\mathrm{loglikelihood}(\Xi^o,\mu_{\boldsymbol{\omega}_k}, \sigma_{\boldsymbol{\omega}_k}, \alpha_k)\} .
 \end{equation} 
-The third is the \textbf{minimum distance} criterion, where we seek the best $\hat{\alpha}$ that minimizes the difference between the observed trajectory $\Xi^o_t$ and the predicted trajectory for the first $n_o$ data points:
+La troisième méthode consiste au critère de \textbf{distance minimum}, qui consiste à rechercher le meilleur $\hat{\alpha}$ qui minimise les différences entre la trajectoire observée  $\Xi^o_t$ et celle prédite pour les $n_o$ premières itérations :
 \begin{equation}
 \label{eq:minDist}
 \hat{\alpha} =\mathrm{argmin}_{\alpha \in S_{\alpha k}} \{\sum_{t=1}^{{n_o}} |\Xi^o_t - \Phi_{\alpha t} \mu_{\boldsymbol{\omega}_k}|\} .
 \end{equation} 
-The fourth method is based on a \textbf{model}:
+La quatrième méthode consiste en la création d'un \textbf{modèle}, 
 % \todo{find another name}: -> why changing it? the reviewers didnt mind that
-we assume that there is a correlation between $\alpha$ and the variation of the trajectory $\delta_{n_o}$ from the beginning until the time $n_o$. This ``variation'' $\delta_{n_o}$ can be computed as the variation of the position, \textit{e.g.}, $\delta_{n_o} = X(n_o) - X(1)$, or the variation in the entire trajectory, $ \delta_{n_o} =\Xi(n_o) - \Xi(1)$, or any other measure of progress, if this hypothesis is appropriate for the type of task trajectories of the application.\footnote{In our case, this assumption can be appropriate, because the reaching trajectories in our application are generally monotonic increasing/decreasing.} 
+basé sur la supposition qu'il y ait une corrélation entre $\alpha$ et la ``variation'' de la trajectoire $\delta_{n_o}$  entre le début et le temps $n_o$. Cette ``variation'' $\delta_{n_o}$ peut correspondre au calcul de la variation positionnelle, \textit{e.g.}, $\delta_{n_o} = X(n_o) - X(1)$,  ou au calcul de la variation de l'ensemble des données représentant la trajectoire, $ \delta_{n_o} =\Xi(n_o) - \Xi(1)$, \toimprove{ou encore n'importe laquelle de ces mesures, tant que l'hypothèse est approprié au type de trajectoire.}\footnote{In our case, this assumption can be appropriate, because the reaching trajectories in our application are generally monotonic increasing/decreasing.} 
 Indeed, the $\alpha$ can be linked also to the movement speed, which can be roughly approximated by $\dot{X} ={ \delta X  \over t_f}$ ($\dot{\Xi} ={ \delta \Xi  \over t_f}$). We model the mapping between $\delta_{n_o}$ and $\alpha$ by: 
 \begin{equation}
 \label{eq:model}
