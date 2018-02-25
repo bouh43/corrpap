@@ -543,65 +543,64 @@ Le fichier d'explication décrit comment lancer des démonstrations basiques. Le
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exemple fournis par le logiciel : apprentissage d'une primitive à une dimension}
 \label{sec:example1DOF}
-Cette section présente comment utiliser le logiciel afin d'apprendre une \textit{ProMP} à une dimension. Cette exemple necessite uniquement l'utilisataion du dossier \textit{MatlabProgram}, composé de :
+Cette section présente comment utiliser le logiciel afin d'apprendre une \textit{ProMP} à une dimension. Cette exemple nécessite uniquement l’utilisation du dossier \textit{MatlabProgram}, composé de :
 \begin{itemize}
 \item Un sous dossier nommé  ``Data'', où un ensemble de trajectoire permet d'apprendre des \textit{ProMPs}. Ces trajectoires sont enregistrées dans des fichier textes, contenant les informations suivantes :
 %that
 %\sout{there are some samples of trajectories in text files. These text files} }can be organize in various ways:
 \begin{itemize}
-\item [-] \textbf{input parameters}: \# input$_1$ \# input$_2$ [...]
-\item [-] \textbf{input parameters with time-step}: \# timeStep \# input$_1$ \# input$_2$ [...]
-\item [-] \textbf{\textit{recordTrajectories.cpp} program recording}: See Section~\ref{sec:dataAquisition} for more information.
+\item [-] \textbf{paramètres d'entrée }: \# e$_1$ \# e$_2$ [...]
+\item [-] \textbf{paramètre d'entrée avec information temporelle}: \# temps \# e$_1$ \# e$_2$ [...]
+\item [-] programme d'enregistrement de trajectoire \textbf{\textit{recordTrajectories.cpp}}: \textit{c.f.} Section~\ref{sec:dataAquisition} pour plus d'information.
 \end{itemize}
-\item A sub-folder called ``used\_functions''. It contains all the functions used to retrieve trajectories, compute ProMPs, infer trajectories, and plot results. Normally, \rev{using this toolbox does not require understanding these functions. }
+\item Un sous dossier nommé ``used\_functions''. Celui-ci contient toutes les fonctions utilisées permettant de récupérer les trajectoires, de calculer les \textit{ProMPs}, d'inférer les trajectoires, ainsi que de représenter les résultats dans des figures. L'utilisation de ce logiciel ne nécessite pas la compréhension de l'ensemble de ces fonctions. 
 %\sout{the use of this toolbox doesn't require to understand these functions}}. 
-The first lines of these functions give an explanation of \rev{their} functioning and precise what are the input(s) and output(s) parameters.
-\item Matlab scripts called ``demo\_*.m". They are simple examples of how to use this toolbox.
+Au début de ces fonctions, des lignes expliquent leur fonctionnement et précisent à quoi correspondent les paramètres d'entrée et de sortie.
+\item Des scripts Matlab dénommés ``demo\_*.m". Il s'agit d'exemples basiques permettant de comprendre comment utiliser ce logiciel.
 \end{itemize}
 
-<<<<<<< HEAD
-The script \mcode{demo\_plot1DOF.m}, can be used to compute a ProMP and to continue an initiated movement. The ProMP is computed from a dataset stored in a ".mat" file, called \textit{traj1\_1DOF.mat}. In this script, variables are first defined to make the script specific to the current dataset:
+Le script \mcode{demo\_plot1DOF.m} permet de calculer une \textit{ProMP} et de continuer un mouvement qui a été initié. La \textit{ProMP} est calculée à partir d'un ensemble de trajectoires récupéré d'un fichier ".mat", appelé \textit{traj1\_1DOF.mat}. Dans ce script, les variables sont d'abord définies afin de correspondre à l'ensemble des trajectoires :
 \begin{tabular}{|c|l|}
   \hline
-  \textbf{Variable assignation} & \textbf{Commentary}\\
+  \textbf{Assignation de la variable } & \textbf{Commentaire}\\
   \hline
-  DataPath\= 'Data\/traj1\_1DOF.mat'; & Can be either ".mat" or ".txt". In the current demo,  you can also write\\
-  & DataPath $=$ 'Data/traj1' if you want to use the text files of this dataset.\\
+  DataPath\= 'Data\/traj1\_1DOF.mat'; & Peut correspondre à un fichier ".mat" ou ".txt". Dans la démonstration courante, vous pouvez aussi écrire\\
+  & DataPath $=$ 'Data/traj1' si vous souhaitez utiliser les fichiers textes de cet ensemble de données.\\
      \hline
-  typeRecover= '.mat' & Or .txt, it depends on your choice of data file.\\
+  typeRecover= '.mat' & Ou .txt, selon le choix du type de fichier de données.\\
     \hline
-  inputName = {'z[m]'}; & Label of your input(s). Here $z$ represents the $z$-axis Cartesian coordinate.\\
+  inputName = {'z[m]'}; & Étiquette des données d'entrée des trajectoires. Ici, $z$ représente la coordonnée Cartésienne d'axe $z$.\\
     \hline
-  s\_ref=100; & Number of samples used as reference to rescale all the trajectories.\\
-  & to the same duration.\\
+  s\_ref=100; & Nombre d'échantillons utilisé en tant que référence afin de re-échantillonner l'ensemble des trajectoires pour qu'elles aient la même longueur temporelle.\\
     \hline
-  nbInput = 1; & Dimension of the generic vector containing the state of the trajectory.\\
+  nbInput = 1; & Dimension du vecteur paramètre contenant les mesures représentant les trajectoires.\\
     \hline
-  M = 5;  & Number of radial basis functions per input.\\
+  M = 5;  & Nombre des fonctions à base radiale par donnée d'entrée 
+  .\\
     \hline
-  expNoise = 0.00001;  & Expected trajectory noise.\\
+  expNoise = 0.00001;  & \toimprove{bruit estimé sur les mesures de la trajectoire}.\\
     \hline
-  percentData = 20;  & Percent of observed data during the inference.\\
+  percentData = 20;  & Pourcentage des données observées avant l'inférence.\\
   \hline
   \end{tabular}
 
-The variables include:
+Dans ces variables, il y a :
+
 \begin{itemize}
-\item \mcode{DataPath} is the path to the recorded data. If the data are stored in text files, this variable contains the folder name where text files are stored. These text files are called ``record$X$.txt", with $X \in [0:n-1]$ if there are $n$ trajectories. One folder is used to learn one ProMP. If the data are already loaded from a ``.mat" file, write the whole path with the extension. The data in ``.mat" matches with the output of the Matlab function \mcode{loadTrajectory}. %, presented in Figure~\ref{fig:yobject}.
-\item \mcode{nbInput}= $D$ is the dimension of the input vector $\xi_t$. 
+\item \mcode{DataPath} est le chemin d'accès menant aux données enregistrées. Si les données sont enregistrées dans des fichiers textes, cette variable contient le nom du dossier où les fichiers textes sont enregistrés. Ces fichiers textes sont appelés ``record$X$.txt", avec $X \in [0:n-1]$ si ils sont $n$ trajectoires. Un dossier est utilisé pour apprendre une \textit{ProMP}. Si les données sont déjà contenues dans un fichier ``.mat", le chemin d'accès total doit être inscrit, avec l'extension. Les données dans le fichier ``.mat" coïncident avec les données de sortie de la fonction Matlab \mcode{loadTrajectory}. %, presented in Figure~\ref{fig:yobject}.
+\item \mcode{nbInput}= $D$ correspond à la dimension du vecteur d'entrée $\xi_t$. 
 %This variable can be divided in two to precise in \mcode{nbInput(1)} what are the first $\xi_t$  dimensions used to recognize both the correct movement primitive and the time modulation of the initiated trajectory. In that case, \mcode{nbInput(2)}$= D - $\mcode{nbInput(1)}, contains the other dimensions, only used to compute the posterior distribution.
-\item \mcode{expNoise} $= \Sigma^o_\xi$ is the expected noise of the initiated trajectory. The smaller this variable is, the stronger the modification of the ProMP distribution will be, given new observations.
+\item \mcode{expNoise} $= \Sigma^o_\xi$ correspond au bruit estimé des mesures de la trajectoire initiée. Plus cette variable est petite, plus la modification de la \textit{ProMP} va être importante, afin de correspondre plus précisément aux observations.
 \end{itemize}
 
 %\rev{After this variable declaration, the user can just launch the script. To give a deeper understanding of this script, we now detail which and how functions are called in it.} 
-We will now explain more in detail the script. 
-To recover data recorded in a ``.txt'' file, we call the function:
+Le script va maintenant être détaillé. Afin de récupérer les données enregistrées dans le fichier ``.txt'', la fonction suivante est appellée :
 
 \mcode{t\{1\} = loadTrajectory(PATH, nameT, varargin)} 
 
-Its input parameters specify the path of the recorded data, the label of the trajectory. Other information can be added by using the \mcode{varargin} variable (for more detail, check the header of the function with the help comments). 
+Ces paramètres d'entrée précisent le chemin d'accès des données enregistrées, ainsi que l'étiquette représentant le type de trajectoire. D'autres informations peuvent être ajoutées, à l'aide de la variable \mcode{varargin} (\textit{c.f.}, informations commentées en tête de cette fonction). 
 %For more detail about these parameters, read the beginning of this function. 
-The output is an object that contains all the information about the demonstrated trajectories. \rev{It is composed of \mcode{nbTraj}, the number of trajectory; \mcode{realTime}, the simulation time; \mcode{y} (and \mcode{yMat}), the vector (and matrix) trajectory set , etc.}. 
+La sortie de cette fonction correspond à un objet contenant toutes les informations des trajectoires de démonstrations. \rev{It is composed of \mcode{nbTraj}, the number of trajectory; \mcode{realTime}, the simulation time; \mcode{y} (and \mcode{yMat}), the vector (and matrix) trajectory set , etc.}. 
 %\rev{\sout{Note that to simplify the Matlab's notation, we denote the $\Xi$ trajectory by \mcode{y} (or \mcode{yMat} in all the toolbox functions}}. 
 \rev{Thus, \mcode{t\{1\}.y\{i\} } contains the $i$-th trajectory}.
 
