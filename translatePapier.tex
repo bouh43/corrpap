@@ -200,14 +200,14 @@ Afin de faciliter la compréhension du cadre théorique, nous introduisons tout 
 \item $\xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi$ : modélisation de la trajectoire avec :
 \begin{itemize}
 \item $\epsilon_\xi \sim \mathcal{N}(0, \beta)$ : bruits supposés de la trajectoire.
-\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$ : fonctions de base radiale (RBFs) utilisée afin de modéliser les trajectoires. Elle correspond à une matrice diagonale par bloque.
+\item $\Phi_t \in \mathbb{R}^{D\times D \cdot M}$ : fonctions à base radiale (\textit{RBFs}) utilisée afin de modéliser les trajectoires. Elle correspond à une matrice diagonale par bloque.
 \begin{itemize}
-\item[-] $M$ : nombre de RBFs.
-\item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$ : $i^e$ RBF correspondant à l'ensemble des entrées $j \in [1:D]$. 
-Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, où $ c_i, h$ sont respectivement le centr et la variance de la $i^e$ Gaussienne. Les Gaussiennes incluses dans la RBF sont normalisées.
+\item[-] $M$ : nombre de \textit{RBFs}.
+\item[-] $ \psi_{ji}(t) =\dfrac{e^{-(t - c_i)^2 \over 2h}}{\sum_{m=1}^{M} e^{-(t - c_m)^2 \over 2h} }$ : $i^e$ \textit{RBF} correspondant à l'ensemble des entrées $j \in [1:D]$. 
+Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{\sqrt{2\pi h}} e^{-(t - c_i)^2 \over 2h}$, où $ c_i, h$ sont respectivement le centre et la variance de la $i^e$ Gaussienne. Les Gaussiennes incluses dans la \textit{RBF} sont normalisées.
 ˆ%\item[-] $ c_i, h$: center and variance parameters of the $i$-th Gaussian.
 \end{itemize}
-\item $\boldsymbol{\omega} \in \mathbb{R}^{D \cdot M}$ : vecteur paramétrique indépendant du temps, utilisé pour pondérer les RBFs. Il s'agit des paramètres à apprendre.
+\item $\boldsymbol{\omega} \in \mathbb{R}^{D \cdot M}$ : vecteur paramétrique indépendant du temps, utilisé pour pondérer les \textit{RBFs}. Il s'agit des paramètres à apprendre.
 
 \end{itemize}
 
@@ -219,15 +219,15 @@ Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{
 \textbf{Modulation du temps :}
 \begin{itemize}
 \item $\bar{s}$ : nombre d'échantillon utilisé en tant que référence, utilisé pour redimensionner toutes les trajectoires afin qu'elles aient la même durée.
-\item $\Phi_{\alpha_i t} \in \mathbb{R}^{D\times D \cdot M} :$ RBFs redimensionnées qui correspondent ainsi à la durée de la trajectoire $\Xi_i$.
+\item $\Phi_{\alpha_i t} \in \mathbb{R}^{D\times D \cdot M} :$ \textit{RBFs} redimensionnées qui correspondent ainsi à la durée de la trajectoire $\Xi_i$.
 \item $\alpha_i = { \bar{s} \over t_{fi}}$ : paramètre de modulation du temps correspondant à la $i^e$ trajectoire.
 \item $\alpha = \Psi_{\delta_{n_o}}\boldsymbol{\omega}_\alpha + \epsilon_\alpha$ : modélisation de la fonction de redimensionnement $\delta_{n_o}$ permettant de définir le paramètre de modulation temporel $\alpha$, avec :
 
 \begin{itemize}
-\item[-] $\Psi$: un ensemble de \textit{RBFs} utilisé dans la modélisation de la fonction de redimensionnement de temps entre $\delta_{n_o}$ and $\alpha$;
+\item[-] $\Psi$: un ensemble de \textit{\textit{RBFs}} utilisé dans la modélisation de la fonction de redimensionnement de temps entre $\delta_{n_o}$ and $\alpha$;
 \item[-] $\delta_{n_o}$ : différence entre la $n_o^e$ mesure et la $1^e$ mesure récoltée. Cette différence peut correspondre à $\delta_{n_o}=\xi(n_o) - \xi(1)$ lorsque l'on considère l'ensemble des mesures décrivant la trajectoire (\textit{e.g.}, position Cartésienne, forces, etc.), ou plus simplement à $\delta_{n_o}= X(n_o) - X(1)$ lorsque l'on considère uniquement les positions cartésiennes de la trajectoire.
 %\item $ \theta_\alpha \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_\alpha}, \sigma_{\boldsymbol{\omega}_\alpha})$: normal distribution of the $\{\boldsymbol{\omega}_{\alpha_1},\ldots, \boldsymbol{\omega}_{\alpha_n} \}$ dataset.
-\item[-] $\boldsymbol{\omega}_\alpha$ : vecteur paramètre pondérant les fonctions de base radiale inclusent dans la matrice $\Psi$. 
+\item[-] $\boldsymbol{\omega}_\alpha$ : vecteur paramètre pondérant les \textit{RBFs} inclusent dans la matrice $\Psi$. 
 %It provides an overall fit for all the $\alpha_i$.
 
 \end{itemize}
@@ -264,7 +264,7 @@ Une \textit{ProMP} est un modèle paramétrique Bayésien représentant un ensem
 \begin{eqnarray}
 \xi(t) = \Phi_t \boldsymbol{\omega} + \epsilon_\xi
 \end{eqnarray}
-, où $\boldsymbol{\omega} \in R^M$ correspond au paramètre indépendant du temps pondérant les fonctions de base radiale ; $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ au bruit de la trajectoire ; et $\Phi_t$  le vecteur contenant les $M$ fonctions de base radiale~\cite{buhmann2000radial} \todo{annexe ?} évaluées au \textit{temps $t$}:
+, où $\boldsymbol{\omega} \in R^M$ correspond au paramètre indépendant du temps pondérant les \textit{RBFs} ; $\epsilon_\xi \sim \mathcal{N}(0, \beta) $ au bruit de la trajectoire ; et $\Phi_t$  le vecteur contenant les $M$ \textit{RBFs}~\cite{buhmann2000radial} \todo{annexe ?} évaluées au \textit{temps $t$}:
 $$ \Phi_{t}=[\psi_{1}(t), \psi_{2}(t), \ldots., \psi_{M}(t)]$$
 avec :
 \begin{equation} \label{eq:RBF}
@@ -296,7 +296,7 @@ p(\boldsymbol{\omega}) & \sim & \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\
 \end{eqnarray}
 La \textit{ProMP} est ainsi apprise et correspond à une distribution de trajectoires. 
 
-Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette distribution, on utilise généralement la trajectoire correspondant à la moyenne de la distribution. La Figure~\ref{fig:1DOFtrajectoriesProMP} montre la \textit{ProMP} d'un mouvement de levée de dimension $1$, avec le nombre d'échantillon référence $\bar{s}=100$ et un nombre de fonctions à base radiale $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
+Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette distribution, on utilise généralement la trajectoire correspondant à la moyenne de la distribution. La Figure~\ref{fig:1DOFtrajectoriesProMP} montre la \textit{ProMP} d'un mouvement de levée de dimension $1$, avec le nombre d'échantillon référence $\bar{s}=100$ et un nombre de \textit{RBFs} $M=5$. %A detailed example from our software is explained in section~\ref{sec:example1DOF}.
 Cet exemple est inclut dans le logiciel Matlab sous le nom~\mcode{demo_plot1DOF.m}. L'explication de ce script est présenté dans la Section~\ref{sec:example1DOF}. De plus, des exemples plus compliqués sont aussi introduis dans le logiciel, sous des noms de type : \mcode{demo_plot*.m}.
 
 
@@ -341,29 +341,29 @@ La variable \mcode{nbData} permet de faire varier le pourcentage de données con
 
 \subsection{Prédiction du paramètre de modulation du temps de la trajectoire}\label{sec:predictDuration}
 Dans la section précédente, la formulation générale des \textit{ProMPs}a été présentée, en faisant l'hypothèse que toutes les trajectoires observées étaient même durée et donc qu'elles sont représentées par le même nombre d'échantillons.\footnote{Actually, we call here duration what is in fact the total number of samples for the trajectory.}
-C'est pourquoi la durée des trajectoires générés par les fonctions à base radiale est fixe et égale à $\bar{s}$. 
+C'est pourquoi la durée des trajectoires générés par les \textit{RBFs} est fixe et égale à $\bar{s}$. 
 
 Cependant, afin de pouvoir générer des trajectoires dans des conditions expérimentales réelles, on considère maintenant que la durée de ces trajectoires de démonstration varie.
 Dans ce but, un paramètre de modulation du temps $\alpha$ est introduit permettant de redimensionner la trajectoire actuelle afin qu'elle ne soit plus définie par $t_{f}$ mesures mais par $\bar{s}$: $\alpha = \bar{s} / t_{f}$.
-%This variable rescales the RBFs of the model to the trajectory duration. 
+%This variable rescales the \textit{RBFs} of the model to the trajectory duration. 
 %It relies on the trajectory duration and a reference number of samples $\bar{s}$.
 La durée normalisée $\bar{s}$ peut être choisi arbitrairement; par exemple, elle peut correspondre à la moyenne des durées des trajectoires, \textit{e.g.}, $\bar{s}=mean(t_{f1},\ldots,t_{fK})$.
 % (we have one sample per iteration time $t$).
 Dans la littérature, ce terme $\alpha$ est parfois appelé la \textit{phase}~\cite{paraschos2013probabilistic,paraschos2013probabilisticTrajectory}. 
-\toimprove{Ce terme $\alpha$ change la phase des fonctions à base radiale, foncitions qui sont étalée temporellement sur l'ensemble de la durée de la trajectoire}.
+\toimprove{Ce terme $\alpha$ change la phase des \textit{RBFs}, foncitions qui sont étalée temporellement sur l'ensemble de la durée de la trajectoire}.
 
 Le paramètre de modulation du temps de la $i^e$ trajectoire $\Xi_i$ est calculé avec : $ \alpha_i = {\bar{s} \over t_{fi}}$. Ainsi, on obtient : $\alpha \cdot t \in [1:\bar{s}]$. Ainsi, le modèle \textit{ProMP} amélioré devient :
 \begin{eqnarray}
 \xi_t = \Phi_{\alpha t} \boldsymbol{\omega} + \epsilon_t \, ,
 \end{eqnarray}
-où $\Phi_{\alpha t}$ est la matrice de fonctions à base radiale évaluée au temps $\alpha t$. L'ensemble des $M$ fonctions Gaussiennes représentant les fonctions à base radialesont étalée pour représenter le même nombre d'échantillons $\bar{s}$. Ainsi, on obtient :
+où $\Phi_{\alpha t}$ est la matrice de \textit{RBFs} évaluée au temps $\alpha t$. L'ensemble des $M$ fonctions Gaussiennes représentant les \textit{RBFs}sont étalée pour représenter le même nombre d'échantillons $\bar{s}$. Ainsi, on obtient :
 $$ \Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\alpha t)].$$
 %\begin{equation}
 %\Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\alpha t)] \mathrm{,~with:}  
 %\psi_{i}(\alpha t) = {1 \over\sum_{j=1}^M \psi_{j}(\alpha t) }exp\{{-({\alpha t / \bar{s}} - c(i))^2 \over {2h}}\} 
 %\end{equation}
 
-%The Matlab function that allows to create such RBFs is
+%The Matlab function that allows to create such \textit{RBFs} is
 %
 %\mcode{Phi_alpha = computeBasisFunction (s_ref,M, D, alpha, t_f, c, h,no)}
 %
@@ -371,15 +371,15 @@ $$ \Phi_{\alpha t}=[\psi_{1}(\alpha t), \psi_{2}(\alpha t), \ldots., \psi_{M}(\a
 %
 %\begin{itemize}
 %\item \mcode{s_ref} = $\bar{s}$: the reference number of samples;
-%\item $M$ is the number of Gaussians of the RBFs;
+%\item $M$ is the number of Gaussians of the \textit{RBFs};
 %\item $D$ is the $\xi_t$ dimension;
 %\item \mcode{alpha} is the time modulation parameter of $\Xi$;
 %\item \mcode{t_f = s_ref / alpha} is the total time duration of $\Xi$; 
 %\item \mcode{c} and \mcode{h} are the parameters of the Gaussians; 
-%\item \mcode{no} informs the data number that we want to model by the RBFs (here $[1:no]$).
+%\item \mcode{no} informs the data number that we want to model by the \textit{RBFs} (here $[1:no]$).
 %\end{itemize} 
 %
-%The output matrix \mcode{Phi_alpha} $= \Phi_{\alpha [1:no]}$ is the RBF matrix computed to represent the first $n_o$ observed data points of a $\Xi$ trajectory.
+%The output matrix \mcode{Phi_alpha} $= \Phi_{\alpha [1:no]}$ is the \textit{RBF} matrix computed to represent the first $n_o$ observed data points of a $\Xi$ trajectory.
 
 Durant la phase d'apprentissage, un ensemble de paramètres $\alpha$ est appris : $S_{\alpha} = \{\alpha_{1},\ldots,\alpha_{n}\}$.
 Puis, en utilisant ce set, la \textit{ProMP} apprise peut être rejouée à différentes vitesses. Par défaut, (\textit{e.g.} quand $\alpha=1$), la vitesse de la trajectoire permet de finir le mouvement en $\bar{s}$ itérations.
@@ -429,64 +429,60 @@ La troisième méthode consiste au critère de \textbf{distance minimum}, qui co
 \end{equation} 
 La quatrième méthode consiste en la création d'un \textbf{modèle}, 
 % \todo{find another name}: -> why changing it? the reviewers didnt mind that
-basé sur la supposition qu'il y ait une corrélation entre $\alpha$ et la ``variation'' de la trajectoire $\delta_{n_o}$  entre le début et le temps $n_o$. Cette ``variation'' $\delta_{n_o}$ peut correspondre au calcul de la variation positionnelle, \textit{e.g.}, $\delta_{n_o} = X(n_o) - X(1)$,  ou au calcul de la variation de l'ensemble des données représentant la trajectoire, $ \delta_{n_o} =\Xi(n_o) - \Xi(1)$, \toimprove{ou encore n'importe laquelle de ces mesures, tant que l'hypothèse est approprié au type de trajectoire.}\footnote{In our case, this assumption can be appropriate, because the reaching trajectories in our application are generally monotonic increasing/decreasing.} 
-Indeed, the $\alpha$ can be linked also to the movement speed, which can be roughly approximated by $\dot{X} ={ \delta X  \over t_f}$ ($\dot{\Xi} ={ \delta \Xi  \over t_f}$). We model the mapping between $\delta_{n_o}$ and $\alpha$ by: 
+basé sur la supposition qu'il y ait une corrélation entre $\alpha$ et la ``variation'' de la trajectoire $\delta_{n_o}$  entre le début et le temps $n_o$. Cette ``variation'' $\delta_{n_o}$ peut correspondre au calcul de la variation positionnelle, \textit{e.g.}, $\delta_{n_o} = X(n_o) - X(1)$,  ou au calcul de la variation de l'ensemble des données représentant la trajectoire, $ \delta_{n_o} =\Xi(n_o) - \Xi(1)$, \toimprove{ou encore n'importe laquelle de ces mesures, tant que l'hypothèse est approprié au type de trajectoire.}\footnote{\toimprove{Dans notre cas, cette hypothèse est appropriée puisque les trajectoires dirigées vers un but de notre application croient généralement de manière monotomne.} }
+En effet, le paramètre $\alpha$ peut être lié à la vitesse de mouvement, qui peut être approximée de manière \toimprove{brut} par $\dot{X} ={ \delta X  \over t_f}$ ($\dot{\Xi} ={ \delta \Xi  \over t_f}$). Nous modelisons le réechantillonage entre $\delta_{n_o}$ et $\alpha$ avec : 
 \begin{equation}
 \label{eq:model}
 \alpha = \Psi(\delta_{n_o})^\top \boldsymbol{\omega}_\alpha + \epsilon_\alpha,
 \end{equation} 
-where $\Psi$ are RBFs, and $\epsilon_\alpha$ is a zero-mean Gaussian noise.
-During learning, we compute the  $\boldsymbol{\omega}_\alpha$ parameter, using the same method as in Equation~\ref{eq:w}.
-During the inference, we compute $\hat{\alpha} = \Psi(\delta_{n_o})^\top \boldsymbol{\omega}_\alpha$.
+où $\Psi$ correspond à la matrice de \textit{RBFs}, et $\epsilon_\alpha$ au bruit suivant une loi normale centrée \todo{et réduite ?} .
+Lors de la phase d'apprentissage, le paramètre $\boldsymbol{\omega}_\alpha$ est calculé en utilisant l’Équation~\ref{eq:w}. 
+Lors de la phase de prédiction, le paramètre $\hat{\alpha} = \Psi(\delta_{n_o})^\top \boldsymbol{\omega}_\alpha$ est calculé.
 %\end{itemize}
 
-A comparison of the four methods for estimating $\alpha$ on a test study with iCub in simulation is presented in Section \ref{sec:simulatedTimeModulationModels}.
+Une étude test, présentée dans la Section~\ref{sec:simulatedTimeModulationModels}, met en jeu le iCub simulé et permet de comparer ces quatre méthodes d'estimation du paramètre  $\alpha$.
 
-There exist other methods in the literature for computing $\alpha$.  For example, \cite{ewerton2015learning} propose a method that models local variability in the speed of execution. In \cite{maeda2016probabilistic} they use a method that improves Dynamic Time Warping by imposing a smooth function on the time alignment mapping using local optimization. These methods will be implemented in the future works.
+\todo{verif déja inclu dans SOA}
+Dans la littérature, il existe d'autres méthodes permettant de calculer ce paramètre $\alpha$. Par exemple~ \cite{ewerton2015learning} propose une méthode qui modélise localement la variabilité de la vitesse d'execution des trajectoires. Dans~\cite{maeda2016probabilistic} ils utilisent une méthode qui permet d'améliorer la méthode \textit{Dynamic Time Warping} en imposant une fonction régulière sur l’alignement temporaire, à l'aide d'optimisation locale. Ces méthodes seront implémentées dans les futures études.
 %In this software, we did not implement such methods yet, since the four proposed criteria are simpler.
 
 
-\subsection{Recognizing one among many movement primitives}
+\subsection{\toimprove{Reconnaître une primitive de mouvement parmi plusieurs}}
 \label{sec:ManyProMP}
 %
 %we learn many movement primitives which correspond to different tasks.\\
 %Let  $S_k = \{\Xi_1,\ldots, \Xi_n\}_k$, the set of trajectories that correspond to the $k$-th movement primitive.
 %Let recall that $\Xi_i = [\xi_{1} \ldots \xi_{t_{fi}}]^\top$ is the $i$-th trajectory of this data set, where $t_{fi}$ is the final time of the movement. 
 %
-Robots should not learn only one skills, but many: different skills for different tasks. 
-\rev{In our framework, tasks are represented by movement primitives, precisely ProMP.}
-So it is important for the robot to be able to learn $K$ different ProMPs and then be able to recognize from the early observations of a trajectory which of the $K$ ProMPs the observations belong to.
+Pour rendre les robots performant, ceux-ci doivent être capable de proposer différents comportements afin d'effectuer différentes tâches.  Dans notre logiciel, chaque \textit{ProMP} représente une tâche distincte.
+Ainsi, il est important que le robot soit capable d'apprendre différentes \textit{ProMPs}, disons $K$, puis d'être capable de reconnaître laquelle de ces trajectoire est initiée par l'utilisateur du robot.
 %We are also interested in learning many ProMPs, say $K$ ProMPs.
 
-During the learning step of a movement primitive $k \in [1:K]$, the robot observes different trajectories $S_k = \{\Xi_1,\ldots,\Xi_n\}$. For each ProMP, it learns the distribution over the parameters vector $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_k}, \Sigma_{\boldsymbol{\omega}_k})$, using Equation~\ref{eq:w}. Moreover, the robot records the different phases of all the observed trajectories: $ S_{\alpha k} = \{\alpha_{1k},\ldots,\alpha_{nk}\}$.
+Durant la phase d'apprentissage d'une Primitive de Mouvement $k \in [1:K]$,  le robot observe différentes trajectoires $S_k = \{\Xi_1,\ldots,\Xi_n\}$. Pour chaque \textit{ProMP}, il apprend alors une distribution à partir de l'ensemble des vecteurs paramètres  $p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}_k}, \Sigma_{\boldsymbol{\omega}_k})$, à l'aide de l'Équation~\ref{eq:w}. De plus, le robot enregistre les différentes durées des trajectoires observées : $ S_{\alpha k} = \{\alpha_{1k},\ldots,\alpha_{nk}\}$.
 
-After having learned these $K$ ProMPs, the robot \rev{can use this information to autonomously execute a task trajectory. Since we are targeting collaborative movements, performed together with a partner at least at the beginning, we want the robot to be able to recognize from the first observations of a collaborative trajectory which is the current task that the partner is doing and what is the intention of the partner. Finally, we want the robot to be able to complete the task on its own, once it has recognized the task and predicted the future trajectory. }
+Après avoir apris ces $K$ \textit{ProMPs}, le robot peut utiliser les informations apprises afin d’exécuter une trajectoire et sa tâche correspondante. Pour cela, le robot doit d'abord être capable de reconnaître, à partir des observations partielles de la trajectoire initiée par l'utilisateur, quel est le mouvement et la tâche attendue, puis comment la continuer.
 %\todo{why not: has to?} must finish a human-initiated movement on its own. 
 
-Let $\Xi^{o} = [\Xi_1 \ldots \Xi_{n_o}]^\top$ be the early observations of an initiated trajectory.
-
-From these partial observations, the robot \rev{can} recognize the \rev{``correct'' (\textit{i.e.}, most likely)} ProMP $\hat{k} \in [1:K]$.
+Soit $\Xi^{o} = [\Xi_1 \ldots \Xi_{n_o}]^\top$ les observations partielles de la trajectoire initiée.
+À partir de ces observations partielles, le robot peut reconnaître la \textit{ProMP} ``correcte'' (\textit{e.g.}, la plus probable) $\hat{k} \in [1:K]$ en suivant plusieurs étapes.
 % by:
 %\begin{itemize}
-\rev{First, for each ProMP $k \in [1:K]$, it computes} the most likely phase (time modulation factor) $\hat{\alpha}_k$ (as explained in Section~\ref{sec:predictDuration}), to obtain the set \rev{of ProMPs with the most likely duration}: $S_{[\mu_{\boldsymbol{\omega}_k}, \hat{\alpha}_k]} = \{(\mu_{\boldsymbol{\omega}_1},\hat{\alpha}_1),\ldots,(\mu_{\boldsymbol{\omega}_K},\hat{\alpha}_K)\}$
+Tout d'abord, pour chaque \textit{ProMP} $k \in [1:K]$, le robot commence par calculer le paramètre de modulation de temps $\hat{\alpha}_k$ le plus probable (\textit{c.f.} Section~\ref{sec:predictDuration}), afin d'obtenir un ensemble contenant les \textit{ProMPs} couplées avec leur durée la plus probable : $S_{[\mu_{\boldsymbol{\omega}_k}, \hat{\alpha}_k]} = \{(\mu_{\boldsymbol{\omega}_1},\hat{\alpha}_1),\ldots,(\mu_{\boldsymbol{\omega}_K},\hat{\alpha}_K)\}$
 
-Then we compute the most likely ProMP $\hat{k}$ in  $S_{[\mu_{\boldsymbol{\omega}_k}, \hat{\alpha}_k]}$ \rev{according to some criterion.
-One possible way is to minimize the distance between the early observations and the mean of the ProMP for the first portion of the trajectory:}
+Puis, le robot calcul la \textit{ProMP} $\hat{k}$ la plus probable depuis l'ensemble : $S_{[\mu_{\boldsymbol{\omega}_k}, \hat{\alpha}_k]}$, en utilisant différents critères. \todo{?}
+Afin de minimiser la distance entre les observations partielles et la moyenne des premières données de la \textit{ProMP}, le robot peut calculer :
 \begin{equation} \label{eq:mostlikelypromp}
 \hat{k} = \arg \min_{k \in [1:K]} \,   \left[      {1 \over n_o} \sum_{t=1}^{n_o}| \Xi_{t} - \Phi_{\hat{\alpha}_k t} \, \mu_{\boldsymbol{\omega}_k} | \right]
 \end{equation}
-\rev{In Equation~\ref{eq:mostlikelypromp}, for each ProMP $k \in [1:K]$, we compute the average distance between the observed early-trajectory $\Xi_t$ and the mean trajectory of the ProMP $\Phi_{\hat{\alpha}_k t} \mu_{\omega_k}$, with $t = [1:n_o]$.
-The most likely ProMP $\hat{k}$ is selected by computing the minimum distance (arg min). Other possible methods for estimating the most likely ProMPs could be inspired by those presented in the previous section for estimating the time modulation, \textit{i.e.} maximum likelihood or learned models.
-}
+Dans l'Équation~\ref{eq:mostlikelypromp}, pour chaque \textit{ProMP}  $k \in [1:K]$, la distance moyenne est calculée entre la trajectoire initiée $\Xi_t$  et la moyenne de la \textit{ProMP} $\Phi_{\hat{\alpha}_k t} \mu_{\omega_k}$, avec $t = [1:n_o]$.
+La \textit{ProMP} $\hat{k}$ la plus vraissemblable est alors selectionnée en calculant la distance minimum (arg min). D'autres méthodes sont possibles pour calculer la \textit{ProMP} la plus probable, méthodes inspirées par celles présentées pour l'estimation du paramètre de modulation du temps ( \textit{c.f.} Section précédente). C'est à dire, l'estimation à l'aide du maximum de vraisemblance ou en apprenant une modélisation du paramètre, \toimprove{modèle basée sur des données de la trajectoire}.
+
 %\end{itemize}
 %\todo{EXPLAIN THIS EQUATION}
 
-
-
-
 %Now the ProMP the most similar to the early-trajectory is identified, we can update the $\hat{k}$-th ProMP to adapt it to the observed early-trajectory.
 
-\rev{Once identified the $\hat{k}$-th  most likely ProMP, we update its posterior distribution to take into account the initial portion of the observed trajectory, using Equation~\ref{eq:inf}:}
+Lorsque la $\hat{k^e}$ \textit{ProMP} la plus probable a été identifiée, la distribution postérieure de cette \textit{ProMP} est caclulée afin de prendre en compte la portion initiale de la trajectoire observée, en utilisant l'Équation~\ref{eq:inf}:
 
 %The first step is then to compute $\hat{t_f}$ \rev{(the expected duration of the trajectory)} by: 
 %\begin{equation}
@@ -503,14 +499,15 @@ The most likely ProMP $\hat{k}$ is selected by computing the minimum distance (a
 \hat{\Sigma}_{\boldsymbol{\omega}_{\hat{k}}}  &= \Sigma_{\boldsymbol{\omega}_{\hat{k}}}  - K(\Phi_{\hat{\alpha}_{\hat{k}}[1:{n_o}]} \Sigma_{\boldsymbol{\omega}_{\hat{k}}} ) \\
 K&= \Sigma_{\boldsymbol{\omega}_{\hat{k}}} \, \Phi_{\hat{\alpha}_{\hat{k}}[1:{n_o}]}^\top \, (\Sigma_{\xi^o} + \Phi_{\hat{\alpha}_{\hat{k}}[1:n_o]}\Sigma_{\boldsymbol{\omega}_{\hat{k}}}  \Phi_{\hat{\alpha}_{\hat{k}}[1:n_o]}^\top)^{-1}
 \end{array}
-\right.\end{equation}
-\rev{with $\hat{\alpha}_{\hat{k}}[1:n_o] = \hat{\alpha}_{\hat{k}} \, t$ (in matrix form), with $t \in [1:n_o]$.}
+\right.
+\end{equation}
+avec $\hat{\alpha}_{\hat{k}}[1:n_o] = \hat{\alpha}_{\hat{k}} \, t$ (forme matricielle), avec $t \in [1:n_o]$.
 
-Finally, the inferred trajectory is given by: 
+Finalement, la trajectoire inférée est calculée avec : 
 $$\forall t \in [1:\hat{t}_f], \hat{\xi}(t) = \Phi_t \, \hat{\mu}_{\boldsymbol{\omega}_{\hat{k}}}$$
-with \rev{the expected duration of the trajectory $\hat{t}_f = \hat{\alpha}_k\bar{s}$.
-The robot is now able to finish the movement executing the \rev{most-likely} ``future'' trajectory $\hat{\Xi} =[\hat{\xi}_{n_o+1} \ldots \hat{\xi}_{\hat{t_{f}}}]^\top$.
-}
+avec une estimation de la durée de la trajectoire correspondant à : $\hat{t}_f = \hat{\alpha}_k\bar{s}$.
+Le robot est alors capable de finir le mouvement en executant la trajectoire ``future'' la plus probable : $\hat{\Xi} =[\hat{\xi}_{n_o+1} \ldots \hat{\xi}_{\hat{t_{f}}}]^\top$.
+
 
 %\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -640,8 +637,8 @@ into a training dataset (used for learning the ProMPs) and a test dataset (used 
 \mcode{promp = computeDistribution(train, M, s_ref,c,h)}
 
 The output variable \mcode{promp} is an object that contains all the ProMP information. 
-The first three input parameters have been presented before: \rev{\mcode{train} is the training set, \mcode{M} is the number of RBFs, \mcode{s_ref} is the number of samples used to rescale all the trajectories.}
-The last two input parameters \mcode{c} and \mcode{h} shape the RBFs of the ProMP model: \mcode{c} $\in \mathbb{R}^M$ is the center of the Gaussians and \mcode{h} $\in \mathbb{R}$ their variance. 
+The first three input parameters have been presented before: \rev{\mcode{train} is the training set, \mcode{M} is the number of \textit{RBFs}, \mcode{s_ref} is the number of samples used to rescale all the trajectories.}
+The last two input parameters \mcode{c} and \mcode{h} shape the \textit{RBFs} of the ProMP model: \mcode{c} $\in \mathbb{R}^M$ is the center of the Gaussians and \mcode{h} $\in \mathbb{R}$ their variance. 
 
 %In Matlab, the equivalent code is:
 %\begin{lstlisting}
@@ -660,7 +657,7 @@ To visualize this ProMP, as shown in Figure~\ref{fig:1DOFtrajectoriesProMP}, cal
 \begin{figure}[h]
 \includegraphics[width=\hsize /2]{img/1DOFtrajectoriesV2.pdf} \includegraphics[width=\hsize /2]{img/1DOFtrajectoriesProMPV2.pdf}
 %\caption{The trajectories of the test dataset for 1DOF primitive.}
-\caption{The observed trajectories are represented in magenta. The corresponding ProMP is represented in blue. The following parameters are used: $\bar{s}=100$ for the reference number of samples, $M=5$ for the number of RBFs spread over time, and  $h=0.04$ (=$ 1 \over M^2$) the variance of the RBFs.}
+\caption{The observed trajectories are represented in magenta. The corresponding ProMP is represented in blue. The following parameters are used: $\bar{s}=100$ for the reference number of samples, $M=5$ for the number of \textit{RBFs} spread over time, and  $h=0.04$ (=$ 1 \over M^2$) the variance of the \textit{RBFs}.}
 \label{fig:1DOFtrajectoriesProMP}
 \end{figure}
 
@@ -671,7 +668,7 @@ To plot the basis functions, simply call:
 
 \mcode{drawBasisFunction(promp.PHI,M)}
 
-where \mcode{promp.PHI} is a set of RBFs evaluated in the normalized time range $t \in [1:\bar{s}]$.
+where \mcode{promp.PHI} is a set of \textit{RBFs} evaluated in the normalized time range $t \in [1:\bar{s}]$.
 %, each of which being evaluated at a different time $t \in [1:\bar{s}]$. \todo{is it better?}%during the interval: $\Phi_{[1:\bar{s}]}$ \todo{reformulate this}. 
 
 Figure \ref{fig:1DOFtrajectoriesProMPbasis} shows at the top the basis functions before normalization, and at the bottom the ProMP modeled from these basis functions. From left to right, we change the number of basis functions. When there are not enough basis functions (left), the model is not able to correctly represent the shape of the trajectories. In the middle, the trajectories are well represented by the five basis functions. With more basis functions (right), the variance of the distribution decreases because the model is more accurate. 
@@ -802,7 +799,7 @@ Were $X_t \in \mathbb{R}^{3}$ is the Cartesian position of the robot's end effec
 
 The corresponding ProMP model is:
 $$\xi_t = \begin{bmatrix} X_t \\ F_t\end{bmatrix} = \Phi_{\alpha t} \boldsymbol{\omega} + \epsilon_t$$
-Where $\boldsymbol{\omega} \in  \mathbb{R}^{D \cdot M}$ is the time independent parameter vector, $\epsilon_t= \begin{bmatrix} \epsilon_{X_t} \\ \epsilon_{F_t}\end{bmatrix} \in \mathbb{R}^D$ is the zero-mean Gaussian i.i.d. observation noise, and $\Phi_{\alpha t} \in \mathbb{R}^{D \times D \cdot M}$ a matrix of Radial Basis Functions (RBFs) evaluated at time $\alpha t$.\\
+Where $\boldsymbol{\omega} \in  \mathbb{R}^{D \cdot M}$ is the time independent parameter vector, $\epsilon_t= \begin{bmatrix} \epsilon_{X_t} \\ \epsilon_{F_t}\end{bmatrix} \in \mathbb{R}^D$ is the zero-mean Gaussian i.i.d. observation noise, and $\Phi_{\alpha t} \in \mathbb{R}^{D \times D \cdot M}$ a matrix of Radial Basis Functions (\textit{RBFs}) evaluated at time $\alpha t$.\\
 Since we are in the multidimensional case, this $\Phi_{\alpha t}$ block diagonal matrix is defined as:
 $$\Phi_{\alpha t}  = BlockdiagonalMatrix(\phi_1,\ldots,\phi_{D}) \in \mathbb{R}^{D \times D \cdot M} $$
 %\left[ \begin{array}{cccc}
@@ -811,7 +808,7 @@ $$\Phi_{\alpha t}  = BlockdiagonalMatrix(\phi_1,\ldots,\phi_{D}) \in \mathbb{R}^
 %\hfill & \hfill & \ldots &\hfill \\
 %\hfill & \hfill & \hfill & \phi_{m_z}
 %\end{array} \right] $
-It is a diagonal matrix of $D$ Radial Basis Functions (RBFs), where each RBF represents one dimension of the $\xi_t$ vector and it is composed of $M$ Gaussians, spread over  same number of samples $\bar{s}$.
+It is a diagonal matrix of $D$ Radial Basis Functions (\textit{RBFs}), where each \textit{RBF} represents one dimension of the $\xi_t$ vector and it is composed of $M$ Gaussians, spread over  same number of samples $\bar{s}$.
 
 
 \subsubsection{Learning motion primitives}
@@ -960,7 +957,7 @@ We set the following parameters:
 \item \mcode{nbInput(1) = 3; nbInput(2) = 6}: dimension of the generic vector containing the state of the trajectories. It is composed of 3D Cartesian position and 6D forces and wrench information.\footnote{Note that in our example wrenches are separated from the Cartesian position, because they are not used to recognize the index of the current ProMP during the inference.}
 %\rev{dimension of the generic vector containing the state of the trajectories. It is composed of 3D Cartesian position and 6D forces and wrench information. Wrenches are separated from the Cartesian position, because they are not used to recognize the index of the current ProMP during the inference.}
 \item \mcode{M(1) = 5; M(2)= 5}: number of basis functions for each \mcode{nbInput} dimension.
-\item \mcode{c = 1/M;h = 1/(M*M)}: RBF parameters (see Equation~\ref{eq:RBF}).
+\item \mcode{c = 1/M;h = 1/(M*M)}: \textit{RBF} parameters (see Equation~\ref{eq:RBF}).
 \item \mcode{expNoise = 0.00001}: the expected data noise. We assume this noise to be very low, since this is a simulation.
 \item \mcode{percentData = 40}: this variable specifies the percentage of the trajectory that the robot will be observed, before infering the end.
 \end{itemize}
@@ -984,7 +981,7 @@ drawRecoverData(t{3}, inputName, 'Interval', [4 7 5 8 6 9], 'Specolor','g','namF
 %{
 %\includegraphics[width=\hsize]{img/3DOFtrajectoriesProMPsAll.pdf}\\
 %}
-%\caption{The ProMPs of the three different demonstrated tasks, from $39$ trajectory observations per ProMP; with M=5 basis functions per information learned; $c={1 \over M}, h={1 \over M^2}$ the parameters of the RBFs' Gaussians, $\bar{s} = 100$ the reference number of samples. Note that we represent only the Cartesian position without force information to be readable.}
+%\caption{The ProMPs of the three different demonstrated tasks, from $39$ trajectory observations per ProMP; with M=5 basis functions per information learned; $c={1 \over M}, h={1 \over M^2}$ the parameters of the \textit{RBFs}' Gaussians, $\bar{s} = 100$ the reference number of samples. Note that we represent only the Cartesian position without force information to be readable.}
 %\label{fig:3TargetsTrajectoriesProMP}
 %\end{figure}
 \begin{figure}[h]
