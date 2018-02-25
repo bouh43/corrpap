@@ -511,32 +511,32 @@ Le robot est alors capable de finir le mouvement en executant la trajectoire ``f
 
 %\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Software overview}\label{sec:softwareOverview}
+\section{Présentation du logiciel}\label{sec:softwareOverview}
 
-In this section, we introduce our open-source software with an overview of its architecture. This software is composed of two main modules, represented in Figure \ref{fig:orgaSoftware}.
+Dans cette Section, le logiciel libre d'accès est présentée. Ce logiciel est composé de deux modules, représentés dans la Figure \ref{fig:orgaSoftware}.
 
 \label{sec:software}
 \begin{figure}[h]
 \center
 \includegraphics[width=\hsize]{img/liaisonAllProgramV3.pdf}
-\caption{Software architecture and data-flows.\\ The robot's control is done either by the user's guidance (manually or through a haptic device) represented in blue, or by the Matlab module, in purple. The C++ module handles the control source to command the robot, as represented in black. Moreover, this module forwards information that comes from the iCub.}
+\caption{Architecture du logiciel avec représentation des échanges de donées.\\ Le contrôle du robot est soit guidé par son utilisateur (manuellement ou à l'aide d'un dispositif haptique) représenté en bleu, ou à l'aide d'un module Matlab, présenté en violet. \toimprove{Le module  C++ permet de faire passer l'information de contrôle à la commande robotique, comme présenté en noir}. De plus, ce module transmet l'information qui provient du \textit{iCub}.}
 \label{fig:orgaSoftware}
 \end{figure}
 
-\rev{While the robot is learning} the Probabilistic Movement Primitives (ProMPs) associated to the different tasks, the robot is controlled by its user. The user's guidance can be either manual for the real iCub, or through a haptic device for the simulated robot. 
+Durant la phase d'apprentissage, où le robot apprend les différentes \textit{ProMPs} et leur tâche correspondante, le robot est contrôlé par un utilisateur. Celui-ci peut guider le robot manuellement, lorsqu'il s'agit du \textit{iCub} réel, ou à l'aide d'un dispositif haptique lorsqu'il s'agit de la simulation du robot.
 
-\rev{A Matlab module allows replaying movement primitives or finishing a movement that has been initiated by its user}. By using this module, the robot can learn distributions over trajectories, replay movement primitives (using the mean of the distribution), recognize the ProMP that best matches a current trajectory, and infer the future evolution (until the end target) of this trajectory.
+Un module Matlab permet de rejouer les \textit{ProMPs}, ou de finir un mouvement qui a été initié par son utilisateur. Ce module permet au robot d'apprendre des \textit{ProMPs} à partir des trajectoires effectuées; de rejouer ces \textit{ProMPs}; de reconnaître la \textit{ProMP} qui correspond le plus à une trajectoire en cours; et de prédire le ``futur'' de cette trajectoire, jusqu'à atteindre le but.
 %\todo{and to make sure that the user's forces exerted on the robot are not stronger than the ones learnt.}
 
-A C++ module forwards to the robot the control that comes either from the user or from the Matlab module. Then, the robot is able to finish a movement initiated by its user (directly or through a haptic device) in an autonomous way, as shown in Figure~\ref{fig:conceptProMP}. %\todo{This program communication also allows to correct the robot behaviour if the users forces are stronger than the expected ones.} \\
+Un module C++ transmet au robot l'information de contrôle qui provient soit de l'utilisateur, soit du module Matlab. Le robot est alors capable de finaliser le mouvement inité par son utilisateur (directement ou à l'aide d'un dispositif haptique) de manière autonome, comme présenté dans la Figure~\ref{fig:conceptProMP}. %\todo{This program communication also allows to correct the robot behaviour if the users forces are stronger than the expected ones.} \\
+Le module C++ est présenté dans la Section~\ref{subec:Setup}, puis une explication théorique des algorithmes utilisés dans le module Matlab  est donnée dans la Section~\ref{sec:theory}. Un guide permettant d'utiliser ce module Matlab est d'abord présenté dans  la Section~\ref{sec:example1DOF} dans le cas d'un exemple jouet, puis dans la Section~\ref{sec:3ProMPsAppli} dans le cas de notre application, où le robot simulé apprend différentes données sur les mouvements (\textit{e.g.}, il s'agit de \textit{ProMPs} à plus haute dimension). Finalement, les résultats de l'application effectué sur le réel robot \textit{iCub} sont présentés dans la Section~\ref{sec:appliRealIcub}.
 
-We present the C++ module in Section~\ref{subec:Setup} and the theoretical explanation of the Matlab module algorithms in Section~\ref{sec:theory}. A guide to run this last module is first presented in Section~\ref{sec:example1DOF} for a simple example, and in Section~\ref{sec:3ProMPsAppli} for our application, where a simulated robot learns many measured information of the movements. Finally, we present results on the real iCub application in Section~\ref{sec:appliRealIcub}.
-
-Our software is available through the GPL licence, and publicly available at: 
+Notre logiciel est disponible avec une licence GPL, et est accessible publiquement à l'adresse : 
 
 \url{https://github.com/inria-larsen/icubLearningTrajectories}.
 
-Tutorial, readme and videos can be found in that repository. \rev{First, the readme file describes how to launch simple demonstrations of the software. Videos present these demonstrations to simplify the understanding. In the next sections, we detail the operation of the demo program for a first case of 1DOF primitive, followed by the presentation of the specific applications on the iCub (first simulated and then real).}
+Ce répertoire propose à la fois un tutoriel, un fichier d'explication (README) et des vidéos de présentation.
+Le fichier d'explication décrit comment lancer des démonstrations basiques. Les vidéos présentent ces démonstrations, afin d'éclaircir le fonctionnement de cette application. Les sections prochaines détaillerons tout d'abord comment fonctionne le ``programme de démonstration'' disponible, permettant l'apprentissage d'une primitive à une dimension; suivi par la présentation d'une application spécifique au \textit{iCub} (d'abord en simulation puis sur le robot réel).
 %\todo{check that, it is not in the readme??}
 
 
