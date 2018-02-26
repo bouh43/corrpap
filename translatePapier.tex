@@ -600,9 +600,9 @@ Le script va maintenant être détaillé. Afin de récupérer les données enreg
 
 Ces paramètres d'entrée précisent le chemin d'accès des données enregistrées, ainsi que l'étiquette représentant le type de trajectoire. D'autres informations peuvent être ajoutées, à l'aide de la variable \mcode{varargin} (\textit{c.f.}, informations commentées en tête de cette fonction). 
 %For more detail about these parameters, read the beginning of this function. 
-La sortie de cette fonction correspond à un objet contenant toutes les informations des trajectoires de démonstrations. \rev{It is composed of \mcode{nbTraj}, the number of trajectory; \mcode{realTime}, the simulation time; \mcode{y} (and \mcode{yMat}), the vector (and matrix) trajectory set , etc.}. 
+Les paramètres de sortie de cette fonction correspond à un objet contenant toutes les informations des trajectoires de démonstrations. Ces paramètres sont le nombre de trajectoires \mcode{nbTraj} ; le nombre d'itérations de cette simulation \mcode{realTime} ; l'ensemble des vecteurs (et matrices) représentant les trajectoires \mcode{y} (et \mcode{yMat}) ; \textit{etc.}. 
 %\rev{\sout{Note that to simplify the Matlab's notation, we denote the $\Xi$ trajectory by \mcode{y} (or \mcode{yMat} in all the toolbox functions}}. 
-\rev{Thus, \mcode{t\{1\}.y\{i\} } contains the $i$-th trajectory}.
+Ainsi, \mcode{t\{1\}.y\{i\}} contient la $i^e$ trajectoire.
 
 %\begin{figure}[h]
 %\centering
@@ -611,8 +611,8 @@ La sortie de cette fonction correspond à un objet contenant toutes les informat
 %\label{fig:yobject}
 %\end{figure}
 
-The Matlab function \mcode{drawRecoverData(t\{1\}, inputName,'namFig', nFig, varargin)} plots in a Matlab figure (numbered \mcode{nFig}) the dataset of loaded trajectories. %By lack of place, we don't represent here these trajectories.
-\rev{An example is shown in Figure~\ref{fig:1DOFtrajectoriesProMP}, on the left. Incidentally, the different duration of the trajectories is visible: on average, it is $1.17 \pm 0.42$ seconds.}
+La fonction Matlab \mcode{drawRecoverData(t\{1\}, inputName,'namFig', nFig, varargin)} permet d'afficher sur une figure (numéroté \mcode{nFig}) les mesures des trajectoires récupérées. %By lack of place, we don't represent here these trajectories.
+Un exemple est montre dans la Figure~\ref{fig:1DOFtrajectoriesProMP}, sur la gauche. Les différentes durées de trajectoires y sont visibles : en moyenne, cette durée est de $1.17 \pm 0.42$ secondes.
 
 % a plot such as Figure~\ref{fig:1DOFtrajectories}. In this Figure, the average duration of these trajectories is $1.17 \pm 0.42$ seconds.
 
@@ -622,22 +622,19 @@ The Matlab function \mcode{drawRecoverData(t\{1\}, inputName,'namFig', nFig, var
 %\caption{The trajectories of the test dataset for 1DOF primitive.}
 %\label{fig:1DOFtrajectories}
 %\end{figure}
-
-To split the \rev{entire dataset of demonstrated} trajectories \mcode{t\{1\}} 
-into a training dataset (used for learning the ProMPs) and a test dataset (used for the inference), call the function
+De cet ensemble de trajectoires de démonstration \mcode{t\{1\}}, un sous ensemble est récupéré afin d'effectuer l'apprentissage des \textit{ProMPs} et un autre afin d'effectuer des tests sur ces \textit{ProMPs}. Pour cela, la fonction suivante est appelée :
 
 \mcode{[train, test] =  partitionTrajectory(t\{1\}, partitionType, percentData, s_ref)}
-\rev{where if \mcode{partitionType}$=1$, only one trajectory is in the test set and the others are placed in the training set, and if \mcode{partitionType}$ >1$ it corresponds to the percentage of trajectories that will be included in the training set.} 
+si \mcode{partitionType}$=1$, seulement une trajectoire est utilisée pour les tests, et si \mcode{partitionType}$ >1$, cette variable correspond alors au pourcentage de trajectoires qui sera inclus dans le sous ensemble utilisé pour l'apprentissage.
 %\rev{\sout{
 %where \mcode{percentTrain} is the percentage of trajectories that \rev{will be included \sout{goes}} in the training \rev{\sout{data}}set. If \mcode{percentTrain=1}, only one trajectory is randomly selected to be in the inference dataset.}}
-
-\rev{The ProMP can be computed from the training set by using the function}:
+La \textit{ProMP} est alors calculée à partir de ce sous ensemble de trajectoires d'apprentissage, à l'aide de la fonction :
 
 \mcode{promp = computeDistribution(train, M, s_ref,c,h)}
 
-The output variable \mcode{promp} is an object that contains all the ProMP information. 
-The first three input parameters have been presented before: \rev{\mcode{train} is the training set, \mcode{M} is the number of \textit{RBFs}, \mcode{s_ref} is the number of samples used to rescale all the trajectories.}
-The last two input parameters \mcode{c} and \mcode{h} shape the \textit{RBFs} of the ProMP model: \mcode{c} $\in \mathbb{R}^M$ is the center of the Gaussians and \mcode{h} $\in \mathbb{R}$ their variance. 
+Le paramètre de sortie  \mcode{promp} est un objet qui contient l'ensemble des informations de la \textit{ProMP}. 
+Les trois premiers paramètres d'entrée ont déja été présentés lors de l'explication des fonctions précédentes : \mcode{train} est l'ensemble des trajectoires d'apprentissage, \mcode{M} est le nombre de \textit{RBFs}, \mcode{s_ref} est le nombre d'échantillon utilisé pour ré-échantilloner toutes les trajectoires.
+Les deux derniers paramètres \mcode{c} et \mcode{h} donnent la forme des \textit{RBFs} utilisés dans la modélisation des \textit{ProMPs} : \mcode{c} $\in \mathbb{R}^M$ est le centre des Gaussiennes et \mcode{h} $\in \mathbb{R}$ leur variance. 
 
 %In Matlab, the equivalent code is:
 %\begin{lstlisting}
@@ -648,30 +645,27 @@ The last two input parameters \mcode{c} and \mcode{h} shape the \textit{RBFs} of
 %end
 %\end{lstlisting}
 %\todo{I don't get here what you want I write: to c/p the program will be to long. DO you want I do a pseudo-code?}
-To visualize this ProMP, as shown in Figure~\ref{fig:1DOFtrajectoriesProMP}, call the function:
+Afin de visualiser cette \textit{ProMP}, comme montre dans la Figure~\ref{fig:1DOFtrajectoriesProMP}, la fonction suivante est appelée :
 \mcode{drawDistribution(promp, inputName,s_ref)}
-
-
 
 \begin{figure}[h]
 \includegraphics[width=\hsize /2]{img/1DOFtrajectoriesV2.pdf} \includegraphics[width=\hsize /2]{img/1DOFtrajectoriesProMPV2.pdf}
 %\caption{The trajectories of the test dataset for 1DOF primitive.}
-\caption{The observed trajectories are represented in magenta. The corresponding ProMP is represented in blue. The following parameters are used: $\bar{s}=100$ for the reference number of samples, $M=5$ for the number of \textit{RBFs} spread over time, and  $h=0.04$ (=$ 1 \over M^2$) the variance of the \textit{RBFs}.}
+\caption{Les trajectoires observées sont représentées en magenta. La \textit{ProMP} est représentée en bleu. Les paramètres suivants sont utilisés : $\bar{s}=100$ le nombre référence d'échantillons; $M=5$ le nombre de \textit{RBFs} étalées sur la dimension temporelle; et $h=0.04$ (=$ 1 \over M^2$) la variance de ces \textit{RBFs}.}
 \label{fig:1DOFtrajectoriesProMP}
 \end{figure}
 
 %In this figure, the distribution is represented according to a reference number of samples $\bar{s} = 100$, and the observed trajectory are resaled according to this number of samples, to facilitate the understanding.
 
-For debugging purposes and to understand how to tune the ProMPs' parameters, it is interesting to plot the overlay of the basis functions in time. Choosing an appropriate number of basis functions is important, as too few may be insufficient to approximate the trajectories under consideration, and too many could result in over-fitting problems.
-To plot the basis functions, simply call: 
+Afin de permettre le débogage ainsi que de comprendre comment régler les paramètres des \textit{ProMPs}, il est intéressant de représenter dans un graphique les fonctions à bases radiale en fonction du temps. En effet, choisir le bon nombre de fonctions à bases radiales est important puisque, lorsqu'elles ne sont pas assez, les trajectoires ne peuvent pas être bien approximées et lorsqu'elles sont trop nombreuse, cela peut provoquer des problèmes de surapprentissage. Pour représenter ces fonctions dans u graphique, la fonction suivante peut être appellée : 
 
 \mcode{drawBasisFunction(promp.PHI,M)}
 
-where \mcode{promp.PHI} is a set of \textit{RBFs} evaluated in the normalized time range $t \in [1:\bar{s}]$.
+où \mcode{promp.PHI} est un ensemble de \textit{RBFs} évaluées dans la plage temporelle normalisée : $t \in [1:\bar{s}]$.
 %, each of which being evaluated at a different time $t \in [1:\bar{s}]$. \todo{is it better?}%during the interval: $\Phi_{[1:\bar{s}]}$ \todo{reformulate this}. 
 
-Figure \ref{fig:1DOFtrajectoriesProMPbasis} shows at the top the basis functions before normalization, and at the bottom the ProMP modeled from these basis functions. From left to right, we change the number of basis functions. When there are not enough basis functions (left), the model is not able to correctly represent the shape of the trajectories. In the middle, the trajectories are well represented by the five basis functions. With more basis functions (right), the variance of the distribution decreases because the model is more accurate. 
-\rev{However, arbitrarily increasing the number of basis functions is not a good idea, as it may not improve the accuracy of the model and worse it may cause overfitting. }
+La Figure~\ref{fig:1DOFtrajectoriesProMPbasis} représente en haut les fonctions à bases radiales avant la normalisation, et en bas la \textit{ProMP} modelé à partir de ces fonctions. De gauche à droit, le nombre de fonctions change. Quand il n'y a pas assez de fonctions (gauche), le model n'es pas capable de représenter correctement la forme des trajectoires. Au milieu, les trajectoires sont correctement représentées par les $5$ fonctions. Avec plus de fonctions (droite), la variance de la distribution décroît parce que le model est plus précis. 
+Cependant, augmenter arbitrairement le nombre de fonctions à base radial n'est pas une bonne idée, puisque à un certain moment, ça n'améliore plus la précision du modèle et pire, ça peut provoquer du surapprentissage.
 %\rev{With too many basis function, there is no real improvement of the accuracy and it may be overfitting}.
 %As a balance, the computation time increases.
 
@@ -680,51 +674,53 @@ Figure \ref{fig:1DOFtrajectoriesProMPbasis} shows at the top the basis functions
 {
 \includegraphics[width=\hsize]{img/1DOFtrajectoriesProMPbasisV4.pdf}
 }
-\caption{The ProMP computed for the test dataset (Figure \ref{fig:1DOFtrajectoriesProMP}) using different numbers of basis functions: from left to right: $M=\{2,5,50\}$ basis functions before normalization, with a variance $h={1 \over M^2}$. }
+\caption{La \textit{ProMP} calculé pour l'ensemble de trajectoire \toimprove{test (?)} (Figure \ref{fig:1DOFtrajectoriesProMP}) en utilisant différents nombres de fonctions à base radiale : de gauche à droite : $M=\{2,5,50\}$ fonctions avant normalisation, de variance $h={1 \over M^2}$. }
 \label{fig:1DOFtrajectoriesProMPbasis}
 \end{figure}
 
-Once the ProMP is learned, the robot can reproduce the movement primitive using the mean of the distribution.
-Moreover, it can now recognize a movement that has been initiated in this distribution, and predict how to finish it. To do so, given the early $n_{o}$ observations of a movement, the robot updates the prior distribution to match the early observed data points: through conditioning, it finds the posterior distribution, that can be used by the robot to execute the movement on its own.
+Après que la \textit{ProMP} soit apprise, le robot est capable de reproduire le mouvement en utilisant la moyenne de la distribution.
+De plus, il peut aussi reconnaitre le mouvement qui a été initié dans cette distribution, et prédire comment le finaliser. Dans ce but, à partir de $n_{o}$ observations initiales d'un mouvement, le robot mets à jour la distribution à priori afin qu'elle passe par les mesures observées : en utilisant le conditionnement, il trouve la distribution postérieur, qui peut être utilisée par le robot afin d'executer la continuation du mouvement par lui même.
 
-The first step in predicting the evolution of the trajectory is to infer the duration of this trajectory, which is encoded by the time modulation parameter $\hat{\alpha}$. The computation of this inference, which was detailed in Section~\ref{sec:predictDuration}, can be done by using the function:
+La première étape pour prédire l'évolution de la trajectoire est d'inférer la durée de cette trajectoire, qui est encodée par le paramètre de modulation du temps $\hat{\alpha}$. Le calcul de cette inférence, qui était détaillé dans la Section~\ref{sec:predictDuration}, peut être effectué à l'aide de la fonction :
 
 \mcode{[expAlpha,type,x]=inferenceAlpha(promp,test\{1\},M,s_ref,c,h,test\{1\}.nbData, expNoise, typeReco)}
 
-where \mcode{typeReco} is the type of criteria used to find the expected time modulation ('MO', 'DI' or 'ML' for model, distance or maximum likelihood methods); \mcode{expAlpha} $=\hat{\alpha}$ is the expected time modulation; \mcode{type} is the index of the ProMP from which \mcode{expAlpha} has been computed, which we note in this paper as $k$ .
+où \mcode{typeReco} est le critère utilisé afin d'estimer le paramètre de modulation du temps (\textit{e.g.}, 'MO', 'DI' ou 'ML' pour ``modélisation'', ``distance'' ou ``maximum de vraisemblance''); \mcode{expAlpha} $=\hat{\alpha}$ l'estimation du paramètre de modulation ; \mcode{type} (noté $k$ dans cette thèse) l'index de la \textit{ProMP} à partir de laquelle \mcode{expAlpha} a été calculée. 
+
 %\mcode{x} is used for debugging purpose.
 %\marco{Finally \mcode{x = test\{1\} + offset} is the trajectory transposed by an offset, to be centred on the mean of the recognized ProMP at time $t=1$ (only used for debugging purposes).[Obs.: I didn’t understand
 %584 this.] }
 %\rev{it is hard to explain in the paper, but from the early-trajectory, to recognize which ProMPs correspond the best to the initiated trajectory, I need to translate the early-trajectory to compute how likely the "shape" of the early-trajectory correspond to the ProMP}
-To predict the evolution of the trajectory, we use Equation~\ref{eq:inf} from Section \ref{sec:predict}. In Matlab, this is done by the function:
-\mcode{infTraj = inference(promp, test\{1\}, M, s_ref, c, h, test\{1\}.nbData, expNoise, expAlpha)}\\
-where \mcode{test\{1\}.nbData} has been computed during the \mcode{partitionTrajectory} step. This variable is the number of observations $n_o$, representing the percentage of observed data (\mcode{percentData}) of the test trajectory (\textit{i.e.}, to be inferred) that the robot observes. \mcode{infTraj}$= \hat{\Xi}$ is the inferred trajectory.
-Finally, to draw the inferred trajectory, we can call the function  \mcode{drawInference(promp,inputName,infTraj, test{1},s_ref)}.
+Afin de prédire l'évolution de la trajectoire, on utilise l'Équation~\ref{eq:inf} de la Section \ref{sec:predict}. Dans Matlab, ce calcul est effectué au sein de la fonction :
 
-It can be interesting to plot the quality of the predicted trajectories as a function of the number of observations, as done in Figure \ref{fig:1DOFtrajectoriesPredictions}.
+\mcode{infTraj = inference(promp, test\{1\}, M, s_ref, c, h, test\{1\}.nbData, expNoise, expAlpha)}\\
+où \mcode{test\{1\}.nbData} est calculé durant l'étape \mcode{partitionTrajectory}. Cette variable représente le nombre $n_o$ d'observations, calculée à partir du pourcentage \mcode{percentData} de données de la trajectoire test observées par le robot. \mcode{infTraj}$= \hat{\Xi}$ correspond à la trajectoire prédite.
+Finalement, la trajectoire inférée est représentée à l'aide de  la fonction \mcode{drawInference(promp,inputName,infTraj, test{1},s_ref)}.
+
+La qualité de la trajectoire inférée en fonction du nombre d'observations est représentée dans la Figure \ref{fig:1DOFtrajectoriesPredictions}.
 
 \begin{figure}[h]
 \centering
 {
 \includegraphics[width=15cm]{img/1DOFtrajectoriesPredictionsV2.pdf}
 }
-\caption{The prediction of the future trajectory given early observations, exploiting the information of the learned ProMP (Figure \ref{fig:1DOFtrajectoriesProMP}). The plots show the predicted trajectories after 10\%, 30\%, 50\% and 80\% of observed data points.}
+\caption{Prédiction de la continuation de la trajectoire testée, à partir de l'observation des observations partielles et de l'information de la \textit{ProMP} apprise (Figure \ref{fig:1DOFtrajectoriesProMP}). Les graphes représentent la trajectoire prédite après l'observation de 10\%, 30\%, 50\% and 80\% des données de la trajectoire totale.}
 % \marco{[This paper explained how to compute the posterior over $\omega$, but not how to
 %compute the prior nor the posterior over trajectories. However this must be computed somewhere
 %to generate figures such as this one.]} \rev{I don't understand, in eq~\ref{eq:w} we explain how the prior is computed}}
 \label{fig:1DOFtrajectoriesPredictions}
 \end{figure}
 
-Note that when we have \rev{observed a larger portion of the trajectory, the prediction of the remaining portion is more accurate}.
+Cette figure met en avant que, lorsqu'une partie importante de la trajectoire est observée, la prédiction de la continuation du mouvement est plus précise.
 
-Now we want to measure the quality of the prediction. Let $\Xi^* = [\xi^o(1),\ldots, \xi^o({n_o}), \xi^*(n_o+1),\ldots, \xi^*(t^*_f)]$ be the real trajectory expected by the user. 
-To measure the quality of the prediction, we can use:
+Après cette étape de prédiction, nous proposons de mesurer la qualité de ces prédictions. Soit $\Xi^* = [\xi^o(1),\ldots, \xi^o({n_o}), \xi^*(n_o+1),\ldots, \xi^*(t^*_f)]$ la trajectoire réelle, espérée par l'utilisateur (ou vérité terrain). 
+Afin de mesurer la qualité de la prédiction, plusieurs mesures peuvet être utilisées :
 \begin{itemize}
-\item The likelihood of having the $\Xi^*$ trajectory given the updated distribution $\hat{p(\boldsymbol{\omega})}$.
-\item The distance between the $\Xi^*$ trajectory and the  $\hat{\Xi}$ inferred trajectory.
+\item La vraisemblance d'avoir une trajectoire $\Xi^*$ sachant la distribution postérieur $p(\boldsymbol{\hat{\omega}})$.
+\item La distance entre la trajectoire désirée $\Xi^*$ et la trajectoire inférée $\hat{\Xi}$.
 \end{itemize}
 
-However, according to the type of recognition \mcode{typeReco} used to estimate the time modulation parameter $\alpha$ from the early observations, a visible mismatch between the predicted trajectory and the real one can be visible even when a lot of observations are used. This is due to the error of the expectation of this time modulation parameter. In Section \ref{sec:predictDuration}, we present the different methods used to predict the trajectory duration. These methods select the most likely $\hat{\alpha}$ according to different criteria: distance; maximum likelihood; model of the $\alpha$ variable\footnote{In this model, we assume that we can find the time modulation parameter according to the global variation of the position during the $n_o$ first observed data.}; and average of the observed $\alpha$ during learning.
+Cependant, suivant la mesure \mcode{typeReco} utilisée pour l'estimation du paramètre de modulation du temps $\alpha$ (estimation faite à partir des données initiales observées), un écart visible peut avoir lieu entre la trajectoire prédite et la trajectoire réelle  et ce, même lorsque beaucoup de données sont observées. Cet écart est  provoqué par l'erreur d'estimation du paramètre de modulation du temps. C'est pourquoi, dans la Section \ref{sec:predictDuration}, différentes méthodes seront présentées afin de permettre de prédire la durée de la trajectoire à continuer. Ces méthodes sélectionnent le paramètre $\hat{\alpha}$ le plus probable selon différents critères : distance; maximum de vraisemblance; modélisation de la variable $\alpha$ \footnote{Cette modélisation se base sur l'hypothèse que le paramètre de modulation du temps peut être estimé à partir de la connaissance de la variation \toimprove{``grossière''} de la position lors des $n_o$ premières données observées.}; et la moyenne des paramètres $\alpha$ observés lors de la phase d'apprentissage.
 %
 %\todo{Je ne pense pas mettre l'exemple ci dessous que tu souhaitais parce que le code est assez long. \\
 %In Matlab, this further prediction can be done by:}
@@ -737,38 +733,38 @@ However, according to the type of recognition \mcode{typeReco} used to estimate 
 %end
 %\end{lstlisting}
 
-Figure \ref{fig:1DOFtrajectoriesPredictionsDuration} shows the different trajectories predicted after $n_{o}=40\%$ of the length of the desired trajectory is observed, according to the method used to estimate the time modulation parameter. 
+La Figure~\ref{fig:1DOFtrajectoriesPredictionsDuration} présente les différentes trajectoires prédites après l'observation de $n_{o}=40\%$ de la trajectoire désirée, en fonction de la méthode utilisée pour estimer le paramètre de modulation du temps. 
 
-On this simple test, where the variation time is little as shown in Table \ref{tab:alphaProMP}, the best result is accomplished by the average of time modulation parameter of the trajectories used during the learning step. In more complicated cases, when the time modulation varies, the other methods will be preferable as seen in Section~\ref{sec:ManyProMP}.
+Dans ce simple test, où la variation du temps est petite comme présentée dans la Table \ref{tab:alphaProMP}, le meilleur des résultats est accomplis avec la méthode de la moyenne des paramètre de modulation du temps des trajectoires de démonstrations (utilisées lors de la phase d'apprentissage). Dans des cas plus compliqués, lorsque la durée des trajectoires varient plus fortement, les autres méthodes peuvent être préférables, comme présenté dans la Section~\ref{sec:ManyProMP}.
 \begin{table}
 \center
 \begin{tabular}{|p{2.5cm}|p{2.5cm}|p{4.5cm}|p{2.5cm}|}
   \hline
-    & Traj. Samples & $\alpha = {\bar{s} \over \mathrm{Iterations}}, \bar{s}=100$ & Duration [s] \\
+    & \#observations & $\alpha = {\bar{s} \over \mathrm{Iterations}}, \bar{s}=100$ & Durée [s] \\
      \hline
-     Min & 83 & 1.2048 & 0.83 \\
+     Minimum & 83 & 1.2048 & 0.83 \\
      \hline
-     Max & 115 & 0.8696 & 1.15\\
+     Maximum & 115 & 0.8696 & 1.15\\
      \hline
-     Mean & 100& 1& 0.99 \\
+     Moyenne & 100& 1& 0.99 \\
      \hline
-     Std deviation & 9 & 11.1111 & 0.09 \\
+     écart type & 9 & 11.1111 & 0.09 \\
      \hline
 \end{tabular}
-\caption{information about trajectories' duration}
+\caption{information concernant la durée des trajectoires}
 \label{tab:alphaProMP}
 \end{table} 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=15cm]{img/1DOFtrajectoriesPredictionsDurationV2.pdf}
-\caption{The prediction of the future trajectory given $n_{o}=40\%$ of early observations from the learned ProMP computed for the test dataset (Figure \ref{fig:1DOFtrajectoriesProMP}). The plots show the predicted trajectory, using different criteria to estimate the best phases of the trajectory: using the average time modulation (Equation~\ref{eq:avg}); using the distance criteria (Equation~\ref{eq:minDist}); using the maximum log-likelihood (Equation~\ref{eq:ml}); or using a model of time modulation according to the time variation (Equation~\ref{eq:model}).}
+\caption{Prédiction de la trajectoire future après l'observation de  $n_{o}=40\%$ d'une trajectoire de l'ensemble de test, à l'aide de la \textit{ProMP} apprise (Figure \ref{fig:1DOFtrajectoriesProMP}). Les graphiques représentent la trajectoire prédite en fonction du critère utilisé afin d'estimer le paramètre de modulation du temps qui correspond le plus à la trajectoire initiée : moyenne des paramètre de modulation du temps (Équation~\ref{eq:avg}); distance (Équation~\ref{eq:minDist}); maximum de vraisemblance (Équation~\ref{eq:ml}); ou modélisation de ce paramètre \toimprove{en fonction de la variation temporelle} (Equation~\ref{eq:model}).}
 \label{fig:1DOFtrajectoriesPredictionsDuration}
 \end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application on the simulated iCub: learning three primitives}
+\section{Application à la simulation du \textit{iCub} : apprentissage de trois primitives}
 \label{sec:3ProMPsAppli}
 \begin{figure}[h]
 \centering
@@ -776,21 +772,21 @@ On this simple test, where the variation time is little as shown in Table \ref{t
 \hspace{0.1cm}
 \includegraphics[width=9cm]{img/3DOFtrajectories.pdf}
 }
-\caption{Left: the three colored targets that the robot must reach from the starting point; the corresponding trajectories are used to learn three primitives representing three skills. 
-Right: the Cartesian position information of the demonstrated trajectories for the three reaching tasks.}% trajectories x (top),y(middle) and(bottom) without force information that are also recorded.}
+\caption{Gauche : les trois buts colorés que le robot doit atteindre à partir d'un point de départ ; les trajectoires correspondantes sont utilisées afin d'apprendre trois primitives, représentant trois actions. 
+Droite: L'information de la position cartésienne des trajectoires de démonstration pour les trois sortes de tâches.}% trajectories x (top),y(middle) and(bottom) without force information that are also recorded.}
 \label{fig:3TargetsTrajectories}
 \label{fig:GazeboGoal}
 \end{figure}
 
-In this application, the robot learns multiple ProMPs and is able to predict the future trajectory of a movement initiated by the user, assuming the movement belongs to one of the learned primitives. Based on this prediction, it can also complete the movement once it has recognized the appropriate ProMP. 
+Dans cette application, le robot apprend plusieurs \textit{ProMPs} et est capable de prédire la continuation d'une trajectoire initiée par l'utilisateur, avec l'hypothèse que le mouvement appartienne à l'une des primitives apprises. À partir de cette prédiction, le robot peut aussi finir le mouvement.. 
 
-We simplify the three actions/tasks by reaching three different targets, represented by three colored balls in the reachable workspace of the iCub. The example is performed with the simulated iCub in Gazebo. Figure~\ref{fig:GazeboGoal} shows the three targets, placed at different heights in front of the robot.
+Les trois actions/tâches sont représenter par les trois buts différents à atteindre, représentés par trois balles colorés et positionnés dans la \toimprove{zone de mouvement} du \textit{iCub}. L'exemple est effectué à l'aide du robot simulé dans \textit{Gazebo}. La Figure~\ref{fig:GazeboGoal} représente les trois buts, placés à différentes hauteurs, en face du robot.
 
-In Section~\ref{sec:formulateModelInt} we formulate the intention recognition problem for the iCub: the problem is to learn the ProMP from trajectories consisting of Cartesian positions in 3D\footnote{Note that in that particular example we do not use the orientation because we want the robot's hand to keep the same orientation during the movement. But in principle, it is possible to learn trajectories consisting of the 6D/7D Cartesian position and orientation of the hand, to make the robot change also the orientation of the hand during the task.} and the 6D wrench information measured by the robot during the movement.
-In Section \ref{subec:Setup} we describe the simulated setup of iCub in Gazebo, then in Section~\ref{sec:dataAquisition} we explain how trajectories are recorded, including force information, when we use the simulated robot.
+Dans la Section~\ref{sec:formulateModelInt}, le problème de reconnaissance de l'intention est formulé avec le robot \textit{iCub} : il s'agit de permettre au robot d'apprendre des \textit{ProMPs} à partir de trajectoires définies par des positions Cartésiennes en 3D\footnote{Remarquons que dans cet exemple spécifique, l'orientation n'est pas utilisée avec le souhait que la main du robot conserve la même orientation durant l'ensemble du mouvement (fixé à priori). Mais en principe, il est possible d'apprendre des trajectoires définis par des positions Cartésiennes et orientation de la main du robot en 6D ou 7D. Ainsi, le robot apprend à changer l'orientation de sa main lors du mouvement.} et l'information des couples en 6D qui sont mesurés par le robot durant l’exécution du mouvement.
+Dans la Section \ref{subec:Setup}, la configuration de la simulation du robot \textit{iCub} dans Gazebo est présentée, puis la Section~\ref{sec:dataAquisition} permet d'expliquer comment les trajectoires sont enregistrées, avec notamment l'information des forces, lors de l'utilisation du robot simulé.
 
 
-\subsection{Predicting intended trajectories by using ProMPs}\label{sec:formulateModelInt}
+\subsection{Prédire les trajectoires attendues à l'aide de \textit{ProMPs}}\label{sec:formulateModelInt}
 
 The model is based on Section~\ref{sec:theory}, but here we want to learn more information during movements. We record this information \rev{in} a multivariate parameter vector:
 $$\forall t, \xi_t=\begin{bmatrix} X_t \\ F_t\end{bmatrix} \in \mathbb{R}^{9}$$ 
