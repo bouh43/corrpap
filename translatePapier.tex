@@ -9,6 +9,9 @@
 \usepackage{pdfpages}
 \usepackage{color, colortbl}
 \usepackage{multirow}
+
+\newcommand{\comment}[1]{}
+
 \linenumbers
 
 
@@ -244,7 +247,7 @@ Notons que le terme de la partie supérieur provient d'une Gaussienne $\frac{1}{
 \item $p(\hat{\boldsymbol{\omega}}) \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}}, \hat{\sigma}_{\boldsymbol{\omega}})$ : distribution postérieur du vecteur paramètre d'une \textit{ProMP}, calculé à partir des observations $\Xi^o$.
 %\item $\hat{\theta}_\alpha \sim \mathcal{N}(\hat{\mu}_{\boldsymbol{\omega}_\alpha}, \hat{\sigma}_{\boldsymbol{\omega}_\alpha})$: posterior distribution of the parameter vector of the parameter $\alpha$ using the observation.
 %\item $ \hat{\boldsymbol{\omega}} \overset{\mathrm{def}}{=}  \hat{\boldsymbol{\mu}_\omega}$ \todo{is it correct to write it like that?}: parameter vector used to select a trajectory in the posterior distribution $\hat{\theta}$.
-%\item $ \hat{\boldsymbol{\omega}_\alpha} = \hat{\mu_{\boldsymbol{\omega}_\alpha}}$: new mean of the distribution of the parameters vector of a modelled $\alpha$ phase, after inference.
+%\item $ \hat{\boldsymbol{\omega}_\alpha} = \hat{\mu_{\boldsymbol{\omega}_\alpha}}$: new moyenne of the distribution of the parameters vector of a modelled $\alpha$ phase, after inference.
 \item $\hat{k}$ : index de la \textit{ProMP} reconnu dans l'ensemble des $K$ \textit{ProMPs} apprises précédemment.
 \end{itemize}
 
@@ -276,12 +279,12 @@ h &=& {1 / M^2}
 \end{equation}
 Avec $\psi \in [0: \bar{s}] \rightarrow \mathbb{R}$ étalée temporellement pour représenter la trajectoire dans sa totalité.
 
-Pour chaque trajectoire $\Xi_i$, le vecteur de paramètre $\omega_i$ est alors calculé afin d'obtenir $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. Ce calcul de vecteur est effectué de manière à ce qu'il minimise l'erreur entre la trajectoire observée $\xi_i(t)$ et sa modélisation $\Phi_t \omega_i + \epsilon_\xi$. Pour cela, l'algorithme de l'erreur quadratique minimale (\textit{Least Mean Square, LMS}) est utilisé :
+Pour chaque trajectoire $\Xi_i$, le vecteur de paramètre $\omega_i$ est alors calculé afin d'obtenir $\xi_i(t) = \Phi_t \omega_i + \epsilon_\xi$. Ce calcul de vecteur est effectué de manière à ce qu'il minimise l'erreur entre la trajectoire observée $\xi_i(t)$ et sa modélisation $\Phi_t \omega_i + \epsilon_\xi$. Pour cela, l'algorithme de l'erreur quadratique minimale (\textit{Least moyenne Square, LMS}) est utilisé :
 \begin{equation} \label{eq:w}
 \omega_i = (\Phi_t^\top\Phi_t)^{-1}\Phi_t^\top \xi_i(t).
 \end{equation} 
 %\todo{I added some noise in the inverse matrix to make sure it is inversible: do I specify it?}
-%\todo{Obs.: I think you can specify it if you want. If you decide to do so, you can write that you are using ``Ridge Regression'' instead of using ``Least Mean Square algorithm''. And you could update the equations accordingly.}
+%\todo{Obs.: I think you can specify it if you want. If you decide to do so, you can write that you are using ``Ridge Regression'' instead of using ``Least moyenne Square algorithm''. And you could update the equations accordingly.}
 Sachant qu'une erreur classique lors du calcul de la matrice $\Phi_t^\top\Phi_t$ a lieu lorsque l'Équation~\ref{eq:w} n'est pas inversible\todo{[ajouter détails]}, un terme sur la diagonal est ajouté afin d'obtenir la ``\textit{Régularisation de Tikhonov}'' :
 
 \begin{eqnarray} \label{eq:wInvertible}
@@ -300,7 +303,7 @@ Lorsque l'on souhaite faire rejouer au robot une trajectoire classique de cette 
 Cet exemple est inclut dans le logiciel Matlab sous le nom~\mcode{demo_plot1DOF.m}. L'explication de ce script est présenté dans la Section~\ref{sec:example1DOF}. De plus, des exemples plus compliqués sont aussi introduis dans le logiciel, sous des noms de type : \mcode{demo_plot*.m}.
 
 
-%\todo{[Obs.: I don't like the notation $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Usually $\theta$ is used for parameters, not for distributions. I would simply write $p(\boldsymbol{\omega}) = \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Moreover $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$ means, as far as I know, that variable $\theta$ is distributed accordingly to a normal distribution with mean $\mu_\boldsymbol{\omega}$ and covariance $\Sigma_{\boldsymbol{\omega}}$, not that $\theta$ is a distribution.]}
+%\todo{[Obs.: I don't like the notation $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Usually $\theta$ is used for parameters, not for distributions. I would simply write $p(\boldsymbol{\omega}) = \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$. Moreover $\theta \sim \mathcal{N}(\mu_\boldsymbol{\omega}, \Sigma_{\boldsymbol{\omega}})$ moyennes, as far as I know, that variable $\theta$ is distributed accordingly to a normal distribution with moyenne $\mu_\boldsymbol{\omega}$ and covariance $\Sigma_{\boldsymbol{\omega}}$, not that $\theta$ is a distribution.]}
 
 
 \subsection{Prédiction du futur mouvement à partir de l'observation d'une trajectoire initiée} \label{sec:predict}
@@ -328,7 +331,7 @@ Les Équations~\ref{eq:inf} et \ref{eq:K} peuvent être calculés à partir des 
 
 %These formulae come from the marginal and the conditional formulae of the Gaussian identities~\cite{paraschos2013probabilistic, Bishop:2006}. See Appendix~\ref{sec:formulas} for more details.
 
-La Figure~\ref{fig:1DOFtrajectoriesPredictions} présente la trajectoire inférée correspondant à un mouvement de levée du bras gauche du robot \textit{iCub}. Les différents graphes montrent les trajectoires inférées, lorsque le robot connaît $n_{o}=10,30,50,80\%$ des données de la trajectoire complète. Cet exemple est aussi disponible dans notre logiciel, sous le nom \mcode{demo_plot1DOF.m}. 
+La Figure~\ref{fig:1DOFtrajectoriesPredictions} présente la trajectoire inférée correspondant à un mouvement de levée du bras gauche du robot iCub. Les différents graphes montrent les trajectoires inférées, lorsque le robot connaît $n_{o}=10,30,50,80\%$ des données de la trajectoire complète. Cet exemple est aussi disponible dans notre logiciel, sous le nom \mcode{demo_plot1DOF.m}. 
 La variable \mcode{nbData} permet de faire varier le pourcentage de données connues. Cette figure permet de montrer que l'amélioration de la prédiction en fonction du nombre de données connues. Un exemple de trajectoires prédites lors de cette tâche de levée de bras à partir de la simulation \textit{Gazebo} peut être visualisée dans une vidéo fournies (\textit{c.f.} Section~\ref{sec:video}).
 
 
@@ -347,7 +350,7 @@ Cependant, afin de pouvoir générer des trajectoires dans des conditions expér
 Dans ce but, un paramètre de modulation du temps $\alpha$ est introduit permettant de redimensionner la trajectoire actuelle afin qu'elle ne soit plus définie par $t_{f}$ mesures mais par $\bar{s}$: $\alpha = \bar{s} / t_{f}$.
 %This variable rescales the \textit{RBFs} of the model to the trajectory duration. 
 %It relies on the trajectory duration and a reference number of samples $\bar{s}$.
-La durée normalisée $\bar{s}$ peut être choisi arbitrairement; par exemple, elle peut correspondre à la moyenne des durées des trajectoires, \textit{e.g.}, $\bar{s}=mean(t_{f1},\ldots,t_{fK})$.
+La durée normalisée $\bar{s}$ peut être choisi arbitrairement; par exemple, elle peut correspondre à la moyenne des durées des trajectoires, \textit{e.g.}, $\bar{s}=moyenne(t_{f1},\ldots,t_{fK})$.
 % (we have one sample per iteration time $t$).
 Dans la littérature, ce terme $\alpha$ est parfois appelé la \textit{phase}~\cite{paraschos2013probabilistic,paraschos2013probabilisticTrajectory}. 
 \toimprove{Ce terme $\alpha$ change la phase des \textit{RBFs}, foncitions qui sont étalée temporellement sur l'ensemble de la durée de la trajectoire}.
@@ -390,10 +393,10 @@ Puis, en utilisant ce set, la \textit{ProMP} apprise peut être rejouée à diff
 \includegraphics[width=13cm]{img/mean_alpha_errV2.pdf}
 \caption{Trajectoire prédite à partir de l'observation d'une trajectoire initiée (points noirs); réalité terrain (\textit{e.g.}, la trajectoire que l'utilisateur voudrait que le robot execute) ; distribution à priori (en bleu clair) ; et distribution postérieur (en rouge), calculée en \toimprove{conditionnant} la distribution afin qu'elle corresponde aux observations. Ici, le calcul de la distribution postérieur est uniquement calculée à partir de la moyenne $\alpha$, de l'ensemble $\alpha_1, \ldots, \alpha_K$ correspondant aux $K$ trajectoires de démonstrations. Sans prédiction du paramètre de modulation du temps de la trajectoire observée et donc en utilisant la moyenne $\alpha$, la trajectoire prédite a une durée visiblement différente de la réalité terrain.}
 
-\label{fig:meanAlpha}
+\label{fig:moyenneAlpha}
 \end{figure}
 
-Durant l'inférence, le paramètre de modulation du temps $\alpha$ de la trajectoire observée partiellement n'est pas connu. À moins que ce paramètre soit fixé à priori, le robot doit alors l'estimer. Cette estimation est essentiel pour assurer une bonne reconnaissance, comme cela est montré dans la Figure~\ref{fig:meanAlpha} : la trajectoire inférée (représentée par la moyenne de la distribution postérieure en rouge) 
+Durant l'inférence, le paramètre de modulation du temps $\alpha$ de la trajectoire observée partiellement n'est pas connu. À moins que ce paramètre soit fixé à priori, le robot doit alors l'estimer. Cette estimation est essentiel pour assurer une bonne reconnaissance, comme cela est montré dans la Figure~\ref{fig:moyenneAlpha} : la trajectoire inférée (représentée par la moyenne de la distribution postérieure en rouge) 
 %\todo{why "has not the same" is not correct?} 
 %For Oriane: check https://english.stackexchange.com/questions/13672/have-not-versus-do-not-have
 n'a pas la même durée que la trajectoire attendue ``réelle'' (qui correspond à la réalité terrain). Cette différence est du à l'erreur d'estimation du paramètre de modulation du temps. Cette estimation $\hat{\alpha}$  est calculée par défaut en tant que moyenne de l'ensemble des paramètres $\alpha_k$ calculés lors de la phase d'apprentissage :
@@ -411,7 +414,7 @@ Afin d'estimer $\hat{\alpha}$, on a implémenté différentes méthodes.
 %\begin{itemize}
 %\label{itemize:methodAlphaEstimation}
 La première méthode consiste au calcul de la \textbf{moyenne des $\alpha_k$}, comme montré dans l'Équation \ref{eq:avg}. La seconde méthode consiste au calcul du \textbf{maximum de ressemblance }
-%As first method, we can simply use the \textbf{mean of the $\alpha$}:
+%As first method, we can simply use the \textbf{moyenne of the $\alpha$}:
 %\begin{equation}
 %\label{eq:avg}
 %%\hat{\alpha} = {1 \over |S_{\alpha k}|} \sum_{\alpha \in S_{\alpha k}} \alpha
@@ -519,24 +522,24 @@ Dans cette Section, le logiciel libre d'accès est présentée. Ce logiciel est 
 \begin{figure}[h]
 \center
 \includegraphics[width=\hsize]{img/liaisonAllProgramV3.pdf}
-\caption{Architecture du logiciel avec représentation des échanges de donées.\\ Le contrôle du robot est soit guidé par son utilisateur (manuellement ou à l'aide d'un dispositif haptique) représenté en bleu, ou à l'aide d'un module Matlab, présenté en violet. \toimprove{Le module  C++ permet de faire passer l'information de contrôle à la commande robotique, comme présenté en noir}. De plus, ce module transmet l'information qui provient du \textit{iCub}.}
+\caption{Architecture du logiciel avec représentation des échanges de donées.\\ Le contrôle du robot est soit guidé par son utilisateur (manuellement ou à l'aide d'un dispositif haptique) représenté en bleu, ou à l'aide d'un module Matlab, présenté en violet. \toimprove{Le module  C++ permet de faire passer l'information de contrôle à la commande robotique, comme présenté en noir}. De plus, ce module transmet l'information qui provient du iCub.}
 \label{fig:orgaSoftware}
 \end{figure}
 
-Durant la phase d'apprentissage, où le robot apprend les différentes \textit{ProMPs} et leur tâche correspondante, le robot est contrôlé par un utilisateur. Celui-ci peut guider le robot manuellement, lorsqu'il s'agit du \textit{iCub} réel, ou à l'aide d'un dispositif haptique lorsqu'il s'agit de la simulation du robot.
+Durant la phase d'apprentissage, où le robot apprend les différentes \textit{ProMPs} et leur tâche correspondante, le robot est contrôlé par un utilisateur. Celui-ci peut guider le robot manuellement, lorsqu'il s'agit du iCub réel, ou à l'aide d'un dispositif haptique lorsqu'il s'agit de la simulation du robot.
 
 Un module Matlab permet de rejouer les \textit{ProMPs}, ou de finir un mouvement qui a été initié par son utilisateur. Ce module permet au robot d'apprendre des \textit{ProMPs} à partir des trajectoires effectuées; de rejouer ces \textit{ProMPs}; de reconnaître la \textit{ProMP} qui correspond le plus à une trajectoire en cours; et de prédire le ``futur'' de cette trajectoire, jusqu'à atteindre le but.
 %\todo{and to make sure that the user's forces exerted on the robot are not stronger than the ones learnt.}
 
 Un module C++ transmet au robot l'information de contrôle qui provient soit de l'utilisateur, soit du module Matlab. Le robot est alors capable de finaliser le mouvement inité par son utilisateur (directement ou à l'aide d'un dispositif haptique) de manière autonome, comme présenté dans la Figure~\ref{fig:conceptProMP}. %\todo{This program communication also allows to correct the robot behaviour if the users forces are stronger than the expected ones.} \\
-Le module C++ est présenté dans la Section~\ref{subec:Setup}, puis une explication théorique des algorithmes utilisés dans le module Matlab  est donnée dans la Section~\ref{sec:theory}. Un guide permettant d'utiliser ce module Matlab est d'abord présenté dans  la Section~\ref{sec:example1DOF} dans le cas d'un exemple jouet, puis dans la Section~\ref{sec:3ProMPsAppli} dans le cas de notre application, où le robot simulé apprend différentes données sur les mouvements (\textit{e.g.}, il s'agit de \textit{ProMPs} à plus haute dimension). Finalement, les résultats de l'application effectué sur le réel robot \textit{iCub} sont présentés dans la Section~\ref{sec:appliRealIcub}.
+Le module C++ est présenté dans la Section~\ref{subec:Setup}, puis une explication théorique des algorithmes utilisés dans le module Matlab  est donnée dans la Section~\ref{sec:theory}. Un guide permettant d'utiliser ce module Matlab est d'abord présenté dans  la Section~\ref{sec:example1DOF} dans le cas d'un exemple jouet, puis dans la Section~\ref{sec:3ProMPsAppli} dans le cas de notre application, où le robot simulé apprend différentes données sur les mouvements (\textit{e.g.}, il s'agit de \textit{ProMPs} à plus haute dimension). Finalement, les résultats de l'application effectué sur le réel robot iCub sont présentés dans la Section~\ref{sec:appliRealIcub}.
 
 Notre logiciel est disponible avec une licence GPL, et est accessible publiquement à l'adresse : 
 
 \url{https://github.com/inria-larsen/icubLearningTrajectories}.
 
 Ce répertoire propose à la fois un tutoriel, un fichier d'explication (README) et des vidéos de présentation.
-Le fichier d'explication décrit comment lancer des démonstrations basiques. Les vidéos présentent ces démonstrations, afin d'éclaircir le fonctionnement de cette application. Les sections prochaines détaillerons tout d'abord comment fonctionne le ``programme de démonstration'' disponible, permettant l'apprentissage d'une primitive à une dimension; suivi par la présentation d'une application spécifique au \textit{iCub} (d'abord en simulation puis sur le robot réel).
+Le fichier d'explication décrit comment lancer des démonstrations basiques. Les vidéos présentent ces démonstrations, afin d'éclaircir le fonctionnement de cette application. Les sections prochaines détaillerons tout d'abord comment fonctionne le ``programme de démonstration'' disponible, permettant l'apprentissage d'une primitive à une dimension; suivi par la présentation d'une application spécifique au iCub (d'abord en simulation puis sur le robot réel).
 %\todo{check that, it is not in the readme??}
 
 
@@ -688,7 +691,7 @@ La première étape pour prédire l'évolution de la trajectoire est d'inférer 
 où \mcode{typeReco} est le critère utilisé afin d'estimer le paramètre de modulation du temps (\textit{e.g.}, 'MO', 'DI' ou 'ML' pour ``modélisation'', ``distance'' ou ``maximum de vraisemblance''); \mcode{expAlpha} $=\hat{\alpha}$ l'estimation du paramètre de modulation ; \mcode{type} (noté $k$ dans cette thèse) l'index de la \textit{ProMP} à partir de laquelle \mcode{expAlpha} a été calculée. 
 
 %\mcode{x} is used for debugging purpose.
-%\marco{Finally \mcode{x = test\{1\} + offset} is the trajectory transposed by an offset, to be centred on the mean of the recognized ProMP at time $t=1$ (only used for debugging purposes).[Obs.: I didn’t understand
+%\marco{Finally \mcode{x = test\{1\} + offset} is the trajectory transposed by an offset, to be centred on the moyenne of the recognized ProMP at time $t=1$ (only used for debugging purposes).[Obs.: I didn’t understand
 %584 this.] }
 %\rev{it is hard to explain in the paper, but from the early-trajectory, to recognize which ProMPs correspond the best to the initiated trajectory, I need to translate the early-trajectory to compute how likely the "shape" of the early-trajectory correspond to the ProMP}
 Afin de prédire l'évolution de la trajectoire, on utilise l'Équation~\ref{eq:inf} de la Section \ref{sec:predict}. Dans Matlab, ce calcul est effectué au sein de la fonction :
@@ -764,7 +767,7 @@ Dans ce simple test, où la variation du temps est petite comme présentée dans
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application à la simulation du \textit{iCub} : apprentissage de trois primitives}
+\section{Application à la simulation du iCub : apprentissage de trois primitives}
 \label{sec:3ProMPsAppli}
 \begin{figure}[h]
 \centering
@@ -780,22 +783,22 @@ Droite: L'information de la position cartésienne des trajectoires de démonstra
 
 Dans cette application, le robot apprend plusieurs \textit{ProMPs} et est capable de prédire la continuation d'une trajectoire initiée par l'utilisateur, avec l'hypothèse que le mouvement appartienne à l'une des primitives apprises. À partir de cette prédiction, le robot peut aussi finir le mouvement.. 
 
-Les trois actions/tâches sont représenter par les trois buts différents à atteindre, représentés par trois balles colorés et positionnés dans la \toimprove{zone de mouvement} du \textit{iCub}. L'exemple est effectué à l'aide du robot simulé dans \textit{Gazebo}. La Figure~\ref{fig:GazeboGoal} représente les trois buts, placés à différentes hauteurs, en face du robot.
+Les trois actions/tâches sont représenter par les trois buts différents à atteindre, représentés par trois balles colorés et positionnés dans la \toimprove{zone de mouvement} du iCub. L'exemple est effectué à l'aide du robot simulé dans \textit{Gazebo}. La Figure~\ref{fig:GazeboGoal} représente les trois buts, placés à différentes hauteurs, en face du robot.
 
-Dans la Section~\ref{sec:formulateModelInt}, le problème de reconnaissance de l'intention est formulé avec le robot \textit{iCub} : il s'agit de permettre au robot d'apprendre des \textit{ProMPs} à partir de trajectoires définies par des positions Cartésiennes en 3D\footnote{Remarquons que dans cet exemple spécifique, l'orientation n'est pas utilisée avec le souhait que la main du robot conserve la même orientation durant l'ensemble du mouvement (fixé à priori). Mais en principe, il est possible d'apprendre des trajectoires définis par des positions Cartésiennes et orientation de la main du robot en 6D ou 7D. Ainsi, le robot apprend à changer l'orientation de sa main lors du mouvement.} et l'information des couples en 6D qui sont mesurés par le robot durant l’exécution du mouvement.
-Dans la Section \ref{subec:Setup}, la configuration de la simulation du robot \textit{iCub} dans Gazebo est présentée, puis la Section~\ref{sec:dataAquisition} permet d'expliquer comment les trajectoires sont enregistrées, avec notamment l'information des forces, lors de l'utilisation du robot simulé.
+Dans la Section~\ref{sec:formulateModelInt}, le problème de reconnaissance de l'intention est formulé avec le robot iCub : il s'agit de permettre au robot d'apprendre des \textit{ProMPs} à partir de trajectoires définies par des positions Cartésiennes en 3D\footnote{Remarquons que dans cet exemple spécifique, l'orientation n'est pas utilisée avec le souhait que la main du robot conserve la même orientation durant l'ensemble du mouvement (fixé à priori). Mais en principe, il est possible d'apprendre des trajectoires définis par des positions Cartésiennes et orientation de la main du robot en 6D ou 7D. Ainsi, le robot apprend à changer l'orientation de sa main lors du mouvement.} et l'information des couples en 6D qui sont mesurés par le robot durant l’exécution du mouvement.
+Dans la Section \ref{subec:Setup}, la configuration de la simulation du robot iCub dans Gazebo est présentée, puis la Section~\ref{sec:dataAquisition} permet d'expliquer comment les trajectoires sont enregistrées, avec notamment l'information des forces, lors de l'utilisation du robot simulé.
 
 
 \subsection{Prédire les trajectoires attendues à l'aide de \textit{ProMPs}}\label{sec:formulateModelInt}
 
-The model is based on Section~\ref{sec:theory}, but here we want to learn more information during movements. We record this information \rev{in} a multivariate parameter vector:
+Il s'agit d'augmenter la modélisation présentée dans la Section~\ref{sec:theory} afin que la \textit{ProMP} soit composée de plusieurs informations sur la trajectoire. Pour cela, ces informations sont enregistrées dans un vecteur paramètre multivarié :
 $$\forall t, \xi_t=\begin{bmatrix} X_t \\ F_t\end{bmatrix} \in \mathbb{R}^{9}$$ 
-Were $X_t \in \mathbb{R}^{3}$ is the Cartesian position of the robot's end effector and $F_t \in \mathbb{R}^6$ the external forces and moments. In particular, $F_t$ contains the user's contact forces and moments. Let us call dim($\xi_t$)$ = D$, the dimension of this parameter vector. %Let $\xi_{inf} =[\xi_{o+1} \ldots \xi_{t_{f}}]^\top$ the output vector of the expected end trajectory, where $t_f$ is the expected total time of the movement.
+Où $X_t \in \mathbb{R}^{3}$ correspond à la position cartésienne de l'actuateur du bras de iCub et $F_t \in \mathbb{R}^6$ les forces et moments externes, provenant notamment des forces de contact que l'utilisateur exerce sur le robot. Soit dim($\xi_t$)$ = D = 9$, la dimension de ce vecteur paramètre. %Let $\xi_{inf} =[\xi_{o+1} \ldots \xi_{t_{f}}]^\top$ the output vector of the expected end trajectory, where $t_f$ is the expected total time of the movement.
 
-The corresponding ProMP model is:
+La \textit{ProMP} est alors représentée par le modèle :
 $$\xi_t = \begin{bmatrix} X_t \\ F_t\end{bmatrix} = \Phi_{\alpha t} \boldsymbol{\omega} + \epsilon_t$$
-Where $\boldsymbol{\omega} \in  \mathbb{R}^{D \cdot M}$ is the time independent parameter vector, $\epsilon_t= \begin{bmatrix} \epsilon_{X_t} \\ \epsilon_{F_t}\end{bmatrix} \in \mathbb{R}^D$ is the zero-mean Gaussian i.i.d. observation noise, and $\Phi_{\alpha t} \in \mathbb{R}^{D \times D \cdot M}$ a matrix of Radial Basis Functions (\textit{RBFs}) evaluated at time $\alpha t$.\\
-Since we are in the multidimensional case, this $\Phi_{\alpha t}$ block diagonal matrix is defined as:
+Où $\boldsymbol{\omega} \in  \mathbb{R}^{D \cdot M}$ correspond au vecteur paramètre qui est indépendant du temps ; $\epsilon_t= \begin{bmatrix} \epsilon_{X_t} \\ \epsilon_{F_t}\end{bmatrix} \in \mathbb{R}^D$ correspond au \toimprove{bruit blanc gaussien} \sout{is the zero-moyenne Gaussian i.i.d. observation noise} ; et $\Phi_{\alpha t} \in \mathbb{R}^{D \times D \cdot M}$ est la matrice contenant les \textit{RBFs} \toimprove{à l'itération} $\alpha t$.\\
+Puisqu'il s'agit d'un cas multidimensionnel, cette matrice diagonale par bloc $\Phi_{\alpha t}$ est définie par :
 $$\Phi_{\alpha t}  = BlockdiagonalMatrix(\phi_1,\ldots,\phi_{D}) \in \mathbb{R}^{D \times D \cdot M} $$
 %\left[ \begin{array}{cccc}
 % & \hfill & \hfill & \hfill\\
@@ -803,40 +806,38 @@ $$\Phi_{\alpha t}  = BlockdiagonalMatrix(\phi_1,\ldots,\phi_{D}) \in \mathbb{R}^
 %\hfill & \hfill & \ldots &\hfill \\
 %\hfill & \hfill & \hfill & \phi_{m_z}
 %\end{array} \right] $
-It is a diagonal matrix of $D$ Radial Basis Functions (\textit{RBFs}), where each \textit{RBF} represents one dimension of the $\xi_t$ vector and it is composed of $M$ Gaussians, spread over  same number of samples $\bar{s}$.
+Il s'agit d'une matrice diagonale de $D$ \textit{RBFs}, où chaque  \textit{RBF} représente une dimension du vecteur $\xi_t$ et est composée de $M$ fonctions Gaussiennes. Ces $M$ fonctions sont éparpillées dans le temps, afin d'être à valeur sur $[0: \bar{s}]$.
 
 
-\subsubsection{Learning motion primitives}
+\subsubsection{Apprentissage de Primitives de Mouvement}
 \label{learning}
 %Assume the robot has to learn $K$ movement primitives.\\
 
-During the learning step of each movement primitive $k \in [1:3]$, the robot observes different trajectories $S_k = \{\Xi_1,\ldots, \Xi_n\}_k$, as presented in Section~\ref{sec:dataAquisition}.\\
-For each trajectory $\Xi_{i {[1:t_{fi}]}} = [\xi_{i(1)}, \ldots, \xi_{i(tf_i)}]^\top$, it computes the optimal $\boldsymbol{\omega}_{ki}$ parameter vector that best approximates the trajectory.
+Durant la phase d'apprentissage de chaque primitive de mouvement $k \in [1:3]$, le robot observe différentes trajectoires $S_k = \{\Xi_1,\ldots, \Xi_n\}_k$ (\textit{c.f.} Section~\ref{sec:dataAquisition}).\\
+Pour chaque trajectoire $\Xi_{i {[1:t_{fi}]}} = [\xi_{i(1)}, \ldots, \xi_{i(tf_i)}]^\top$, le robot calcule alors le vecteur paramètre optimal $\boldsymbol{\omega}_{ki}$ afin que la modélisation approxime au mieux la trajectoire.
 
-We saw in Section~\ref{sec:ManyProMP} how these computations are done. In our software, we use matrix computation instead of $t_{fi}$ iterative ones done for each observation $t$ (as in Equation ~\ref{eq:w}). Thus, we have:
+Dans la Section~\ref{sec:ManyProMP}, ces calculs sont présentés. Dans  le logiciel, un calcul matriciel est effectué à la place de $t_{fi}$ calculs itératifs, qui seraient effectués pour chaque observation $t$ (comme dans l'Équation ~\ref{eq:w}). Ainsi, le calcul devient :
 \begin{eqnarray}
 \boldsymbol{\omega}_{ki} = (\Phi_{\alpha [1:t_{fi}]}^\top \Phi_{\alpha [1:t_{fi}]})^{-1} \Phi_{\alpha [1:t_{fi}]}^\top * \Xi_{i {[1:t_{fi}]}}
 \end{eqnarray}
-with $\Phi_{\alpha [1:t_{fi}]} = [\Phi_{\alpha 1}, \Phi_{\alpha 2}\ldots,\Phi_{\alpha t_{fi}}]^\top$.
+avec $\Phi_{\alpha [1:t_{fi}]} = [\Phi_{\alpha 1}, \Phi_{\alpha 2}\ldots,\Phi_{\alpha t_{fi}}]^\top$.
 
 
-\subsubsection{Prediction of the trajectory evolution from initial observations}
+\subsubsection{Prédiction de l'évolution de la trajectoire à partir d'observations initiales}
 \label{prediction}
 
-After having learned the three ProMPs, the robot \rev{is able to} finish an initiated movement on its own. In Sections~\ref{sec:predict}, \ref{sec:predictDuration} and \ref{sec:ManyProMP} we explained how \rev{to compute the future intended trajectory given the early observations}. %the end of this movement is computed.
+Après avoir appris les trois \textit{ProMPs}, le robot est capable de finir le mouvement initié par lui même. Les Sections~\ref{sec:predict}, \ref{sec:predictDuration} et \ref{sec:ManyProMP}, présentent les différents calculs permettant d'estimer la trajectoire désirée à partir des observations initiales . %the end of this movement is computed.
 
-In this example, we add specificities about the parameters to learn.
+Dans cet exemple des spécificités sont ajoutées sur les paramètres à apprendre.
 
-Let $\Xi^{o} = \begin{bmatrix} X^o \\ F^o \end{bmatrix} = [\Xi_1 \ldots \Xi_{n_o}]^\top$ be the early observations of the trajectory.
+Soit $\Xi^{o} = \begin{bmatrix} X^o \\ F^o \end{bmatrix} = [\Xi_1 \ldots \Xi_{n_o}]^\top$ les premières observations de la trajectoire initiée.
 
-First, we only consider the partial observations: $X^{o} = [X_1 \ldots X_{n_o}]^\top$.
-Indeed, we assume the recognition of a trajectory is done with Cartesian position information only, because the same movement can be done and recognized with different force profiles than the learned ones.
-
-From this partial observation $X^o$, the robot recognizes the current ProMP $\hat{k} \in [1:3]$, as seen in Section~\ref{sec:ManyProMP}. It also computes an expectation of the time modulation $\hat{t}_f$, as seen in Section \ref{sec:predictDuration}. Using the expected value of the time modulation, it approximates the trajectory speed and its total time duration.
+En premier lieu, seule une sous partie de ses observations est considérée : $X^{o} = [X_1 \ldots X_{n_o}]^\top$. Cela se base sur l'hypothèse que la reconnaissance de la trajectoire se fait uniquement avec l'information de sa position Cartésienne, puisqu'une même trajectoire peut être effectuée et reconnaissable quelque soit son profil de forces .
+À partir de l'observation partielle de la trajectoire $X^o$, le robot reconnait la \textit{ProMP} courante $\hat{k} \in [1:3]$ (\textit{c.f.} Section~\ref{sec:ManyProMP}). De plus, il calcul une estimation du paramètre de modulation du temps $\hat{t}_f$ (\textit{c.f.} Section \ref{sec:predictDuration}). À l'aide de cette estimation, il approxime alors la vitesse de la trajctoire et sa durée totale.
 %\marco{is this expectation in sense of expected value?}
 %\rev{yes}
 
-Second, we use the total observation $\Xi^o$ to update the ProMP, as seen in Section \ref{sec:predict}. This computation is based on equation~\ref{eq:udateWithAlpha}, but here again, we use matrix computation:
+En second lieu, l'ensemble des observations initiales $\Xi^o$ est utilisé afin de mettre à jour la \textit{ProMP} reconnue (\textit{c.f.} Section \ref{sec:predict}). Pour ce faire, un calcul matriciel est effectué, basé sur l'Équation~\ref{eq:udateWithAlpha} :
 $$\left\{
 \begin{array}{rl}
 \hat{\mu}_{\boldsymbol{\omega}_k} &= \mu_{\boldsymbol{\omega}_k}  + K(\Xi^o - \Phi_{\alpha[1:n_o]} \mu_{\boldsymbol{\omega}_k} ) \\ 
@@ -845,30 +846,32 @@ K&= \Sigma_{\boldsymbol{\omega}_k} \Phi_{\alpha[1:n_o]}^\top(\Sigma_{\xi^o} + \P
 \end{array}
 \right.$$
 
-From this posterior distribution, we retrieve the inferred  $\hat{\Xi} = \{ \hat{\xi}_1,..., \hat{\xi}_{\hat{t}_f}\}$ trajectory, with:
+À partir de cette distribution postérieure, la trajectoire inférée $\hat{\Xi} = \{ \hat{\xi}_1,..., \hat{\xi}_{\hat{t}_f}\}$ est récupérée par :
 $$ \forall t \in [1:\hat{t}_f],\hat{\xi}_t = \begin{bmatrix} \hat{X}_t \\ \hat{F}_t\end{bmatrix} =  \Phi_{\alpha t} \hat{\mu}_{\boldsymbol{\omega}_k} $$
 %Using the partial inferred trajectory $\hat{X}$, the robot is able to finish the movement. Using the partial inferred trajectory $\hat{F}$, the robot stays alert to its user's wishes, as presented in Section~\ref{subsec:forces}.
-\rev{Note that the inferred wrenches $\hat{F}_t$, here, correspond to the simulated wrenches in Gazebo. In this example there is little use for them in simulation; the interest for predicting also wrenches will be clearer in Section \ref{sec:appliRealIcub}, with the example on the real robot.} 
+
+Notons que les forces inférées $\hat{F}_t$ correspondent à des \toimprove{forces} \comment{wrench} simulées dans Gazebo. Dans cet exemple, l'information ds forces est très peu utilisée. L'intérêt de prédire aussi les \toimprove{forces} \comment{wrenches} sera plus claire dans la Section~\ref{sec:appliRealIcub}, lors de l'exemple sur le robot réel.
 
 
-\subsection{Setup for simulated iCub}
+\subsection{Configurations pour le robot simulé}
 \label{subec:Setup}
-For this application, we created a prototype in Gazebo, where the robot must reach three different targets with the help of a human. To interact physically with the robot simulated in Gazebo, we used the Geomagic touch, a haptic device.
+Pour cette application, nous avons crée un prototype sur Gazebo, où le robot doit atteindre trois différentes positions but, avec l'aide de l'utilisateur. Afin que celui-ci puisse interagir physiquement avec le robot simulé, un dispositif haptique nommé \textit{Geomagic touch} est utilisé.
 
-The setup consists of:
+La configuration consiste en :
 \begin{itemize}
-\item the iCub simulation in Gazebo, complete with the dynamic information provided by \textit{wholeBodyDynamicsTree} (\url{https://github.com/robotology/codyco-modules/tree/master/src/modules/wholeBodyDynamicsTree}) and the Cartesian information provided by \textit{iKinCartesianController};
-\item the Geomagic Touch, installed following the instructions in \url{https://github.com/inria-larsen/icub-manual/wiki/Installation-with-the-Geomagic-Touch}, which not only install the SDK and the drivers of the GeoMagic but also point to how to create the yarp drivers for the Geomagic;
-\item a C++ module (\url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/CppProgram}) that connects the output command from the Geomagic to the iCub in Gazebo, and eventually enables recording the trajectories on a file. A tutorial is included in this software.
+\item un robot iCub simulé dans \textit{Gazebo}, comprenant l'information de la dynamique du robot fournie par l'application \textit{wholeBodyDynamicsTree} (\url{https://github.com/robotology/codyco-modules/tree/master/src/modules/wholeBodyDynamicsTree}) et l'information sur les positions cartésiennes du robot fournie par l'application \textit{iKinCartesianController} ;
+\item le \textit{Geomagic Touch} qui doit être installé suivant les instructions fournies dans \url{https://github.com/inria-larsen/icub-manual/wiki/Installation-with-the-Geomagic-Touch}, qui installe non seulement le kit de développement et les drivers de ce dispositif, mais aussi informe comment installer les drivers sur \textit{YARP}\todo{expliquer ce que c'est en amont} ;
+\item un module C++ (\url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/CppProgram}) qui renvoi les commandes provenant du Geomagic au iCub simulé et qui permet d'enregistrer des trajectoires fais par le robot simulé dans un fichier. Un tutoriel permettant de comprendre comment utiliser ce module est fourni avec le logiciel.
 \end{itemize}
 
-The interconnection among the different modules is represented in Figure~\ref{fig:orgaSoftware}, where the Matlab module is not used. %sketched in Figure~\ref{fig:systemHaptic}.
-The tip of the Geomagic is virtually attached to the end-effector of the robot:
+Les connexions entres les différents modules sont représentées dans la Figure~\ref{fig:orgaSoftware}, \toimprove{où le module Matlab n'est pas utilisé} \todo{???}.
+%sketched in Figure~\ref{fig:systemHaptic}.
+La pointe du stylo du Geomagic est virtuellement attaché à la main du robot :
 $$ x_{geo} \rightarrow x_{icub\_hand} $$
-When the operator moves the Geomagic, the position of the Geomagic tip $x_{geo}$ is scaled (1:1 by default) in the iCub workspace as $x_{icub\_hand}$, and the Cartesian controller is used to move the iCub hand around a ``home" position, or default starting position:
+Quand l'opérateur bouge le Geomagic, le position de la pointe du stylo du Geomagic $x_{geo}$ est redimensionnée \todo{(1:1 par défaut) ??} dans l'environnement du iCub simulé en tant que $x_{icub\_hand}$ et le contrôleur cartésien du robot est utilisé afin de déplacer la main du robot par rapport soit à une position de départ fixé dans la simulation (l'utilisateur doit alors positionner le Geomagic afin d'atteindre cette position), soit à la position prise au départ par l'utilisateur lorsqu'il appuie sur l'un des boutons du Geomagic :
 $$ x_{icub\_hand} = hapticDriverMapping(x_0 + x_{geo})$$
-where \textit{hapticDriverMapping} is the transformation applied by the haptic device driver, which essentially maps the axis from the Geomagic reference frame to the iCub reference frame.
-By default, no force feedback is sent back to the operator in this application, as we want to emulate the zero-torque control mode of the real iCub, where the robot is ideally transparent and not opposing any resistance to the human guidance. A default orientation of the hand (``katana" orientation) is set.
+où \textit{hapticDriverMapping} correspond à la transformation appliquée par le dispositif haptique, \toimprove{qui mappe la fenêtre de référence du Geomagic à la fenêtre de référence du iCub.}
+Par défaut, dans cette application, aucune force n'est renvoyée à l'opérateur, puisqu'il s'agit de simuler le mode de contrôle à couple nulle du iCub réel (il s'agit d'un mode de contrôle où le robot n'oppose aucune force de résistance, permettant à l'humaine de le guider). Une orientation par défaut est définie dans cette application.
 
 %\begin{figure}[h]
 %\centering
@@ -877,9 +880,9 @@ By default, no force feedback is sent back to the operator in this application, 
 %\label{fig:systemHaptic}
 %\end{figure}
 
-\subsection{Data acquisition}
+\subsection{Acquisitiom de données}
 \label{sec:dataAquisition}
-The dark button of the Geomagic is used to start and stop the recording of the trajectories. The operator must click and hold the button during the whole movement and release the button at the end. The trajectory is saved on a file called \textit{recordX.txt} for the $X$-th trajectory. The structure of this file is:
+Le bouton sombre du Geomagic est utilisée afin de commencer et d'arrêter l'enregistrement de chaque trajectoire. L'opérateur doit alors cliquer et maintenir ce bouton durant tout son mouvement, puis relâcher celui-ci à la fin de la trajectoire. La trajectoire est sauvegardé dans un fichier nommé \textit{recordX.txt} pour la $X^e$ trajectoire. La structure de ce fichier est :
 \begin{lstlisting}
 #time #xgeo #ygeo #zgeo #fx #fy #fz #mx #my #mz #x_icub_hand #y_icub_hand #z_icub_hand
 5.96046e-06 -0.0510954 -0.0127809 -0.0522504 0.284382 -0.0659538 -0.0239582 -0.0162418 -0.0290078 -0.0607215 -0.248905 -0.0872191 0.0477496$
@@ -893,8 +896,8 @@ The dark button of the Geomagic is used to start and stop the recording of the t
 %\label{fig:geobuttons}
 %\end{figure}
 
-A video showing the iCub's arm moved by an user through the haptic device in Gazebo is available in Section~\ref{sec:video} (tutorial video).
-The graph in Figure~\ref{fig:3TargetsTrajectories} represents some trajectories recorded with the Geomagic, corresponding to lifting the left arm of the iCub. % (in the iCub's frame).
+Une vidéo représentant cette manipulation, où l'opérateur guide le bras du iCub simulé à l'aide du dispositif haptique est disponible (\textit{c.f.} Section~\ref{sec:video}).
+Le graphe de la Figure~\ref{fig:3TargetsTrajectories} représente quelques trajectoires enregistrées à l'aide du Geomagic, lors de la levée du bras gauche du robot \textit{iCub}.
 
 %\begin{figure}[h]
 %\centering
@@ -903,20 +906,20 @@ The graph in Figure~\ref{fig:3TargetsTrajectories} represents some trajectories 
 %\label{fig:trajectories}
 %\end{figure}
 
-Demonstrated trajectories and their corresponding forces can be recorded directly from the robot, by accessing the Cartesian interface and the \textit{wholeBodyDynamicsTree} module.\footnote{\rev{In our example, we do not use the simulated wrench information as it is very noisy. However, we provide the code and show how to retrieve it and use it, in case the readers should not have access to the real iCub.}}
+Les trajectoires de démonstrations et leurs forces correspondantes peuvent être enregistrées directement, en accédant à l'interface Cartésienne du robot et au module \textit{wholeBodyDynamicsTree}.\footnote{Dans notre exemple, l'information des forces et des couples ne sont pas utilisées car elles sont trop bruitées. Cependant, nous fournissons le code permettant de montrer comment les récupérer et comment les utiliser à partir du Geomagic.}
 
-In our project on Github, we provide the acquired dataset with the trajectories for the interested reader who wishes to test the code with these trajectories. Two datasets are available at \url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/MatlabProgram/Data/}:  the first dataset called ``heights" is composed of three goal-directed reaching tasks, where the targets vary in height; the second dataset called ``FLT" is composed of trajectories recorded on the real robot, whose arms moves forward, to the left and to the top.
+Dans notre projet Github, nous fournissons l'ensemble des données des trajectoires que nous avons enregistré, pour les utilisateurs qui souhaitent tester le code avec ces trajectoires. Deux ensembles de données sont disponibles à l'adresse \url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/MatlabProgram/Data/}:  le premier, appelé ``heights", est composé de trajectoires utilisées afin d'atteindre trois positions buts, dont la hauteur varie ; le second, appelé `FLT", est composé de trajectoires effectuées par le vrai robot, et permettent d'atteindre trois type de but : un but positioné devant le robot, un autre sur sa gauche et le dernier en hauteur.
 
-A matlab script that learns ProMPs with such kinds of datasets is available in the toolbox, called \mcode{demo_plotProMPs.m}. It contains all the following steps.
+Un script Matlab permet d'apprendre les \textit{ProMPs} à partir d'ensemble de trajectoires enregistrées comme celles présentées ci-dessus. Il s'agit du script \mcode{demo_plotProMPs.m} qui contient les étapes présentées ci-dessous.
 
-To load the first ``heights" dataset with the three trajectories, write:
+Afin de récupérer l'ensemble de données ``\textit{heights}", le script suivant est appelé :
 \begin{lstlisting}
 t{1} = loadTrajectory('Data/heights/bottom', 'bottom', 'refNb', s_bar, 'nbInput',nbInput, 'Specific', 'FromGeom');
 t{2} = loadTrajectory('Data/heights/top', 'top', 'refNb', s_bar, 'nbInput',nbInput, 'Specific', 'FromGeom');
 t{3} = loadTrajectory('Data/heights/middle', 'forward', 'refNb', s_bar, 'nbInput',nbInput, 'Specific', 'FromGeom');
 \end{lstlisting}
 
-Figure \ref{fig:3TargetsTrajectories} shows the three sets of demonstrated trajectories. In the used dataset called 	``heights", we have recorded $40$ trajectories per movement primitive.
+La Figure \ref{fig:3TargetsTrajectories} représente ces trois groupes de trajectoires de démonstration contenu dans l'ensemble ``\textit{height}''. Dans cet ensemble, $40$ trajectoires ont été enregistrées par primitive de mouvement.
 
 %\begin{figure}[h]
 %\centering
@@ -927,18 +930,16 @@ Figure \ref{fig:3TargetsTrajectories} shows the three sets of demonstrated traje
 %\label{fig:3TargetsTrajectories}
 %\end{figure}
 
-\subsection{Learning the ProMPs}
+\subsection{Apprentissage de \textit{ProMPs}}
 
-
-We need to first learn the ProMPs associated to the three observed movements. 
-First, we partition the collected dataset into a training set and test dataset for the inference. One random trajectory for the inference is used:
+Tout d'abord, les \textit{ProMPs} qui correspondent aux trois mouvements observés doivent être apprises. Pour cela, l'ensemble de données est d'abord séparé en deux, la première partie afin d'apprendre les \textit{ProMPs} et la seconde afin de vérifier que la prédiction se fait correctement (trajectoires tests). 
+Pour ne conserver qu'une trajectoire test sélectionnée de manière aléatoire, la fonction suivante est appelée:
 %Before learning them, we pick from the training set one of the observed trajectory to test the inference, by writing for each $i$-th ProMP:
 \begin{lstlisting}
 [train{i},test{i}] = partitionTrajectory(t{i},1,percentData,s_bar);
 \end{lstlisting}
-The second input parameter specifies that we select only one trajectory, randomly selected, to test the ProMP. %With another number, for instance $10$, $10\%$ of the recorded data would be used for tests.
-
-Now, we compute the three ProMPs with:
+Le second paramètre d'entrée spécifie qu'une seule trajectoire doit être sélectionnée de manière aléatoire afin de tester la \textit{ProMP} apprise. %With another number, for instance $10$, $10\%$ of the recorded data would be used for tests.
+Maintenant, les trois \textit{ProMPs} sont apprises avec :
 
 \begin{lstlisting}
 promp{1} = computeDistribution(train{1}, M, s_bar,c,h);
@@ -946,20 +947,22 @@ promp{2} = computeDistribution(train{2}, M, s_bar,c,h);
 promp{3} = computeDistribution(train{3}, M, s_bar,c,h)
 \end{lstlisting}
 
-We set the following parameters:
+avec comme paramètres :
 \begin{itemize}
-\item \mcode{s\_bar=100}: reference number of samples, which we note in this paper as $\bar{s}$.
-\item \mcode{nbInput(1) = 3; nbInput(2) = 6}: dimension of the generic vector containing the state of the trajectories. It is composed of 3D Cartesian position and 6D forces and wrench information.\footnote{Note that in our example wrenches are separated from the Cartesian position, because they are not used to recognize the index of the current ProMP during the inference.}
+\item \mcode{s\_bar=100} : le nombre d'échantillon de référence, noté $\bar{s}$ dans cette thèse.
+\item \mcode{nbInput(1) = 3; nbInput(2) = 6} : la dimension du vecteur paramètre qui contien les états de la trajectoire. Il est composé de la position Cartésienne en $3D$ et des forces et couples en $6D$.\comment{\footnote{Note that in our example wrenches are separated from the Cartesian position, because they are not used to recognize the index of the current ProMP during the inference.}}
 %\rev{dimension of the generic vector containing the state of the trajectories. It is composed of 3D Cartesian position and 6D forces and wrench information. Wrenches are separated from the Cartesian position, because they are not used to recognize the index of the current ProMP during the inference.}
-\item \mcode{M(1) = 5; M(2)= 5}: number of basis functions for each \mcode{nbInput} dimension.
-\item \mcode{c = 1/M;h = 1/(M*M)}: \textit{RBF} parameters (see Equation~\ref{eq:RBF}).
-\item \mcode{expNoise = 0.00001}: the expected data noise. We assume this noise to be very low, since this is a simulation.
-\item \mcode{percentData = 40}: this variable specifies the percentage of the trajectory that the robot will be observed, before infering the end.
+\item \mcode{M(1) = 5; M(2)= 5}: le nombre de \textit{RBFs} utilisé pour représenter chacune des \mcode{nbInput} dimensions.
+\item \mcode{c = 1/M;h = 1/(M*M)}: Les paramètres des \textit{RBF} (\textit{c.f.} Équation~\ref{eq:RBF}).
+\item \mcode{expNoise = 0.00001} : le bruit supposé des données.
+\item \mcode{percentData = 40} : cette variable spécifie le pourcentage de données de la trajectoire totale que le robot doit mesurer avant de prédire la continuation de la trajectoire.
 \end{itemize}
-These parameters can be changed at the beginning of the Matlab script.
+
+Ces paramètres peuvent être adaptés et sont fixés au début du script Matlab.
 
 
-Figure \ref{fig:3TargetsZTrajectoriesProMP} shows the three ProMPs of the reaching movements towards the three targets. To highlight the most useful dimension, we only plot the $z$-axis Cartesian position. However, each dimension is plotted by the Matlab script with:
+La Figure \ref{fig:3TargetsZTrajectoriesProMP} présente les trois \textit{ProMPs} permettant d'atteindre trois positions but répartie à différentes hauteurs. Afin de clarifier ce graphique, seul l'axe $z$ de la position Cartésienne est présenté.
+
 \begin{lstlisting}
 drawRecoverData(t{1}, inputName, 'Specolor','b','namFig', 1);
 drawRecoverData(t{1}, inputName, 'Interval', [4 7 5 8 6 9], 'Specolor','b','namFig',2);
@@ -984,36 +987,35 @@ drawRecoverData(t{3}, inputName, 'Interval', [4 7 5 8 6 9], 'Specolor','g','namF
 {
 \includegraphics[height=8cm]{img/3DOFtrajectoriesProMPs.pdf}
 }
-\caption{The Cartesian position in the $z$-axis of the three ProMPs corresponding to reaching three targets. There are $39$ trajectory demonstrations per each ProMPm with M=5 basis functions, $c={1 \over M}, h={1 \over M^2}$ and $\bar{s} = 100$.}
+\caption{Axe $z$ de la position Cartésienne pour les trois \textit{ProMPs} permettant d'atteindre des buts positionnées à différentes hauteurs. Il y a $39$ trajectoire de démonstration pour chaque \textit{ProMP} avec $M=5$ fonctions à base radiale (ici des Gaussiennes), paramétrées par $c={1 \over M}, h={1 \over M^2}$ et $\bar{s} = 100$.}
 \label{fig:3TargetsZTrajectoriesProMP}
 \end{figure}
 
 
-\subsection{Predicting the desired movement}
+\subsection{Prédiction du mouvement désiré}
 
-Now that we have learned the different ProMPs, we can predict the end of a trajectory according to the early observation $n_o$.
-This number is computed from the variable \mcode{percentData} written at the beginning of the trajectory by: $n_o= |{percentData \over 100}* t_{fi}|$, where $i$ is the index of the test-trajectory
+Maintenant que les trois \textit{ProMPs} sont apprises, la prédiction de la fin de la trajectoire peut être effectuée, à partir de $n_o$ observations initiales.
+Ce nombre est calculé à partir de la variable présentée précédement \mcode{percentData} : $n_o= |{percentData \over 100}* t_{fi}|$, où $i$ est l'indexe de la trajectoire test.
 
-To prepare the prediction, the model the time modulation of each trajectory is computed with:
+Afin de préparer la prédiction, le paramètre de modulation du temps de chaque trajectoire est calculé à l'aide d'une modélisation :
 \begin{lstlisting}
     w = computeAlpha(test.nbData,t, nbInput);
     promp{1}.w_alpha= w{1};
     promp{2}.w_alpha= w{2};
     promp{3}.w_alpha= w{3};
 \end{lstlisting}
-This model relies on the global variation of Cartesian position during the first $n_o$ observations. The model's computations are explained in Section~\ref{sec:predictDuration}.
+Cette modélisation s'appuie sur la \toimprove{variation brutale} de la position Cartésienne durant les $n_o$ premières observations. Les calculs effectués par cette modélisation sont expliqués dans la Section~\ref{sec:predictDuration}.
 
-Now, to estimate the time modulation of the trajectory, call the function:
+Maintenant, afin d'estimer ce paramètre de modulation du temps, il suffit d'appeler la fonction :
 \begin{lstlisting}
 [alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'MO');
 \end{lstlisting}
-Where \mcode{alphaTraj} contains the estimated time modulation $\hat{\alpha}$ and \mcode{type} gives the index of the recognized ProMP. The last parameter \mcode{x} is used for debbuging purposes.
+où \mcode{alphaTraj} contient l'estimation du paramètre de modulation du temps $\hat{\alpha}$ et la variable \mcode{type} correspond à l'index de la \textit{ProMP} reconnu (\textit{e.g.} le type de primitive de mouvement). Le dernier paramètre \mcode{x} est utilisé dans des buts de débogage.
 
-% This variable vector contains the early observations of the trajectory translated with an offset to be centred at the mean of the recognized ProMP.  
-%\marco{why the mean? Why this translation?}
+% This variable vector contains the early observations of the trajectory translated with an offset to be centred at the moyenne of the recognized ProMP.  
+%\marco{why the moyenne? Why this translation?}
 %\rev{It is hard to explain in english for me, I join a picture to explain the idea}
-
-Using this estimation of the time modulation, the end of the trajectory is inferred with:
+En utilisant cette estimation du paramètre de modulation du temps, la fin de la trajectoire est alors inférée avec :
 \begin{lstlisting}
 infTraj = inference(promp, test{1}, M, s_bar, c, h, test{1}.nbData, expNoise, alphaTraj);
 \end{lstlisting}
@@ -1039,15 +1041,15 @@ infTraj = inference(promp, test{1}, M, s_bar, c, h, test{1}.nbData, expNoise, al
 
 %\todo{l'image n'est pas clair, on ne voit pas grand chose : comment rendre ça plus clair ?}
 
-As shown in the previous example, the quality of the prediction of the future trajectory depends on the accuracy of the time modulation estimation. This estimation is computed by calling the function: 
+Comme présenté dans l'exemple précédent, la qualité de la prédiction du future de la trajectoire dépend de la précision de l'estimation du paramètre de modulation du temps. Cette estimation est effectuée de différentes manières: 
 \begin{lstlisting}
-%Using the model:
+%En utilisant une modelisation :
 [alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'MO');
-%Using the distance criteria:
+%En utilisant un critere de distance :
 [alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'DI');
-%Using the Maximum likelihood criteria:
+%En utilisant le maximum de vraisemblance :
 [alphaTraj,type, x] = inferenceAlpha(promp,test{1},M,s_bar,c,h,test{1}.nbData, expNoise, 'ML');
-%Using the mean of observed temporal modulation during learning:
+%En utilisant la moyenne des parametres de modulation du temps calcules lors de l'apprentissage :
 alphaTraj = (promp{1}.mu_alpha + promp{2}.mu_alpha + promp{3}.mu_alpha) /3.0;  
 \end{lstlisting}
 
@@ -1060,98 +1062,105 @@ alphaTraj = (promp{1}.mu_alpha + promp{2}.mu_alpha + promp{3}.mu_alpha) /3.0;
 %\label{fig:3DOFtrajectoriesPredictionsDuration}
 %\end{figure}
 
-\subsection{Predicting the time modulation}\label{sec:simulatedTimeModulationModels}
+\subsection{Prédiction du paramètre de modulation du temps}\label{sec:simulatedTimeModulationModels}
+La Section~\ref{sec:predictDuration} présente les quatre méthodes proposées permettant d'estimer le paramètre d'estimation du temps et précise pourquoi cette estimation est importante lors de la reconnaissance de la trajectoire. 
+Dans l'expérience actuelle, ces méthodes sont maintenant comparées.
 
-In Section \ref{sec:predictDuration} we presented four main methods for estimating the time modulation parameter, discussing why this is crucial for a better estimation of the trajectory. 
-Here, we compare the methods on the three goals experiment.
 % consisting of learning three ProMPs where the final position varies in the height position ($z$-axis in Cartesian coordinates). 
-We recorded 40 trajectories for each movement primitive, 
+
+%Les sections précédentes ont montrées que $40$ trajectoires ont été enregistrées par primitive de mouvement, soit un total de $120$ trajectoires. 
+
+%We recorded 40 trajectories for each movement primitive, 
 %executed by four different human participants, 
-for a total of 120 trajectories.
+%for a total of 120 trajectories.
 %, with $40$ trajectories per each movement primitive. 
 %This experiment has been done with four humans, that does ten trajectories for each movement primitive. Thus, we have forty observed trajectories per movements. 
-After having computed the corresponding ProMPs, we tested the inference by providing early observations of a trajectory that the robot must finish. For that purpose, it recognizes the correct ProMP among the three precedently learned (see Section~\ref{sec:ManyProMP}) and then it estimates the time modulation parameter $\hat{\alpha}$.
+
+Après avoir calculé les trois \textit{ProMPs} (\textit{c.f.} section précédente), l'inférence de la finition de trajectoire est maintenant testée. Pour cela, le robot doit tout d'abord reconnaitre la \textit{ProMP} correspondante, parmi les trois apprises (\textit{c.f.} Section~\ref{sec:ManyProMP}), puis il doit estimer le paramètre de modulation du temps $\hat{\alpha}$.
 %To understand how to infer a trajectory from many ProMPs, refer to Section~\ref{sec:ManyProMP}. 
-Figure~\ref{fig:analyseAlpha} represents the average error of the $\hat{\alpha}$ during inference for 10 trials according to the number of observations (from 30\% to 90\% of observed data) and according to the used method. 
-These methods are the ones we have just presented before that we called mean (Equation~\ref{eq:avg}), maximum likelihood (Equation~\ref{eq:ml}), minimum distance (Equation~\ref{eq:minDist}) or model (Equation~\ref{eq:model}). 
-Each time, the tested trajectory is chosen randomly from the data set of observed trajectories (of course, the test trajectory does not belong to the training set, so it was not used in the learning step). 
+La Figure~\ref{fig:analyseAlpha} représente l'erreur moyenne de l'estimation de ce paramètre $\hat{\alpha}$ à partir de $10$ tests d'inférence, en fonction du pourcentage de la trajectoire totale observé par le robot (de 30\% à 90\% de la trajectoire totale) et en fonction de la méthode utilisée. 
+Ces méthodes sont celles présentées précédemment appelées ``moyenne'' (\textit{c.f.} Équation~\ref{eq:avg}), ``maximum de vraisemblance'' (\textit{c.f.} Équation~\ref{eq:ml}), ``distance minimum'' (Équation~\ref{eq:minDist}) ou modélisation (\textit{c.f.} Équation~\ref{eq:model}). 
+À chaque fois, la trajectoire testée est choisie aléatoirement de l'ensemble des trajectoires observées (cette trajectoire test n'est pas incluse dans l'ensemble de trajectoire de démonstration, afin qu'elle ne soit pas utilisée dans l'étape d'apprentissage). 
 \begin{figure}[h]
  \begin{minipage}[c]{.46\linewidth}
 \includegraphics[width=\hsize]{img/alphaErrorAll.pdf}
 \end{minipage} \hfill
-   \begin{minipage}[c]{.46\linewidth}
-\includegraphics[width=\hsize]{img/YErrorAll.pdf}
-\end{minipage}
-\center
+  \begin{minipage}[c]{.46\linewidth}
+%\includegraphics[width=\hsize]{img/YErrorAll.pdf}
+%\center
 \includegraphics[height=6cm]{img/errorBoxplot.pdf}
-\caption{(top left) Error of $\alpha$ estimation; (top right and bottom) error of trajectory prediction according to the number of known data and the method used. We executed 10 different trials for each case.}
+\end{minipage}
+\caption{(à gauche) Erreur d'estimation du paramètre $\alpha$  ; (à droite) erreur de la prédiction de la trajectoire, suivant le nombre d'observation connues par le robot et la méthode utilisée. Dans chaque cas, $10$ tests sont effectués.}
 \label{fig:analyseAlpha}
 \end{figure}
-The method that takes the average of $\alpha$ observed during learning is taken as comparison (in black). We can see that other methods are more accurate. \rev{The \textit{maximum likelihood} is increasingly more accurate, as expected. The fourth method (\textit{model}) that models the $\alpha$ according to the global variation of the trajectory's positions during the early observations is the best performing when the portion of observed trajectory is small (\textit{e.g.}, 30\%-50\%).  Since it is our interest to predict the future trajectory as early as possible, we adopted the \textit{model} method for our experiments.}
+La méthode qui consiste à effectuer la moyenne des paramètres $\alpha$ observés lors de l'apprentissage est utilisée \toimprove{en comparaison} (présentée dans les graphes en noir). Les graphes mettent en avant que les autres méthodes sont plus précise. 
+%La méthode du maximum de vraisemblance est plus précise, comme attendu. 
+La dernière méthode (\textit{c.à.d.} celle qui consiste à modéliser le paramètre $\alpha$ en fonction de \toimprove{la variation globale} de la position Cartésienne durant les premières observations de la trajectoire) est celle qui permet au mieux d'approximer le paramètre de modulation du temps lorsque le robot observe peut de données de la trajectoire (\textit{e.g.}, 30\%-50\% observation de la trajectoire totale).  De plus, c'est cette même méthode qui infère le mieux la trajectoire désirée. Ainsi, on utilise la méthode de la \textit{modélisation} pour nos expériences, quand il s'agit de reconnaître la trajectoire à partir de la position Cartésienne du robot.
 %Note that even though 
 
 
 
 %\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application on the real iCub}
+\section{Application sur le robot \textit{iCub} réel}
 \label{sec:appliRealIcub}
 
-\rev{In this section we present and discuss two experiments with the real robot iCub.}
+Dans cette section, nous nous intéressons à deux expériences effectuées sur le robot \textit{iCub} réel.
 
-\rev{In the first, we take inspiration from the experiment of the previous Section \ref{sec:3ProMPsAppli}, where the ``tasks'' are exemplified by simple point-to-point trajectories demonstrated by a human tutor. In this experiment we explore how to use wrench information and use known demonstrations as ground truth, to evaluate the quality of our prediction.}
+La première expérience s'inspire de l'expérience précédente (\textit{c.f.} Section \ref{sec:3ProMPsAppli}), où les  ``tâches'' sont représentées par des trajectoires de démonstration dirigées vers des buts distincts. Ces démonstrations sont effectuées par un collaborateur humain. Cette expérience permet d'explorer comment les informations sur les forces et les couples peuvent être exploitées. 
+Afin de pouvoir évaluer la qualité des prédictions, les trajectoires tests présentées partiellement au robot sont en réalité connues dans leur totalité, afin d'avoir une ``vérité terrain''.
 %The task consists in collaborating with a human operator to sort objects. 
 
 %As an example, imagine a classic object sorting scenario, where the tasks could be transferring the objects to the correct bin or tray, or an assembly scenario where the tasks are different object-picking and manipulation trajectories, to be performed with or without the human partner.
 %}
 
-\rev{In the second experiment, we set up a more realistic collaborative scenario, inspired by collaborative object sorting. 
-In such applications, the robot is used to lift an object (heavy, or dangerous, or that the human cannot manipulate, as for some chemicals or food), the human inspects the object and then decides if it is accepted or rejected. Depending on this decision, the object goes on a tray or bin in front of the robot, or on a bin located on the robot side. 
-Dropping the objects in two cases must be done in a different way. Realizing this application with iCub is not easy, as iCub cannot lift heavy objects and has a limited workspace. Therefore, we simplify the experiment with small objects and two bins. The human simply starts the robots movement with physical guidance, and then the robot finishes the movement on its own.
-In this experiment the predicted trajectories are validated on-the-fly by the human operator.}
+La seconde expérience consiste en un scénario collaboratif plus réaliste, inspiré par le tri d'objets de manière collaboratif. 
+Dans de telles application, le robot est utilisé afin de soulever des objets qui peuvent être lourds, dangereux, ou que l'humain ne peut pas manipuler (\textit{i.e.} des objets chimiques ou de la nourriture). Le partenaire humain imspecte alors l'objet et décide si il est accepté ou rejeté. Selon cette décision, l'objet est mis dans une corbeille positionné en face du robot, ou dans une poubelle placée à coté du robot. 
+Jeter l'objet l'objet dans les deux cas doit être effectué de manière différente. Réaliser cette tâche avec le \textit{iCub} n'est pas évident, car son espace opérationnel est limité et il ne peut pas porter d'objets lourds. C'est pourquoi, l'expérience a été simplifié et correspond au déplacement de petits objets et de deux corbeilles. Le partenaire humain n'a qu'a commencer un mouvement en guidant le bras du robot, puis de le lâcher, le robot finit alors le mouvement à accomplir par lui même.
+Pour garantir la sécurité du robot, les trajectoires prédites sont alors présentés sur une interface graphique représentant le monde du robot, puis sont validés sur le champs par l'opérateur humain afin que le robot effectuent le mouvement.
 
-\rev{In a more complex collaborative scenario, tasks could be elementary tasks such as pointing, grasping, reaching, manipulating tools (the type of task here is not important, as long as it can be represented by a trajectory).}
+Pour des scénario de collaboration plus compliqué, les tâches pourront être des tâches élémentaires telles que pointer, attraper, atteindre, manipuler des objets. Dans cette étude, nous n'avons pas effectué ce type de tâche, cette partie n'étant pas intéressante, puisqu'elle peut être lancé directement avec le type de primitive de mouvement reconnu.
 
-
-\subsection{Three simple actions with wrench information}
-
-\rev{Task trajectories, in this example, have both position and wrench information.
-In general, it is a good idea to represent collaborative motion primitives in terms of both position and wrenches, as this representation enables using them in the context of physical interaction.
- Contrarily to the simulated experiment, here the inferred wrenches $\hat{F}_t$ correspond to the wrenches the robot should perceive if the partner was manually guiding the robot to perform the entire movement: indeed, these wrenches are computed from the demonstrations used to learn the primitive. 
-The predicted wrenches can be used in different ways, depending on the application.
-For example, if the partner breaks the contact with the robot, the perceived wrenches will be different. If the robot is not equipped with tactile or contact sensors, this information can be used by the robot to ``perceive'' the contact breaking and interpret it, for example, as the sign that the human wants the robot to continue the task on its own. 
-Another use for the demonstrated wrenches is for detecting abnormal forces while the robot is moving: this use can have different applications, from adapting the motion to new environment to automatically detecting new demonstrations. 
-Here, they are simply used to detect when the partner breaks the contact with the robot, and the latter must continue the movement on its own.
+\subsection{Trois actions simples, avec informations sur les forces et les couples}
+\comment{torseur = forces + moment de couple}
+Dans cet exemple, les trajectoires sont aussi définies par des informations sur les forces et les couples reçus par le robot. Cet ajout de données est utile pour représenter des primitives de mouvements collaboratives puisque cela permet au robot de prendre en compte l'interaction physique qu'il a avec son utilisateur.
+Contrairement aux expériences simulées, les forces et couples inférés $\hat{F}_t$ correspondent à ceux que le robot devrait percevoir si le partenaire le guide manuellement durant l'ensemble du mouvement. En effet, ces données sont calculées à partir des trajectoires de démonstrations, où l'utilisateur guide le robot pour lui permettre d'apprendre les différentes primitives de mouvement. 
+Les forces et couples qui sont prédits peuvent être utilisés de différente manière en fonction de l'application.
+%Par exemple, si le partenaire brise le contact avec le robot, les forces et couples perçus vont changer. Si le robot n'est pas équipé de capteurs tactiles ou de contact, ces informations peuvent alors être utilisées afin qu'il  ``perçoive'' que ce contact a été stopé et qu'il puisse l'interpréter, par exemple, comme le signe que le partenaire souhaite qu'il continue la tâche par lui meme. 
+Par exemple, le robot peut utiliser ces informations afin de détecter des forces anormales qui lui sont appliqués pendant son mouvement : il pourrait alors adapter son mouvement à de nouveaux environemments (évitement d'obstacle) ou comprendre qu'il doit apprendre de nouvelles trajectoires (le partenaire reprend le controle pour lui apprendre un nouveau mouvement).
+%Here, they are simply used to detect when the partner breaks the contact with the robot, and the latter must continue the movement on its own.
 %In the current case where the partner let go of the robot, the forces will be weaker. Thus, in future work, if wrenches are stronger that the inferred forces, the robot will stop its action and follow the partner's guidance.
-}
 
-\rev{In the following, we present how to realize the experiment for predicting the user intention with the real iCub, using our software.}
+Les prochains paragraphes permettent de présenter la réalisation de l'expérience, qui consiste donc à prédire l'intention de l'utilisateur lorsque celui-ci utilise le robot réel.
 %We tested our software on the real iCub. 
-The robot must learn three task trajectories represented in Figure \ref{fig:realAppli}. In red, the first trajectory goes from an initial position \rev{in front of the robot} to its left (\rev{task} A). In \rev{green}, the second trajectory goes from the same initial position to the top (\rev{task C}). In \rev{blue}, the last trajectory goes from the top \rev{position to the position on the left (task B).}
+Le robot apprend trois trajectoires, représentant chacune des tâches différentes. La Figure~\ref{fig:realAppli} représente ces trajectoires, avec la première, présentée en rouge, qui démarre devant le robot et va vers la gauche (tâche A) ; la seconde, présentée en vert, qui démarre de la même position et finit en hauteur (tâche C) ; et la dernière, présentée en bleu, qui démarre en hauteur et qui finit sur la gauche, à la même position finale que la trajectoire précédente (tâche B).
 
-\rev{To provide the demonstrations for the tasks, the human tutor used three visual targets shown on the iCub\_GUI, a basic module of the iCub code that provides a real-time synthetic and augmented view of the robot status, with arrows for the external forces and colored objects for the targets. 
-One difficulty for novice users of iCub is to be able to drive the robot's arm making it perform desired complex 3D trajectories \cite{ivaldi2017towards}, but after some practice in moving the robot's arm the operator recorded all the demonstrations.
-We want to highlight that having variations in the starting or ending points of the trajectories is not at all a problem, since the ProMPs are able to deal with this variability.%, contrarily to other methods for synthesizing motion primitives.
-}
+Afin de fournir des démonstration des tâches, le tuteur humain utilise trois but visuels, visible virtuellemet sur le
+``\textit{iCub\_GUI}'', qui est un module du robot \textit{iCub} qui présente l'état en temps réel du robot, avec des flèches représentant les forces externes reçues par le robot et des objets colorés représentant les cibles à atteindre.\todo{mettre une figure}
+
+Les utilisateurs novices du robot \textit{iCub} ont des difficultés à manipuler le bras du robot et à lui faire exécuter des trajectoire complexes en $3D$~\cite{ivaldi2017towards}, mais après avoir effectué plusieurs mouvements, l'opérateur est capable d'effectuer correctement les mouvements.
+De plus, même expérimenté, l'utilisateur peut effectuer un même mouvement de différentes façons, puisque les bras du robot sont composés de beaucoup d'articulation. Ces variations ne posent cependant pas de problème, puisque les \textit{ProMPs} prennent en compte la variabilité des démonstrations.
+%We want to highlight that having variations in the starting or ending points of the trajectories is not at all a problem, since the ProMPs are able to deal with this variability.%, contrarily to other methods for synthesizing motion primitives.
+
 
 
 %One challenge of this real-world application is that the robot's arm is not easy to handle. The user need to control all the robot's degrees of freedom with one of his hands. Moreover, the user can guide the robot in different ways, so  there is variability in movements that reach the same goal.
 
 %Despite these difficulties, we will see that 
-We will see that by using the ProMPs method and by learning the end-effector Cartesian position, the robot will be able to learn distributions over trajectories, recognize when a movement belongs to one of these distributions and infer the end of the movement.
+Ainsi, en utilisant la méthode des \textit{ProMPs} et en apprenant la position Cartésienne de l'effecteur du robot, celui-ci va être capable d'apprendre des distributions de ces trajectoires, de reconnaître la distribution liée à la trajectoire courante et d'inférer la continuation du mouvement.
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=9cm]{img/experimentRepresentation.pdf}\includegraphics[width=10cm]{img/realTrajectories2.pdf}\\
 \includegraphics[width=18cm]{img/realTrajectoriesv2.pdf}
-\caption{Top left: the iCub and the visualization of the three targets in its workspace, defining the three tasks A-B-C. Top right: Cartesian position information of the demonstrated trajectories for the three tasks. Bottom left and right: wrench (force and moment) information of the demonstrated trajectories.
+\caption{En haut à gauche : le robot \textit{iCub} et la visualisation des positions Cartésiennes des trois buts dans son espace opérationnel, avec les trajectoires correspondantes qui définissent les trois tâches A-B-C. En haut à droite : les position Cartésienne des trajectoires de démonstrations pour ces trois tâches. En bas de gauche à droite: les forces et moments des trajectoires de démonstration.
 %The three trajectories presenting the primitives A, B, and C. A color code (RGB) is used throughout the paper to facilitate the recognition of trajectories (top-left); and the corresponding test-set composed of position (top) and wrench (bottom) information.
 }
 \label{fig:realAppli}
 \end{figure}
 
-In this experiment, the robot received $10$ demonstrated trajectories per movement primitive, all provided by the same user. We recorded the Cartesian end-effector position and the wrenches of the robot's left arm. Data are retrieved using the function \mcode{used_functions/retrieveRealDataWithoutOrientation.m}. The output parameters of this function are three objects (one per ProMP) that contain all the required information to learn the ProMPs. 
+Dans cette expérience, le robot récupère $10$ trajectoires de démonstrations par primitive de mouvement, toutes fournies par un même utilisateur. Les données enregistrées correspondent à la position Cartésienne de la main gauche du robot ainsi que les forces et moment qu'elle reçoit lors de ces mouvements. Les données sont récupérées à l'aide de la fonction \mcode{used_functions/retrieveRealDataWithoutOrientation.m}. Les paramètres de sorties de cette fonction correspondent à trois objets  (un par \textit{ProMP}) qui contiennent toutes les informations requises afin d'apprendre les \textit{ProMPs}. 
 %%From these objects, the robot learned:
 %Each trajectory is:
 %$$\Xi_t = \begin{bmatrix}
@@ -1160,54 +1169,45 @@ In this experiment, the robot received $10$ demonstrated trajectories per moveme
 %\marco{[Obs.: What did the robot learn? The parameters $\omega$ and the distributions or the trajectories?]}
 %\rev{I don't understand your question: by learning the $\omega$ parameter and the distributions, the robot learns the trajectory, isn't it?} 
 
-In this function, the wrench information are filtered using a Matlab function called \mcode{envelope.m}\footnote{Information about this function can be found here: \url{https://fr.mathworks.com/help/signal/ref/envelope.html?requestedDomain=www.mathworks.com}}: for each trajectory \mcode{traj} and its subMatrix $M = F([1:t])$:
+Dans cette fonction, les informations des forces et des couples sont filtrées à l'aide d'une fonction Matlab appelée \mcode{envelope.m}\footnote{Les informations de cette fonctions peuvent être récupérées ici : \url{https://fr.mathworks.com/help/signal/ref/envelope.html?requestedDomain=www.mathworks.com}}: pour chaque trajectoire \mcode{traj} et sa sous-matrice $M = F([1:t])$:
 \begin{lstlisting}
 [envHigh, envLow] = envelope(traj.M);
 traj.M = (envHigh+envLow)/2;
 \end{lstlisting}
-These three objects are saved in \mcode{'Data/realIcub.mat'}. A Matlab script called \mcode{demo_plotProMPsIcub.m} recovers these data, using the function \mcode{load('Data/realIcub.mat')}. This script follows the same organization as the ones we previously explained in Sections~\ref{sec:example1DOF} and \ref{sec:3ProMPsAppli}. 
-By launching this script, the recovered data are plotted first.
+Ces trois objets sont sauvegardés dans \mcode{'Data/realIcub.mat'}. Un script Matlab appelé \mcode{demo_plotProMPsIcub.m} permet de récupérer ces données, à l'aide de la fonction \mcode{load('Data/realIcub.mat')}. Ce script est organisé de la même manière que ceux présenté dans les Sections~\ref{sec:example1DOF} and \ref{sec:3ProMPsAppli}. 
+En lançant ce script, les données récupérée sont d'abord représentées.
 
-%\begin{figure}[h]
-%\centering
-%\includegraphics[height = 10cm]{img/realTrajectories2.pdf} \includegraphics[width=\hsize]{img/realTrajectoriesv2.pdf} 
-%\caption{Reprensentation of the three trajectories learned by the real iCub. Top: 3D Cartesian position; bottom: wrenches with 3D forces (left) and 3D moments (right).}
-%\label{fig:realTraj}
-%\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[height = 5cm]{img/realTrajectories2.pdf} \includegraphics[width=\hsize]{img/realTrajectoriesv2.pdf} 
+\caption{\ori{cette figure était supprimée.} Représentation des trois trajectoires apprises par le robot réel. En haut : position cartésienne 3D ; en bas : forces en 3D et moments en 3D.}
+\label{fig:realTraj}
+\end{figure}
 
-Then, the ProMPs are computed and plotted, as presented in Figure~\ref{fig:realDistribution}.
-In this figure, the distributions are visibly overlaid:
+Puis, les \textit{ProMPs} sont apprises et affichées, comme présenté dans la Figure~\ref{fig:realDistribution}.
+Dans cette figure, les distributions sont visiblement superposées :
 \begin{itemize}
-\item during the whole trajectories duration for the wrench information;
+\item le long de toutes les trajectoires en ce qui concerne les informations des couples ;
 % $f_x$, $f_y$, $f_z$ and $m_z$ dimensions; 
-\item during the $40\%$ first samples of the trajectories for the Cartesian position information.
+\item lors des $40$ premiers pourcents des trajectoires en ce qui concerne l'information des positions Cartésiennes.
 %$x$, $y$ and $z$ dimensions. 
 \end{itemize}
-
-
 %We make the hypothesis that force information is not useful for identifying trajectories. However, the robot learned it to know what are the forces' amplitude it is supposed to measure.
+Après cette étape d'apprentissage, l'utilisateur choisi la \textit{ProMP} à tester. En utilisant la variable qui représente le pourcentage de données de la trajectoire que le robot observe avant d'effectuer l'inférence, le script calcul alors le nombre $n_o$ d'observations qui correspond à ce pourcentage. Notons que $n_o$ n'est pas identique pour toutes les trajectoires testées, puisque ce nombre dépend de leur durée totale. En utilisant ce nombre, le robot modélise le paramètre de modulation du temps $\alpha$ pour chaque trajectoire (\textit{c.f.} Section~\ref{sec:predictDuration}). En effet, la ``variation globale'' correspond à la variation des données de la trajectoire entre l'itération $1$ et l'itération$n_0$. En utilisant ce modèle, le paramètre de modulation du temps de la trajectoire test est estimée et la \textit{ProMP} correspondante est identifiée.
 
-
-
-
-After this learning step, the user chooses which ProMP to test.
-Using a variable that represents the percentage of observed data to be used for the inference, the script computes the number of early observations $n_o$\footnote{$n_o$ is not the same for each trajectory test, because it depends on the total duration of the trajectory to be inferred. } that will be measured by the robot. Using this number, the robot models the time modulation parameter $\alpha$\footnote{Since the model uses the $n_o$ parameter, its computation cannot be performed before this step.} of each ProMP, as explained in Section~\ref{sec:predictDuration}. 
-Using this model, the time modulation of the test trajectory is estimated and the corresponding ProMP is identified.
-
-%\begin{figure}[h]
-%\centering
-%\includegraphics[width = 8cm]{img/realalphaModel.pdf} \includegraphics[width = 8cm]{img/alphaInfWithForces.pdf} 
-%\caption{$\alpha$ model with (left) and without (right) wrenches. In pink, the $\alpha$ model based on the $\alpha$ set of the learning trajectories; in green, their real values; in red, the $\hat{\alpha}$ expectation of the test trajecory; and in blue its real value.
-%}
-%\label{fig:realalphaModel}
-%\end{figure}
-
-%Figure \ref{fig:realalphaModel} represents some $\alpha$ estimation using the learned model. On the left when the model doesn't contain wrench information, on the right with wrench information. The green crosses represent the $\alpha$ set of the learning trajectories, and the pink crosses the estimation done by the model based on this set. The $10$ first crosses are the $\alpha$ set of the first ProMP, the $10$ following the ones of the second ProMP and the last $10$ crosses the ones for the third ProMP. Finally, the red cross is the $\hat{\alpha}$ estimation of the test trajectory and the blue cross the real $\alpha$ of this test trajectory. We can see that with wrench information, the $\alpha$ estimation is really accurate.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 8cm]{img/realalphaModel.pdf} \includegraphics[width = 8cm]{img/alphaInfWithForces.pdf} 
+\caption{\ori{Cette figure était supprimée}$\alpha$ model with (left) and without (right) wrenches. In pink, the $\alpha$ model based on the $\alpha$ set of the learning trajectories; in green, their real values; in red, the $\hat{\alpha}$ expectation of the test trajecory; and in blue its real value.
+}
+\label{fig:realalphaModel}
+\end{figure}
+\ori{La Figure~\ref{fig:realalphaModel} représente l'estimation de quelques paramètres $\alpha$, à l'aide de la modélisation apprise. Sur la gauche, quand la modélisation ne contient pas d'information sur les forces et les couples, et sur la droite, lorsqu'elle contient ces informations. Les croix vertes représentent l'ensemble de $\alpha$ des trajectoires d'apprentissage, et les croix roses, l'estimation effectuée par la modélisation à l'aide de cet ensemble. Les $10$ première croix correspondent à l'ensemble de $\alpha$ de la première \textit{ProMP}, les $10$ suivantes, celles de la seconde \textit{ProMP} et les $10$ dernières, celles de la dernière \textit{ProMP}. Finalement, la croix rouge correspond à l'estimation $\hat{\alpha}$ de la trajectoire testée et la croix bleue le paramètre $\alpha$ réel de cette même trajectoire. Ces résultats montre qu'avec l'information des forces et des couples, l'estimation du paramètre $\alpha$ est plus précis.}
 
 \begin{figure}[!h]
 \centering
 \includegraphics[height = 10cm]{img/realDistribution.pdf} 
-\caption{The ProMPs learned by the robot from the demonstrations of Figure \ref{fig:realAppli}.}
+\caption{Les \textit{ProMPs} apprises par le robot à partir des démonstrations représentées dans la Figure \ref{fig:realAppli}.}
 \label{fig:realDistribution}
 \end{figure}
 
@@ -1224,48 +1224,41 @@ Using this model, the time modulation of the test trajectory is estimated and th
 \includegraphics[width=15cm]{img/infc.pdf}\\
 %\includegraphics[width=\hsize /3]{img/infData3D/top30.pdf}
 }
-\caption{The prediction of the future trajectory from the learned ProMPs computed from the position information for the  3-targets dataset on the real iCub (Figure \ref{fig:realDistribution}) after 40\% of observations.}
+\caption{Prédiction de la trajectoire future après l'observation partielle ($40\%$) de celle-ci. Cette prédiction est effectuée à l'aide des \textit{ProMPs} définies par leur position Cartésienne. Ces \textit{ProMPs} sont apprises à partir des trois ensembles de trajectoires correspondant aux trois tâches. Ces trajectoires sont effectuées avec le robot \textit{iCub} réel (Figure \ref{fig:realDistribution}).}
 \label{fig:realTrajectoriesPredictions}
 \end{figure}
 
-Then, the inference of the trajectory's target is performed. 
-Figure~\ref{fig:realTrajectoriesPredictions} represents the inference of the three tested trajectories when wrench information is not used by the robot to infer the trajectory. 
-\rev{To realize this figure, with the comparison between the predicted trajectory and the ground truth, we applied our algorithm offline. In fact, it is not possible at time $t$ to have the ground truth of the trajectory intended by the human from $t+1$ to $t_f$: even if we would tell to the human in advance the goal that he/she must reach for, the trajectory to reach that goal could vary. So, for the purpose of these figures and comparisons with the ground truth, we show here the offline evaluation: we select one demonstrated task trajectory from the test set (not the training set used to learn the ProMP) as ground truth, and imagine that this is the intended trajectory.
-In Figure~\ref{fig:realTrajectoriesPredictions}, the ground truth is shown in black, whereas the portion of this trajectory that is fed to the inference, and that corresponds to the ``early observations'', is represented with bigger black circles.
-}
+Puis, l'inference du but de la trajectoire est effectuée. La Figure~\ref{fig:realTrajectoriesPredictions} représente l'inférence de trois trajectoires testées (chacune correspondant à des tâches différentes) et où l'information des forces et des couples n'est pas utilisée. 
+Afin de réaliser cette figure qui compare la trajectoire prédite et la trajectoire attendue, l'algorithme a été ici effectué en hors-ligne. En effet, il n'est pas possible d'avoir de vérité terrain sans avoir récupérée la trajectoire entière en amont. Ainsi, une trajectoire de démonstration a été récupérée de l'ensemble de test (\textit{c.à.d.} qu'elle n'a pas été utilisée pour l'apprentissage) en tant que ``vérité terrain''. Il s'agit alors de la trajectoire attendue.
+Dans la Figure~\ref{fig:realTrajectoriesPredictions}, la vérité terrain est présentée en noir, alors que la portion de trajectoire qui est utilisée lors de l'inférence (\textit{c.à.d} les ``observations initiale'') est représentée par des point plus gros en noir.
 %\rev{These tests have been done on a test base, that contains some whole-trajectories guided by the user. Then, we give to the program only a partial trajectory composed on 40\% of the recorded trajectory. The ground truth (\textit{e.g.} the total-trajectories of the test base) are represented in the figure in black. The partial-trajectories, that are known by the software are represented with the black circles.} 
-We can see that the inference of the Cartesian position is correct, although we can see an error of about $1$ second of the estimated duration time for the last trial. Also, the wrench inference is not accurate. We can assume that it is: because the robot infers the trajectory using only position information without wrench information, or because the wrenches' variation is not correlated to the position variation.
-To improve this result, we can make the inference using wrench in addition to Cartesian position information, as shown in Figure~\ref{fig:realTrajectoriesPredictionsWithForces}. We can see in this Figure that the estimation of the trajectory's duration is accurate. The disavantage is that the inference of the Cartesian position is less accurate because the posterior distribution computation makes a trade-off between fitting Cartesian position and wrench early observations. Moreover, to allow a correct inference using wrench information, the noise expectation must be increased to consider forces. \footnote{In future versions, we will include the possibility to have different noise models for the observations, \textit{e.g.} we will have $\Sigma_\Xi^o = \left[
+Cette figure met en évidence que l'inférence de la position Cartésienne est correcte, malgré qu'une erreur d'une seconde est visible sur l'estimation de la durée de la trajectoire inférée pour la tâche A. De plus, l'inférence des forces et des couple n'est pas très précise. Cela est possiblement dû au fait que la variation des forces et des couples n'est pas corrélée à la variation positionnelle, or le robot prédit la trajectoire en utilisant l'information de la position seule, sans l'information provenant des forces et des couples.
+Afin d'améliorer ce résultat, il faut alors ajouter la connaissance des mesures des forces et des couples lors de l'inférence, comme présenté dans la Figure~\ref{fig:realTrajectoriesPredictionsWithForces}. Cette figure montre que l'estimation de la durée des trajectoire est plus précise. Le désavantage est par contre que la position Cartésienne inférée est un peu moins précise, puisque la distribution de la \textit{ProMP} est mise à jour en faisant un compromis entre les mesures de la position Cartésienne et celle des forces et des couples. De plus, afin de permettre une prédiction correcte des forces et des moments, l'estimation du bruit doit être augmenté dans ces dimensions. Ainsi, dans de futures versions, il s'agira d'ajouter la possibilité de faire varier les modèles de bruit selon les trajectoires observées (\textit{c.à.d} que l'on aura  $\Sigma_\Xi^o = \left[
 \begin{array}{c c}
 \Sigma_X  & 0\\  
 0 &\Sigma_F \\
-\end{array}\right]$. We will therefore set a bigger covariance for the wrench information than for the position information.}
-
-
+\end{array}\right]$. Ainsi, la covariance sera plus grande en ce qui concerne les données des forces et des couples, que celle concernant les données positionnelles.)
 %allow to have different expectation noises according to the data type
 %\textcolor{blue}{expectation noises [Obs.: Is “noise
 %expectation” or “expectation noise” the same as “observation noise”?]}
 %\textcolor{purple}{@marco: i didn't understand your question but tell me if it is more clear now with the following parenthesis} 
 
+Afin de confirmer ces résultats, nous avons annalysé l'inférence des trajectoire et l'estimation du paramètre $\alpha$, selon différente longueure de trajectoire observée (de $30$ à $90\%$ de la trajectoire totale). Pour chacun de ces pourcentages, $20$ tests ont été effectués, avec ou sans données sur les forces et les moments.
 
-To confirm these results, we analyzed the trajectory inference and $\alpha$ estimation considering different percentages of each trajectory as observed data ($30$ to $90\%$). For each percentage, we performed $20$ tests, with and without force information.
+Dans la Figure~\ref{fig:errBoxWithWithoutForces}, chaque graphique représente les erreurs de ces $20$ tests. En haut, le critère d'erreur correspond à la distance moyenne entre la trajectoire prédite et celle réelle. Ce graphe montre que l'inférence de la position Cartésienne de la trajectoire effectuée par la main du robot est plus précise sans prendre en compte l'information des forces et des couples. En bas, le critère d'erreur correspond à la distance moyenne entre l'estimation du paramètre $\alpha$ et sa vrai valeur. Cette fois-ci, les données des forces et des couples permettent d'approximer mieux le paramètre $\alpha$.
+Ainsi, ces graphes confirment les hypothèses proposées concernant les Figures~\ref{fig:realTrajectoriesPredictions} et ~\ref{fig:realTrajectoriesPredictionsWithForces}.
+\todo{j'ai jamais précisé que c'est logique que l'information des forces permettent de mieu estimer le paramètre alpha ?} 
 
+La médiane, la moyenne et la variance de ces erreurs de prédiction, calculées à l'aide de l'erreur quadratique moyenne (\textit{NRMSE}), sont reportés dans la Table~\ref{table:statsError}. 
+\toimprove{L'erreur de prédiction du paramètre de modulation du temps correspond à un scalaire} : $|\alpha_{\textrm{prediction}} - \alpha_{\textrm{real}} |$.   
+L'erreur de prédiction de la trajectoire est calculée à l'aide du \textit{NRMSE} de $| \Xi_{\textrm{prediction}} - \Xi_{\textrm{real}}  |$.
 
-In Figure~\ref{fig:errBoxWithWithoutForces}, each box-plot represents errors for $20$ tests.
-On the top, the error criterion is the average distance between the inferred trajectory and the real one. We can see that the inference of Cartesian end-effector trajectory is more accurate without wrench information.
-On the bottom, the error criterion is the distance between the estimated $\alpha$ and the real one. We can see that using wrench information, the estimation of the $\alpha$ is more accurate.
-Thus, these two graphs confirm what we assumed from Figures~\ref{fig:realTrajectoriesPredictions} and ~\ref{fig:realTrajectoriesPredictionsWithForces}. 
+Dans l'étude suivante, nous utiliserons alors l'information des couples et des forces uniquement lors de l'estimation du paramètre de modulation du temps $\alpha$. Cela permettra d'avoir à la fois la meilleur inférence de la trajectoire estimée , mais aussi la meilleur estimation du paramètre de modulation du temps. Ainsi l'algorithme combinera les benéfice de prédiction effectuée avec ou sans l'information des forces et des moments.
 
-\rev{Median, mean and variance of the prediction errors, computed with the normalized root-mean-square error (NRMSE) are reported in Table~\ref{table:statsError}. 
-The prediction error for the time modulation is a scalar: $|\alpha_{\textrm{prediction}} - \alpha_{\textrm{real}} |$.   
-The prediction error for the trajectory is computed by the NRMSE of $| \Xi_{\textrm{prediction}} - \Xi_{\textrm{real}}  |$.}
+La Table~\ref{table:statsError} reporte aussi le temps moyen de calcul nécessaire à la prédiction du paramètre de modulation du temps et de la distribution postérieure. Les calculs sont effectués sur Matlab, sur un ordinateur à un cœur  (\textit{e.g.} sans parallélisation). Alors que le temps de calcul dans le cas de calcul ``sans forces et moments'' est correcte pour des applications en temps réel, en utilisant l'information des forces et des moments, la prédiction est plus lente ce qui limite l'utilisation en temps-réel de cette application lorsque des décisions rapides doivent être prises par le robot.
+\todo{C'est pourquoi, dans la troisième étude de cette thèse, nous chercherons à diminuer la dimensionnalité des \textit{ProMPs} lorsque l'on souhaite apprendre les mouvements \toimprove{du corps entier du partenaire du} robot.}
+% Computation time will be improved in the future works, with the implementation of the prediction in an iterative way.
 
-In future upgrades for this application, we will probably use the wrench information only to estimate the time modulation parameter $\alpha$, to have both the best inference of the intended trajectory and the best estimation of the time modulation parameter to combine the benefits of inference with and without wrench information.
-
-
-\rev{
-Table~\ref{table:statsError} also reports the average time for computing the prediction of both time modulation and posterior distribution.  The computation were performed in Matlab, on a single core laptop (no parallelization). While the computation time for the case ``without wrenches'' is fine for real-time application, using the wrench information delays the prediction and represents a limit for real-time applications if fast decisions have to taken by the robot. Computation time will be improved in the future works, with the implementation of the prediction in an iterative way.
-}
 
 %or change the tolerance interval of accepted wrenches \todo{as represented in figure\ref{}}.
 
@@ -1280,7 +1273,8 @@ Table~\ref{table:statsError} also reports the average time for computing the pre
 \includegraphics[width=14cm]{img/withWrenchInfC.pdf}\\
 %\includegraphics[height=20cm]{img/infUseForces.pdf}
 }
-\caption{The prediction of the future trajectory from the learned ProMPs computed from the position and wrench information for the 3-targets dataset on the real iCub (Figure \ref{fig:realDistribution}) after 40\% of observations.}
+\caption{
+Prédiction de la trajectoire future après l'observation partielle ($40\%$) de celle-ci. Cette prédiction est effectuée à l'aide des \textit{ProMPs} définies par leur position Cartésienne et les forces et moments externes. Ces \textit{ProMPs} sont apprises à partir des trois ensembles de trajectoires correspondant aux trois tâches. Ces trajectoires sont effectuées avec le robot \textit{iCub} réel (Figure \ref{fig:realDistribution}).}
 \label{fig:realTrajectoriesPredictionsWithForces}
 \end{figure}
 
@@ -1291,7 +1285,7 @@ Table~\ref{table:statsError} also reports the average time for computing the pre
 \includegraphics[width=12cm]{img/errBoxWithWithoutForces.pdf}\\
 \includegraphics[width=12cm]{img/boxAlphaErrorWithForces.pdf}
 }
-\caption{Trajectory prediction error (top) and time modulation estimation error (bottom) of the future trajectory with and without wrench information, for the 3-targets dataset on the real iCub (Figure \ref{fig:realDistribution}) with respect to the number of observed data points.}
+\caption{Erreur de prédiction de la trajectoire (en haut) et erreur d'estimation du paramètre de modulation du temps (en bas) de la trajectoire inférée avec ou sans l'information des forces et des couples, pour les ensembles de trajectoires correspondant aux trois tâches, trajectoires effectuées sur le robot \textit{iCub} réel (\textit{c.f.} Figure~\ref{fig:realDistribution}).}
 \label{fig:errBoxWithWithoutForces}
 \end{figure}
 
@@ -1314,48 +1308,47 @@ Table~\ref{table:statsError} also reports the average time for computing the pre
 
 \begin{table}
 \begin{center}
-\color{blue}
-\textbf{With wrenches}
+\textbf{Avec les forces et moment}
 \begin{tabular}{|p{3.6cm}|p{2cm}|c|c|c|c|}
   \hline 
-   \% of observed data ($\simeq$ n. of samples) &  & \textbf{$30 (\simeq 180$)} & \textbf{$50 (\simeq 300$)} & \textbf{$70 (\simeq 419$)} & \textbf{$90 (\simeq 539$)}  \tabularnewline
+   \% de la trajectoire observée ($\simeq$ nb. d'échantillons) &  & \textbf{$30 (\simeq 180$)} & \textbf{$50 (\simeq 300$)} & \textbf{$70 (\simeq 419$)} & \textbf{$90 (\simeq 539$)}  \tabularnewline
   \hline
-\multirow{3}{3cm}{Prediction error of time modulation} &  median& 2.26e-08 & 1.35e-08 & 3.61e-09 & 8.95e-09 \tabularnewline
+\multirow{3}{3cm}{Erreur de prédiction du paramètre $\alpha$} &  médiane & 2.26e-08 & 1.35e-08 & 3.61e-09 & 8.95e-09 \tabularnewline
  % \hline
-  \cline{2-6} & mean & 4.26e-02 & 7.81e-09 & 2.19e-08 & 2.09e-08 \tabularnewline
+  \cline{2-6} & moyenne & 4.26e-02 & 7.81e-09 & 2.19e-08 & 2.09e-08 \tabularnewline
  \cline{2-6} & variance & 1.08e-02 & 1.09e-16 & 5.44e-16 & 2.24e-16 \tabularnewline
   \hline
-\multirow{3}{3cm}{Prediction error for the trajectory (NRMSE) [m]} &  median& 2.73e-01 & 5.51e-01 & 4.52e-01 & 5.38e-01 \tabularnewline
+\multirow{3}{3cm}{Err. de prédiction de la trajectoire (NRMSE) [m]} &  médiane & 2.73e-01 & 5.51e-01 & 4.52e-01 & 5.38e-01 \tabularnewline
  % \hline
-  \cline{2-6} & mean & 8.11e-01 & 5.86e-01 & 5.29e-01 & 3.42e-01 \tabularnewline
+  \cline{2-6} & moyenne & 8.11e-01 & 5.86e-01 & 5.29e-01 & 3.42e-01 \tabularnewline
  \cline{2-6} & variance & 7.45e-01 & 1.36e-01 & 7.74e-02 & 2.93e-02 \tabularnewline
   \hline  
-\multirow{2}{3cm}{Computation time [s]} &  mean & 0.25 & 0.74 & 1.92 & 3.59 \tabularnewline
+\multirow{2}{3cm}{Temps de calcul [s]} &  moyenne & 0.25 & 0.74 & 1.92 & 3.59 \tabularnewline
  \cline{2-6} & variance & 0.01 & 0.27 & 2.77 & 4.81 \tabularnewline
  \hline
 \end{tabular}
 
 \vspace{0.4cm}
-\textbf{Without wrenches}
+\textbf{Sans forces et couples}
 \begin{tabular}{|p{3.6cm}|p{2cm}|c|c|c|c|}
   \hline 
-   \% of observed data ($\simeq$ n. of samples) &  & \textbf{$30 (\simeq 180$)} & \textbf{$50 (\simeq 300$)} & \textbf{$70 (\simeq 419$)} & \textbf{$90 (\simeq 539$)}  \tabularnewline
+   de la trajectoire observée ($\simeq$ nb. d'échantillons) &  & \textbf{$30 (\simeq 180$)} & \textbf{$50 (\simeq 300$)} & \textbf{$70 (\simeq 419$)} & \textbf{$90 (\simeq 539$)}  \tabularnewline
   \hline
-\multirow{3}{3cm}{Prediction error of time modulation} &  median& 1.19e-02 & 1.76e-02 & 1.74e-02 & 1.62e-02 \tabularnewline
-  \cline{2-6} & mean & 2.81e-02 & 1.92e-02 & 2.45e-02 & 1.43e-02 \tabularnewline
+\multirow{3}{3cm}{Erreur de prédiction du paramètre $\alpha$} &  médiane & 1.19e-02 & 1.76e-02 & 1.74e-02 & 1.62e-02 \tabularnewline
+  \cline{2-6} & moyenne & 2.81e-02 & 1.92e-02 & 2.45e-02 & 1.43e-02 \tabularnewline
  \cline{2-6} & variance & 9.51e-04 & 1.00e-04 & 3.37e-04 & 1.82e-04 \tabularnewline
   \hline
-\multirow{3}{3cm}{Prediction error for the trajectory (NRMSE) [m]} &  median& 4.53e-02 & 4.73e-02 & 7.20e-02 & 6.20e-02 \tabularnewline
+\multirow{3}{3cm}{Err. de prédiction de la trajectoire (NRMSE) [m]} & médiane & 4.53e-02 & 4.73e-02 & 7.20e-02 & 6.20e-02 \tabularnewline
  % \hline
-  \cline{2-6} & mean & 1.56e-01 & 7.36e-02 & 5.75e-02 & 4.29e-02 \tabularnewline
+  \cline{2-6} & moyenne & 1.56e-01 & 7.36e-02 & 5.75e-02 & 4.29e-02 \tabularnewline
  \cline{2-6} & variance & 5.04e-02 & 1.80e-03 & 1.80e-03 & 6.0e-04 \tabularnewline
   \hline  
-\multirow{2}{3cm}{Computation time [s]} &  mean & 6.89e-02 & 8.49e-02 & 1.43e-01 & 2.58e-01 \tabularnewline
+\multirow{2}{3cm}{Temps de calcul [s]} &  moyenne & 6.89e-02 & 8.49e-02 & 1.43e-01 & 2.58e-01 \tabularnewline
  \cline{2-6} & variance & 2.83e-03 & 1.19e-03 & 7.31e-03 & 2.45e-03 \tabularnewline
  \hline
 \end{tabular}
 \end{center}
-\caption{\rev{Mean and stdev of the NRMSE of the prediction errors plotted in Figure~\ref{fig:errBoxWithWithoutForces}, and average time for computing both predictions (time modulation and trajectory via update of the posterior distribution). The computation were performed in Matlab, on a single core (no parallelization).}}
+\caption{Moyenne et variance \todo{(ou écart type?)} du \textit{NRMSE} des erreurs de prédiction affichées dans la Figure~\ref{fig:errBoxWithWithoutForces}, et moyenne des temps de calcul nécessaires aux prédictions (\textit{c.à.d.} prédiction du paramètre $\alpha$ et de la trajectoire). Les calculs sont effectués sous Matlab, avec un ordinateur à un cœur (\textit{e.g.} sans parallélisation).}
 \normalcolor
 \label{table:statsError}
 \end{table}
@@ -1364,25 +1357,24 @@ Table~\ref{table:statsError} also reports the average time for computing the pre
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.5\hsize]{img/realXp.pdf}
-\caption{\rev{The second experiment with the robot: iCub must sort the objects into two bins, guided by the human. If the object is good, the robot has to put the object in the ``front bin"; if the object is not good, the robot has to put the object in the ``left bin". The gestures to put the objects into the two bins are different. To simplify, the drop locations for the two bins are represented by the targets F and L. After inspecting the object, the human drives the robot towards the front of the left.}}
+\caption{\rev{Seconde expérience avec le robot : \textit{iCub} doit trier les objets dans deux corbeilles, grâce à un guidage partiel de l'utilisateur. Si l'objet est correct, le robot doit déplacer l'objet dans la corbeille placée devant lui, sinon dans la corbeille à sa gauche. Les mouvements permettant de mettre les objets dans ces corbeilles sont différents. Afin de simplifier, les endroits où le robot doit lâcher les objets dans les corbeilles sont représentés ici par ``F'' et ``L''. Après avoir inspecté l'objet, l'utilisateur guide partiellement le robot vers la gauche ou la droite.}}
 \label{figure:sortingiCub}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\textbf{Action towards the front bin (F)}\\
+\textbf{Action dirigée vers l'avant (F)}\\
 \includegraphics[width=0.8\hsize]{img/FRONT2modif.pdf}\\
-\textbf{Action towards the left bin (L)}\\
+\textbf{Action dirigée vers la gauche (L)}\\
 \includegraphics[width=0.8\hsize]{img/FigLeft.pdf}
-\caption{\rev{Predicted trajectories for the second experiment with the robot (Figure \ref{figure:sortingiCub}). The black circles represent the observations acquired while the human is physically moving the iCub's arm. When the human breaks the contact and releases the arm, the robot predicts the future trajectory and continues the movement.  The prior of the recognized ProMP is blue, the posterior ProMP used for prediction is red, the prior ProMP of the other task (i.e., the one that is recognized as not the one currently being executed) is green.\textbf{Top, F}: the human moves the arm towards the front bin. After few observations ($\sim$ 0.5s) the robot recognizes that the movement corresponds to the ``F'' action. The prior of the F actions is blue, the posterior/prediction is red, the L action is green. \textbf{Bottom, L}: the human moves the arm towards the left bin.  After few observations ($\sim$ 0.25s) the robot has recognized the L action. The prior of the L action is blue, the posterior red, the F action (not recognized) is green.}}
+\caption{Trajectoires prédites pour la seconde expérience avec le robot (Figure \ref{figure:sortingiCub}). Les gros points noirs représentent les observations du robot lorsque son utilisateur guide physiquement son bras. Lorsque le partenaire lâche le bras du robot, celui-ci prédit la trajectoire future et la continue. La distribution à priori de la \textit{ProMP} reconnue est présentée en bleu; la distribution postérieur de cette \textit{ProMP}, utilisée pour effectuer la trajectoire prédite est présentée en rouge ; la \textit{ProMP} de l'autre tâche est présentée en vert. \textbf{En haut, F} : l'utilisateur déplace le bras du robot vers la corbeille placée en avant. Après $0.5$seconde, le robot reconnaît que le mouvement correspond à l'action ``F''. \textbf{En bas, L} : l'utilisateur déplace le bras du robot vers la corbeille placée à la gauche du robot. Après environ $0.25$ seconde, le robot reconnaît l'action``L''.}
 \label{figure:sortingiCubTrajectories}
 \end{figure}
 
 
+\subsection{Tri collaboratif d'objets}
 
-\subsection{Collaborative object sorting}
-
-\rev{We realized another experiment with iCub, where the robot has to sort some objects in different bins (see Figure \ref{figure:sortingiCub}). We have two main primitives: one for a bin located on the left of the robot, and one for the bin to the front. Dropping the object is done at different heights, with a different gesture that also has a different orientation of the hand. 
+Une autre expérience a été réalisée avec le \textit{iCub}, où le robot doit trier quelques objets dans différentes corbeilles (\textit{c.f.} Figure~\ref{figure:sortingiCub}). We have two main primitives: one for a bin located on the left of the robot, and one for the bin to the front. Dropping the object is done at different heights, with a different gesture that also has a different orientation of the hand. 
 For this reason, the ProMP model consists of the Cartesian position of the hand $X_t=[x_t,y_t,z_t] \in R^3$ and its orientation $A_t \in R^4$, expressed as a quaternion:
 $$\xi_t = \begin{bmatrix} X_t \\ A_t\end{bmatrix} = \Phi_{\alpha t} \, \boldsymbol{\omega} + \epsilon_t$$
 As in the previous experiment, we first teach the robot the primitives by kinesthetic teaching, with a dozen of demonstrations. Then we start the robot movement: the human operator physically grabs the robot's arm and start the movement towards one of the bins. 
@@ -1551,7 +1543,7 @@ When the human starts a new collaborative task, the robot uses the early observa
 %The first module allows you to learn movement primitives using the probabilistic movement primitive method. By using this probabilistic method, you can learn distributions over movement primitives instead of one restricted movement. Thus, you can specify some via-points included in the learned distribution from where the movement will bypass. Moreover, you can use this learning to infer the continuation of a current trajectory.
 %To use this module and learn ProMPs, you just have to record the information of the trajectories to learn into a file, and to change a few variables in a Matlab script.
 %
-%The second module allows you to control and interact physically with the arm of the iCub, either by hand for the real robot, or by using the haptic device when you use the robot's simulation. During the interaction, you can use this module to record trajectories and the associated wrenches. From these trajectories, the module can learn ProMPs. Then, you can command the robot to follow the mean of the learned distributions to replay the movements correctly. Moreover, if you initiate a movement by guiding the robot's hand (manually or with the haptic device) and stop the guidance, the robot is able to finish the movement autonomously. On that purpose, it recognizes the corresponding ProMP, estimates the duration of the trajectory, and computes a posterior distribution of the ProMP using the early observations of the current trajectory.
+%The second module allows you to control and interact physically with the arm of the iCub, either by hand for the real robot, or by using the haptic device when you use the robot's simulation. During the interaction, you can use this module to record trajectories and the associated wrenches. From these trajectories, the module can learn ProMPs. Then, you can command the robot to follow the moyenne of the learned distributions to replay the movements correctly. Moreover, if you initiate a movement by guiding the robot's hand (manually or with the haptic device) and stop the guidance, the robot is able to finish the movement autonomously. On that purpose, it recognizes the corresponding ProMP, estimates the duration of the trajectory, and computes a posterior distribution of the ProMP using the early observations of the current trajectory.
 
 
 
@@ -1651,31 +1643,6 @@ K&= \Sigma_{\boldsymbol{\omega}}\Phi_{[1:n_o]}^\top(\Sigma_\xi^o + \Phi_{[1:n_o]
 %\label{sec:Tuto}
 %\includepdf[pages=1-3]{previousPDF/tutorial.pdf}
 \end{appendices} 
-
-
-
-\section*{Conflict of Interest Statement}
-%All financial, commercial or other relationships that might be perceived by the academic community as representing a potential conflict of interest must be disclosed. If no such relationship exists, authors will be asked to confirm the following statement: 
-
-The authors declare that the research was conducted in the absence of any commercial or financial relationships that could be construed as a potential conflict of interest.
-
-\section*{Author Contributions}
-
-Designed study: OD, AP, FC, SI. Wrote software: OD, ME, AP, SI. Wrote paper: OD, AP, ME, FC, JP, SI. 
-%The Author Contributions section is mandatory for all articles, including articles by sole authors. If an appropriate statement is not provided on submission, a standard one will be inserted during the production process. The Author Contributions statement must describe the contributions of individual authors referred to by their initials and, in doing so, all authors agree to be accountable for the content of the work. Please see  \href{http://home.frontiersin.org/about/author-guidelines#AuthorandContributors}{here} for full authorship criteria.
-
-\section*{Funding}
-%Details of all funding sources should be provided, including grant numbers if applicable. Please ensure to add all necessary funding information, as after publication this is no longer possible.
-
-This paper was partially funded by the European projects CoDyCo (no. 600716 ICT211.2.1) and AnDy (no. 731540 H2020-ICT-2016-1), and the French CPER project SCIARAT.
-
-\section*{Acknowledgments}
-%This is a short text to acknowledge the contributions of specific colleagues, institutions, or agencies that aided the efforts of the authors.
-
-The authors wish to thank the IIT researchers of the CoDyCo project for their support with iCub, Ugo Pattacini and Olivier Rochel for their help with the software for the Geomagic, and Iñaki Fernández Pérez for all his relevant feedback.
-
-%\section*{Supplemental Data}
-% \href{http://home.frontiersin.org/about/author-guidelines#SupplementaryMaterial}{Supplementary Material} should be uploaded separately on submission, if there are Supplementary Figures, please include the caption in the same file as the figure. LaTeX Supplementary Material templates can be found in the Frontiers LaTeX folder 
 
 
 \bibliographystyle{plain} % for Science, Engineering and Humanities and Social Sciences articles, for Humanities and Social Sciences articles please include page numbers in the in-text citations
