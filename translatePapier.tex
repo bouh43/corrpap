@@ -1374,19 +1374,14 @@ Prédiction de la trajectoire future après l'observation partielle ($40\%$) de 
 
 \subsection{Tri collaboratif d'objets}
 
-Une autre expérience a été réalisée avec le \textit{iCub}, où le robot doit trier quelques objets dans différentes corbeilles (\textit{c.f.} Figure~\ref{figure:sortingiCub}). We have two main primitives: one for a bin located on the left of the robot, and one for the bin to the front. Dropping the object is done at different heights, with a different gesture that also has a different orientation of the hand. 
-For this reason, the ProMP model consists of the Cartesian position of the hand $X_t=[x_t,y_t,z_t] \in R^3$ and its orientation $A_t \in R^4$, expressed as a quaternion:
+\toimprove{La seconde expérience réalisée avec le \textit{iCub} réel, a été présentée au début de la Section~\ref{sec:appliRealIcub} où celui-ci doit trier des objets dans deux corbeilles (\textit{c.f.} Figure~\ref{figure:sortingiCub}) à l'aide de deux primitives de mouvements, l'une en direction de la corbeille placée à sa gauche, et l'autre pour celle placée devant lui. Le robot doit lâcher l'objet à différentes hauteurs, avec différents gestes de la main et différentes orientations de celle-ci}. \todo{repetion}
+C'est pourquoi, la modélisation de la \textit{ProMP} prend cette fois ci en compte la position Cartésienne de la main $X_t=[x_t,y_t,z_t] \in R^3$ et son orientation $A_t \in R^4$, exprimé en quaternion :
 $$\xi_t = \begin{bmatrix} X_t \\ A_t\end{bmatrix} = \Phi_{\alpha t} \, \boldsymbol{\omega} + \epsilon_t$$
-As in the previous experiment, we first teach the robot the primitives by kinesthetic teaching, with a dozen of demonstrations. Then we start the robot movement: the human operator physically grabs the robot's arm and start the movement towards one of the bins. 
-The robot' skin is used twice. 
-First, to detect the contact when the human grabs the arm, which marks the beginning of the observations. 
-Second, when the human breaks the contact with the arm, which marks the end of the observations. 
-Using the first portion of the observed movement, the robot recognize the current task that is being executed, predicts the future movement that is intended by the human and then executes it on its own. 
-In the video (see link in Section \ref{sec:video}) we artificially introduced  a pause to let the operator ``validate'' the predicted trajectory, using a visual feedback on the iCubGui. 
+Tout comme pour l'expérience précédente, le robot apprend d'abord les primitives par apprentissage kinesthésique (\textit{c.à.d.} que l'on guide physiquement le robot pour que celui-ci apprenne les trajectoires effectuées ), avec une douzaine de démonstrations. Après cette phase d'apprentissage, l'utilisateur peut attraper la main du robot, commencer un mouvement en direction d'une des corbeilles, puis la lâche au moment où l'utilisateur désire que le robot finisse par lui même le mouvement. L'information de  contact sur la peau du robot est utilisée deux fois. Premièrement, quand l'utilisateur attrape le bras, le robot détecte le contact sur sa peau, ce qui lui fait comprendre que la trajectoire est commencée.  Deuxièmement, lorsque le partenaire lâche la main du robot, le robot détecte la fin du contact sur sa peau, ce qui lui fait comprendre que la trajectoire initiée par le partenaire est finie. 
+En utilisant cette première portion de trajectoire, le robot reconnaît alors la tâche initiée, et prédit la finalisation du mouvement qui est attendue par le partenaire, puis L’exécute de manière autonome. 
+\toimprove{Dans une des vidéos présentée dans la Section~\ref{sec:video}, une pause artificielle est introduite après que l'utilisateur ait initié le mouvement, afin que celui-ci ``valide'' la trajectoire prédite par le robot, à partir de la visualisation de cette trajectoire sur l'interface iCubGui \todo{déjà dit avant}}. 
 %The predicted trajectory is shown on the iCubGui.
-Figure \ref{figure:sortingiCubTrajectories} shows one of the predictions made by the robot after the human releases the arm. Of course in this case we do not have a ``ground truth'' for the predicted trajectory, only a validation of the predicted trajectory by the operator.}
-
-
+La Figure~\ref{figure:sortingiCubTrajectories} représente une de ces prédiction effectuée par le robot réel après que l'utilisateur ait relâché la main du robot. Dans cette figure, il n'y a plus de trajectoire représentant la ``vérité terrain'', puisque cette information est inconnue. Cependant, il s'agit de la bonne trajectoire attendu par l'utilisateur.
 
 %\subsection{Model specification}
 %\label{modelSpe}
@@ -1438,13 +1433,12 @@ Figure \ref{figure:sortingiCubTrajectories} shows one of the predictions made by
 %\newpage
 
 
-\section{Videos}
+\section{Vidéos}
 \label{sec:video}
 %A video that shows the inference using iCubGazeboSim is available here: 
 %
 % \url{https://www.youtube.com/edit?o=U&video_id=0i5O4Lsf7J}
-
-We recorded several videos that complement the tutorials. The videos are presented in the github repository of our software:
+Plusieurs vidéos ont été enregistrées afin de compléter les tutoriels. Les vidéos sont présentées dans le répertoire Github du logiciel à l'adresse :
 \url{https://github.com/inria-larsen/icubLearningTrajectories/tree/master/Videos}.
 
 % 
@@ -1467,23 +1461,21 @@ We recorded several videos that complement the tutorials. The videos are present
 %In the second part, we show the experiment performed on the real iCub robot. We first show how we collect some arm and tasks trajectories; when the human grasps the robot and applies a force that is interpreted as an intent to move, its arm goes in zero torque control mode, then the human starts lifting the arm. Whenever the arm trajectory is predicted and finished correctly, the task trajectory is provided to the robot to finish the movement.
 
 
-\section{DISCUSSION} \label{sec:discussion}
+\section{Discussion} \label{sec:discussion}
 
-\rev{While we believe that our proposed method is principled and has several advantages for predicting intention in human-robot interaction, there are numerous improvements that can be done. Some will be object of our future works.}
+Bien que la méthode proposée propose de nombreux avantages permettant de prédire l'intention  lors d'une interaction entre l'humain et le robot, plusieurs améliorations peuvent être effectuées :
 
-\rev{\textbf{Improving the estimation of the time modulation -}} Our experiments showed that estimating the time modulation parameter $\alpha$, determining the duration of the trajectory, greatly improves the prediction of the trajectory in terms of difference with the human intended trajectory (\textit{i.e.}, our ground truth). We proposed four simple methods in Section \ref{sec:predictDuration}, and in the iCub experiment we showed that the method that maps the time modulation and the variation of the trajectory in the first $n_o$ observations 
+\textbf{Amélioration de l'estimation du paramètre de modulation du temps -} Les expériences proposées ont montré que l'estimation du paramètre de modulation du temps $\alpha$, qui permet de déterminer la durée de la trajectoire, améliore grandement la prédiction de la trajectoire, puisque celle-ci correspond d'avantage à la trajectoire espérée par l'utilisateur (représentée par la vérité terrain dans les tests hors-ligne). Pour estimer ce paramètre, la Section \ref{sec:predictDuration} présente quatre méthodes possible, et les expériences avec le \textit{iCub} ont montré que la méthode qui modélise le paramètre de modulation du temps en fonction de la \toimprove{variation globale} des mesures entre la première et la $n_o^e$ observations 
 %($\delta(X) = X(n_o) -X(1)$) 
 %\todo{continue correctoin here}
-provides a good estimate of the time modulation $\alpha$ for our specific application. However, it is an \textit{ad hoc} model that cannot be generalized to all possible cases.
-Overall, the estimation of the time modulation (or phase) can be improved.
-For example, \cite{maeda2016probabilistic} used Dynamic Time Warping, while  \cite{ewerton2015learning} proposed to improve the estimation by having local estimations of the speed in the execution of the trajectory, to comply with cases where the velocity of task trajectory may not be constant throughout the task execution.
-In the future, we plan to explore more solutions and integrate them into our software.
+permet d'estimer correctement ce paramètre $\alpha$ dans le cadre de notre application. Cependant, il s'agit d'une modélisation \textit{ad hoc} qui ne peut pas être généralisé pour tous les cas possibles. C'est pourquoi, il serait bénéfique d'améliorer l'estimation de ce paramètre.
+Par exemple, \sout{\cite{maeda2016probabilistic} utilise la méthode \textit{Dynamic Time Warping}, tandis que~ \cite{ewerton2015learning} propose d'améliorer cette estimation en faisant des estimations locales de la vitesse d’exécution de la trajectoire, afin de pouvoir traiter les cas où la vitesse des trajectoires ne sont pas constantes durant l’exécution de celle-ci.} \ori{en utilisant les techniques présentées dans la Sections [...]} 
 
-\rev{\textbf{Improving prediction -}} Another point that needs further investigation and improvement is how to improve the prediction of the trajectories exploiting different information. In our experiment with iCub, we improved the estimation of the time modulation using position and wrench information; however, we observed that the noisy wrench information does not help in improving the prediction of the position trajectory. One improvement is to certainly exploit more information from the demonstrated trajectories, such as estimating the different noise of every trajectory component and exploiting this information to improve the prediction.
-\rev{Another possible improvement would consist in using contextual information about the task trajectories.}
-\rev{Finally, it would be interesting to try to identify automatically the characteristic such as velocity profiles or accelerations, that are renown to play a key role in attributing intentions to human movements. For example, in goal-directed tasks such as reaching, the arm velocity profile and the hand configuration are cues that helps us detect intentions. Extracting these cues automatically, leveraging the estimation of the time modulation, would probably improve the prediction of the future trajectory. This is a research topic on its own, outside the scope of this paper, with strong links to human motor control.}
+\textbf{Amélioration de la prédiction -} Un autre point qui mérite d'avantage d'investigation concerne l'amélioration de la prédiction des trajectoires, en exploitant différentes informations. Dans les études présentée dans cette thèse, l'estimation du paramètre de modulation a été amélioré en utilisant l'information des forces est des couples exercées sur le robot. Cependant, les mesures des couples étaient trop bruitées pour être utilisées afin d'améliorer la prédiction de la trajectoire elle-même. Une amélioration de ce logiciel serait certainement d'utiliser d'avantage d'information provenant des trajectoires de démonstration, tel qu'estimer le bruit de chaque type de mesure séparément et d'exploiter cette information afin d'améliorer la prédiction.
+Une autre amélioration possible serait aussi d'utiliser des informations concernant le contexte dans lequel se trouve les trajectoires. Par exemple, en détectant les différents objets présents dans \toimprove{l'espace d'action du robot}, afin d’accroître la probabilité que les trajectoires se dirigent vers ce but ou de recentrer les trajectoires prédites vers l'objet/le lieu le plus probablement visée. 
+Finalement, il serait intéressant d'essayer d'identifier automatiquement les caractéristiques des profiles de vitesses de d’accélérations, qui ont la réputation de jouer un rôle important dans l'attribution des intentions des mouvements humains. Par exemple, lors des tâches dirigées vers un but, la vitesse des bras et la configuration des bras sont des indices permettant de détecter les intentions des humains. Extraire ces indices de manière automatique et utiliser l'information du paramètre de modulation du temps permettrait probablement d'améliorer la prédiction de la tâche à effectuer.
 
-\rev{\textbf{Continuous prediction -} In Section \ref{sec:ManyProMP} we described how to compute the prediction of the future trajectory after recognizing the current task. However, we did not explore what happens if the task recognition is wrong: this may happen, if there are two or more task with a similar trajectory at the beginning (\textit{e.g.}, moving the object from the same initial point towards one of four possible targets), or simply because there were not enough observed points. So what happens if our task recognition is wrong? How to re-decide on a previously identified task? And how should the robot decide if its current prediction is finally correct (in statistical terms)? While implementing a continuous recognition and prediction is easy with our framework (one has simply to do the estimation at each time step), providing a generic answer to these question may not be straightforward. Re-deciding about the current task implies also changing the prediction of the future trajectory. If the decision does not come with a confidence level greater than a desired value, then the robot could face a stall: if asked to continue the movement but unsure about the future trajectory, should it continue or stop? The choice may be application-dependent. We will address these issues and the continuous prediction in future works.}
+\textbf{Prédiction en continue -} La Section~\ref{sec:ManyProMP} présentait les calculs permettant la prédiction de la trajectoire future, après avoir reconnue la tâche courante. Cependant, nous n'avons pas exploré ce qui adviendrait lors de mauvaise reconnaissance de la tâche : cela pourrait arriver, lorsque deux tâches ont des trajectoires trop similaires (\textit{i.e.} lorsque l'objet est déplacée à partir d'une même position initiale, et se dirige vers différents buts assez proche), ou simplement parce que l'utilisateur lâche le bras du robot avant que celui-ci ait mesuré suffisamment de données. Il serait alors pertinent de permettre au robot d'estimer si sa reconnaissance est suffisamment fiable d'un point de vue statistique avant d'effectuer l'action. Alors qu'implémenter une reconnaissance et une prédiction en continue nécessiterait uniquement d'effectuer les calculs de manière itératif, il serait par contre plus compliqué de permettre au robot de décider à nouveau quelle est la tâche à accomplir puisque cela nécessiterait aussi de changer la trajectoire inférée. De plus, que devrait faire le robot dans le cas où celui-ci n'est plus suffisamment sur de la trajectoire à effectuer : devrait il s'arrêter ? La réponse à cette question dépendrait alors du type d'application.
 
 %To present these modules, we first explained the ProMP's theory and we specify the included features, such as the possibility to estimate the duration of the movement, and the possibility to use wrench information to infer the trajectory. Then, we present a simple use of the toolbox thanks to a 1DOF primitive example. Next, we explain how to control the robot in simulation with another example that uses the simulated robot. Finally, we present you results of the simulated and the real iCub's experiments. These results shows that:
 %\begin{itemize}
@@ -1496,9 +1488,10 @@ In the future, we plan to explore more solutions and integrate them into our sof
 
 %Second, to improve the prediction, we will use wrench information only for the estimation of the modulation time parameter, without using it to update the distribution of the ProMP. Thus, we should have the advantages of wrench information without the drawbacks presented before. We will also allow to have a different expected data noise for each kind of movement information. Indeed, we assume that if we choose a bigger expected data noise for the wrench information (that can variate depending on the trajectory) than for the position information, since position information plays a bigger role in the update of the distribution, the drawback of wrench information will be minor.  
 
-\rev{\textbf{Improving computational time -}} Finally, we plan to improve the computational time for the inference and the portability of our software by porting the entire framework in C++.
+\textbf{Améliorer le temps de calcul -} Finallement, afin de diminuer le temps de calcul nécessaire pour la reconnaissance et la prédiction des trajectoire et afin de rendre ce logiciel \toimprove{portatif}, le logiciel courrant devra être implémenté en C++.
 
-\rev{\textbf{Learning tasks with objects -} In many collaborative scenarios, such as object carrying and cooperative assembly, the physical interaction between the human and the robot is mediated by objects. In these cases, if specific manipulations must be done on the objects, our method still applies, but not only on the robot. It must be adapted to the new ``augmented system'' consisting of robot and object. Typically, we could image a trajectory for some frame or variable or point of interest for the object, and learn the corresponding task. Since ProMPs support multiplication and sequencing of primitives, we could exploit the properties of the ProMPs to learn the joint distribution of the robot task trajectories and the object task trajectories.}
+\textbf{Apprendre des tâches avec des objets -} Dans beaucoup de scénario (\textit{i.e.}, port d'objet ou travail d'assemblage coopératif), l'interaction physique entre l'humain et le robot est médiée par des objets. Dans ces cas, si les manipulations sont spécifiques aux objets, la méthode que nous proposons s'applique toujours, mais pas uniquement au robot. Il faudrait alors adapter les \textit{ProMPs} afin qu'elles enregistres les données concernant l'objet.  Nous pourrions alors avoir des variables ou des points d’intérêts représentant l'objet, et apprendre des tâches qui lui correspondent. Puisque les \textit{ProMPs} permettent la co-activation (produit) et la mixture (fonction d'activation) de primitives, ces propriétés pourraient être exploitées afin d'apprendre une distribution conjointe des trajectoires du robot et des trajectoires que doivent effectuer les objets.
+\ori{Notons qu'en enregistrant les informations sur les forces extérieurs, l'expérience que nous avons proposés où le robot apprend à la fois les positions cartésiennes qu'il doit suivre durant la trajectoire ainsi que les informations sur les forces permet sûrement déjà au robot d'identifier, par le poids de l'objet, qu'elle trajectoire il devrait effectuer. Cette hypothèse est cependant à vérifier}. \todo{en discuter avec Sere et François}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{CONCLUSION}
@@ -1506,22 +1499,20 @@ In the future, we plan to explore more solutions and integrate them into our sof
 
 
 %In this paper we propose a method to recognize the intention of the human partner collaborating with the iCub, formalized as the target and the ''future'' trajectory associated to a skill, modeled by a goal-directed Probabilistic Movement Primitive.   
+Dans ce papier, nous proposons une méthode permettant de prédire l'intention d'un utilisateur qui interagit physiquement avec le robot \textit{iCub}, dans des tâches de coopération. La prédiction de l'intention est représentée comme la prédiction du but et de la trajectoire ``future'' désirée par le partenaire. Cette intention doit être identifiée à partir d'observations initiales de la trajectoire, et est modélisée à l'aide de la méthode de Primitive De Mouvement Probabiliste. Nous avons choisi cette méthode car elle permet de prendre en compte la variabilité des trajectoires permettant de répondre à une même tâche, en représentant ces trajectoires sous la forme d'une distribution de trajectoires, calculée à l'aide de plusieurs démonstrations de la tâche.
+À partir des informations fournies par la \textit{ProMP}, le robot est alors capable de calculer la finition de la trajectoire initiée, en conditionnant la \textit{ProMP} afin qu'elle corresponde aux données initiales de la trajectoire observées.
+D'autres caractéristiques de cette méthodes correspondent à l'estimation de la durée du mouvement attendu, la reconnaissance de la tâche courante parmi plusieurs connues à l'avance, et la prédiction multimodale.
 
-In this paper we propose a method for predicting the intention of a user physically interacting with the iCub in a collaborative task. We formalize the intention prediction as predicting the target and ``future'' intended trajectory from early observations of the task trajectory, modeled by Probabilistic Movement Primitives (ProMPs). 
-We use ProMPs because they capture the variability of the task, in the form of a distribution of trajectories coming from several demonstrations of the task.
-From the information provided by the ProMP, we are able to compute the future trajectory by conditioning the ProMP to match the early observed data points.
-\rev{Additional features of our method are the estimation of the duration of the intended movement, the recognition of the current task among the many known in advance, and multimodal prediction.}
+La Section~\ref{sec:theory} décrit la structure théorique et les Sections~\ref{sec:softwareOverview}--\ref{sec:appliRealIcub} présentent le logiciel open-source qui fourni l'implémentation de la méthode proposée. 
+Le logiciel est accessible sur \texttt{github} et des tutoriels et vidéos sont fournies.
 
-Section \ref{sec:theory} described the theoretical framework, whereas Sections \ref{sec:softwareOverview}--\ref{sec:appliRealIcub} presented the open-source software that provides the implementation of the proposed method. 
-The software is available on \texttt{github}, and tutorials and videos are provided.
-
-\rev{We used three examples of increasing complexity to show how to use our method for predicting the intention of the human in collaborative tasks, exploiting the different features. } 
+Nous utilisons trois exemples dans lesquels la complexité augmente afin d'expliquer comment utiliser la méthode et le logiciel pour permettre de reconnaître l'intention d'un humain dans des tâches de collaboration, en exploitant différentes caractéristiques.
 %Our examples use both the real and the simulated iCub (in Gazebo).
-We presented experiments with both the real and the simulated iCub. In our experiments, the robot learns a set of motion primitives corresponding to different tasks, from several demonstrations provided by a user. The resulting ProMPs are the prior information that is later used to make inferences about human intention.
-When the human starts a new collaborative task, the robot uses the early observations to infer which task the human is executing, and predicts the trajectory that the human intends to execute. When the human releases the robot, the predicted trajectory is used by the robot to continue executing the task on its own.
+Les expériences présentées ont été effectuées à la fois avec le robot réel et le robot simulé. Dans celles-ci, le robot apprend un ensemble de primitives de mouvement qui correspondent à des tâches différentes, à partir de plusieurs trajectoires de démonstration guidées par un utilisateur. Les \textit{ProMPs} ainsi apprises correspondent à une modélisation à priori des trajectoires à effectuer, et sont utilisées par la suite pour permettre d'inférer l'intention d'un utilisateur.
+Quand celui-ci commence une des tâche collaborative, le robot utilise les observations correspondant à ce mouvement initial afin d'inférer quelle tâche l'utilisateur est entrain d'effectuer, et de prédire la finition de la trajectoire correspondante, souhaitée par l'utilisateur. Dès que l'utilisateur lâche le bras du robot, la trajectoire prédire est utilisée par le robot, afin qu'il effectue par lui même la tâche attendue.
 
-\rev{In Section \ref{sec:discussion} we discussed some current issues and challenges for improving the proposed method and make it applicable to a wider repertoire of collaborative human-robot scenarios. In our future works, our priority would be in accelerating the time for computing the inference, and finding a principled way to do continuous estimation, by letting the robot re-decide continuously about the current task and future trajectory.
-}
+Dans la Section~\ref{sec:discussion}, nous proposons quelques améliorations du logiciel, afin de répondre à des enjeux non-pris en compte dans la version actuelle, ce qui permettrait ainsi à ce logiciel d'être utiliser dans un répertoire encore plus large de scénarios de collaboration entre l'humain et le robot. \sout{Dans de futures travaux, la priorité sera alors d'accélérer le temps de calcul nécessaire à l'inférence, et de permettre d'inférer de manière continue les trajectoires à exécuter, en permettant au robot de décider en continue quelle est la tâche courante et le futur de la trajectoire.}
+
 
 %Thanks to the prior knowledge of the ProMP, 
 %We formalize the prediction of intention as the prediction of the future trajectory given early observed data points. Thanks to the prior information provided by the ProMP, we are able to compute the future trajectory by conditioning the ProMP to match the early observations.
@@ -1571,20 +1562,20 @@ When the human starts a new collaborative task, the robot uses the early observa
 
 \begin{appendices}
 \addcontentsline{toc}{chapter}{APPENDICES}
-\section{Detail of the inference formula}
+\section{Détails concernant les formules permettant l'inférence}
 \label{sec:formulas}
 
-In this appendices, we explain how to obtain the inference formulae used in our software.
-First, let us recall the Marginal and Conditional Gaussians laws\footnote{\label{noteGaussian} From the book \cite{bishop2006pattern}}
+Dans ces annexes, les formules permettant d'effectuer l'inférence sont développées. 
+Pour cela, les lois gaussiennes marginales et conditionnelles sont utilisées~\footnote{\label{noteGaussian} Provenant du livre~\cite{bishop2006pattern}}.
 % from the book "Gaussian Identities" of Michael A. Osborne, p93}:
 %\begin{quotation}
-Given a marginal Gaussian distribution for $x$ and a Gaussian distribution for $y$ given $x$ in the form:
+Étant donnée la distribution gaussienne marginale de $x$ et la distribution gaussienne de $y$ sachant $x$ :
 \begin{equation}
 \label{eq:book1}
 p(x) = \mathcal{N}\left(x | \mu, \Delta^{-1}\right)\\
 p(y|x) = \mathcal{N}\left(Ax + b, L^{-1}\right)
 \end{equation}
-the marginal distribution of $y$ and the conditional distribution of $x$ given $y$ are given by
+la distribution marginale de $y$ et la distribution conditionnelle de  $x$ sachant $y$ sont données par :
 \begin{equation}
 \label{eq:book2}
 p(y) = \mathcal{N}\left(y | A\mu + b, L^{-1} + A\Delta^{-1}A^\top\right) 
@@ -1594,31 +1585,28 @@ p(y) = \mathcal{N}\left(y | A\mu + b, L^{-1} + A\Delta^{-1}A^\top\right)
 \label{eq:book3}
 p(x | y) = \mathcal{N}\left(x | \Sigma{ A^\top L(y-b) + \Delta\mu},\Sigma\right)
 \end{equation}
-where
+où
 $$\Sigma = (\Delta + A^\top LA)^{-1}$$
 %\end{quotation}
 
-We computed the parameter's marginal Gaussian distribution from the set of observed movements:
+À partir de l'ensemble des mouvements observées, les paramètres de la distribution gaussienne marginale sont alors calculés par :
 \begin{equation}
 \label{paramdistrib}
   p(\boldsymbol{\omega}) \sim \mathcal{N}(\mu_{\boldsymbol{\omega}}, \Sigma_{\boldsymbol{\omega}})
 \end{equation}
-
-From the model $\Xi_t = \Phi_{[1:t_f]} \boldsymbol{\omega} + \epsilon_\Xi$, we have the conditional Gaussian distribution for $\Xi$ given $\boldsymbol{\omega}$: 
+À partir de la formule $\Xi_t = \Phi_{[1:t_f]} \boldsymbol{\omega} + \epsilon_\Xi$, la distribution gaussienne conditionnelle de $\Xi$ sachant $\boldsymbol{\omega}$ est donnée par : 
 \begin{equation}
 p(\Xi | \boldsymbol{\omega}) = \mathcal{N}(\Xi | \Phi_{[1:t_f]} \boldsymbol{\omega}, \Sigma_\Xi)
 \end{equation}
-Then, using Equation~\ref{eq:book2}:
+Puis, à l'aide de l'Équation~\ref{eq:book2}, la distribution à priori de la \textit{ProMP} est obtenue :
 \begin{equation}
 \label{eq:marg}
 p(\Xi) = \mathcal{N}(\Xi |\Phi_{[1:t_f]} \mu_w, \Sigma_\Xi + \Phi_{[1:t_f]} \Sigma_{\boldsymbol{\omega}} \Phi_{[1:t_f]}^\top ) 
 \end{equation}
-that is the prior distribution of the ProMP.
 
-Let $\Xi^o=[\xi^o(1),\ldots, \xi^o({n_o})]$ be the first $n_o$ observations of the trajectory to predict with the first $n_o$ elements corresponding to the early observations.
-
-Let $\hat{\Xi} = [\xi^o({1}), \ldots, \xi^o({n_o}), \hat{\xi}({n_o+1}), \ldots, \hat{\xi}(t_{\hat{t}_f})]$ be the whole trajectory we have to predict.
-We can then compute the posterior distribution of the ProMP by using the conditional Gaussians Equation~\ref{eq:book3}:
+Soit $\Xi^o=[\xi^o(1),\ldots, \xi^o({n_o})]$,  les $n_o$ premières observations de la trajectoire à prédire.
+Soit $\hat{\Xi} = [\xi^o({1}), \ldots, \xi^o({n_o}), \hat{\xi}({n_o+1}), \ldots, \hat{\xi}(t_{\hat{t}_f})]$ la trajectoire escomptée.
+La distribution postérieure de la \textit{ProMP} peut alors être calculée, en utilisant l'équation gaussienne conditionnelle~\ref{eq:book3}:
 \begin{equation}
 \label{eq:cond}
 p(\boldsymbol{\omega} | \Xi^o) = \mathcal{N}(\boldsymbol{\omega} | \mu_{\boldsymbol{\omega}} + K(\Xi^o - \Phi_{[1:n_o]} \mu_{\boldsymbol{\omega}}), \Sigma_{\boldsymbol{\omega}} - K \Phi_{[1:n_o]} \Sigma_{\boldsymbol{\omega}}) 
@@ -1627,7 +1615,7 @@ p(\boldsymbol{\omega} | \Xi^o) = \mathcal{N}(\boldsymbol{\omega} | \mu_{\boldsym
 \mathrm{with~} K = \Sigma_{\boldsymbol{\omega}} \Phi_{[1:n_o]}^\top (\Sigma_\Xi + \Phi_{[1:n_o]} \Sigma_{\boldsymbol{\omega}}\Phi_{[1:n_o]}^\top)^{-1}
 \end{equation}
 
-Thus, we have the posterior distribution of the ProMP $p(\boldsymbol{\omega} | \Xi^o) = \mathcal{N}(\boldsymbol{\omega} | \hat{\boldsymbol{\mu}_\omega}, \hat{\boldsymbol{\Sigma}_\omega})$ with:
+Ainsi, la distribution postérieure de la \textit{ProMP} est obtenue : $p(\boldsymbol{\omega} | \Xi^o) = \mathcal{N}(\boldsymbol{\omega} | \hat{\boldsymbol{\mu}_\omega}, \hat{\boldsymbol{\Sigma}_\omega})$ avec:
 \begin{eqnarray} 
 \left\{
 \begin{array}{rl}
