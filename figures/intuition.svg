@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="291.78448mm"
+   height="167.14928mm"
+   viewBox="0 0 291.78448 167.14928"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 (93ccf03162, 2017-09-10)"
+   sodipodi:docname="intuition.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.47"
+     inkscape:cx="556.92329"
+     inkscape:cy="246.80869"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1462"
+     inkscape:window-height="907"
+     inkscape:window-x="0"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid815"
+       originx="11.207381"
+       originy="-113.05006" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(11.207381,-16.80067)">
+    <rect
+       style="fill:#c8e7c7;fill-opacity:1;stroke:none;stroke-width:2.96647978;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect841"
+       width="31.750002"
+       height="58.208332"
+       x="21.166666"
+       y="58.875" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 21.034038,90.625 H 52.916667 C 62.696052,85.25305 89.620145,76.196475 89.958333,58.875"
+       id="path817"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 52.916667,90.625 c 10.730197,2.177877 31.819217,15.12933 31.75,26.45833"
+       id="path819"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="-11.775822"
+       y="93.904335"
+       id="text823"><tspan
+         sodipodi:role="line"
+         id="tspan821"
+         x="-11.775822"
+         y="93.904335"
+         style="stroke-width:0.26458332">start</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="96.36795"
+       y="56.340961"
+       id="text827"><tspan
+         sodipodi:role="line"
+         id="tspan825"
+         x="96.36795"
+         y="56.340961"
+         style="stroke-width:0.26458332">prim1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="90.778168"
+       y="115.44366"
+       id="text831"><tspan
+         sodipodi:role="line"
+         id="tspan829"
+         x="90.778168"
+         y="115.44366"
+         style="stroke-width:0.26458332">prim2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="21.38233"
+       y="130.61935"
+       id="text2284"><tspan
+         sodipodi:role="line"
+         id="tspan2282"
+         x="21.38233"
+         y="130.61935"
+         style="stroke-width:0.26458332">50-50 </tspan><tspan
+         sodipodi:role="line"
+         x="21.38233"
+         y="143.84853"
+         style="stroke-width:0.26458332"
+         id="tspan2286">guess</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="8.179327"
+       y="27.093296"
+       id="text2290"><tspan
+         sodipodi:role="line"
+         id="tspan2288"
+         x="8.179327"
+         y="27.093296"
+         style="stroke-width:0.26458332">without vision</tspan><tspan
+         sodipodi:role="line"
+         x="8.179327"
+         y="40.322464"
+         style="stroke-width:0.26458332"
+         id="tspan2292">(only physical</tspan><tspan
+         sodipodi:role="line"
+         x="8.179327"
+         y="53.551628"
+         style="stroke-width:0.26458332"
+         id="tspan2296">interaction)</tspan></text>
+    <rect
+       y="58.875"
+       x="174.75763"
+       height="58.208332"
+       width="31.750002"
+       id="rect2300"
+       style="fill:#c8e7c7;fill-opacity:1;stroke:none;stroke-width:2.96647978;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path2302"
+       d="m 174.625,90.625 h 31.88263 c 9.77939,-5.37195 36.70348,-14.428525 37.04167,-31.75"
+       style="fill:none;stroke:#00cf00;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path2304"
+       d="m 206.50763,90.625 c 10.7302,2.177877 31.81922,15.12933 31.75,26.45833"
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:8, 4;stroke-dashoffset:0;stroke-opacity:1" />
+    <text
+       id="text2308"
+       y="93.904335"
+       x="141.81514"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="93.904335"
+         x="141.81514"
+         id="tspan2306"
+         sodipodi:role="line">start</tspan></text>
+    <text
+       id="text2322"
+       y="130.87308"
+       x="157.07013"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         id="tspan2320"
+         style="stroke-width:0.26458332"
+         y="130.87308"
+         x="157.07013"
+         sodipodi:role="line">gaze primitive</tspan><tspan
+         style="stroke-width:0.26458332"
+         y="144.10225"
+         x="157.07013"
+         sodipodi:role="line"
+         id="tspan2334">predicts motion</tspan><tspan
+         style="stroke-width:0.26458332"
+         y="157.33141"
+         x="157.07013"
+         sodipodi:role="line"
+         id="tspan2350">primitive before</tspan><tspan
+         style="stroke-width:0.26458332"
+         y="170.56058"
+         x="157.07013"
+         sodipodi:role="line"
+         id="tspan2354">updating it with</tspan><tspan
+         style="stroke-width:0.26458332"
+         y="183.78975"
+         x="157.07013"
+         sodipodi:role="line"
+         id="tspan2356">observations</tspan></text>
+    <text
+       id="text2330"
+       y="24.841522"
+       x="163.45911"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="24.841522"
+         x="163.45911"
+         id="tspan2324"
+         sodipodi:role="line">with vision</tspan><tspan
+         id="tspan2326"
+         style="stroke-width:0.26458332"
+         y="38.07069"
+         x="163.45911"
+         sodipodi:role="line">(gaze+physical</tspan><tspan
+         id="tspan2328"
+         style="stroke-width:0.26458332"
+         y="51.299854"
+         x="163.45911"
+         sodipodi:role="line">interaction)</tspan></text>
+    <text
+       id="text2340"
+       y="58.949528"
+       x="250.64612"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="58.949528"
+         x="250.64612"
+         id="tspan2338"
+         sodipodi:role="line">prim1</tspan></text>
+    <text
+       id="text2344"
+       y="118.05222"
+       x="245.05634"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="118.05222"
+         x="245.05634"
+         id="tspan2342"
+         sodipodi:role="line">prim2</tspan></text>
+  </g>
+</svg>
